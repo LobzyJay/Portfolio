@@ -112,6 +112,7 @@ function initBackground() {
     applyUvCrop(uniforms, img.naturalWidth || img.width, img.naturalHeight || img.height, window.innerWidth, window.innerHeight);
     uniforms.u_ready.value = true;
     canvas.style.opacity = '1';
+    window.dispatchEvent(new Event('asset-loaded'));
   }
 
   function applyGrainFallback() {
@@ -130,6 +131,7 @@ function initBackground() {
     applyUvCrop(uniforms, 512, 512, window.innerWidth, window.innerHeight);
     uniforms.u_ready.value = true;
     canvas.style.opacity = '1';
+    window.dispatchEvent(new Event('asset-loaded'));
   }
 
   const img   = new Image();
@@ -181,62 +183,62 @@ function injectAssets() {
    ============================================================ */
 function initAnimation() {
   // ── Initial states ───────────────────────────────────────
-  gsap.set('.avatar-wrap',                         { autoAlpha: 0, scale: 0.76 });
-  gsap.set(['.profile-name', '.experience-badge'], { autoAlpha: 0, y: 14 });
-  gsap.set('.social-icon',                         { autoAlpha: 0, y: 10 });
-  gsap.set('.btn-pill',                            { autoAlpha: 0, y: 10 });
-  gsap.set('.tools-bar',                           { autoAlpha: 0, y: 10 });
-  // Cards: opacity-only fade — no transform so CSS hover transition isn't triggered
-  gsap.set('.service-card',                        { autoAlpha: 0 });
+  gsap.set('.avatar-wrap',                         { autoAlpha: 0, scale: 0.72 });
+  gsap.set(['.profile-name', '.experience-badge'], { autoAlpha: 0, y: 18 });
+  gsap.set('.social-icon',                         { autoAlpha: 0, y: 12 });
+  gsap.set('.btn-pill',                            { autoAlpha: 0, y: 12 });
+  gsap.set('.tools-bar',                           { autoAlpha: 0, y: 12 });
+  gsap.set('.service-card',                        { autoAlpha: 0, y: 22 });
   gsap.set('.hero-line',                           { y: '110%', autoAlpha: 0 });
   gsap.set('#coming-soon',                         { autoAlpha: 0 });
 
   // ── Master timeline ──────────────────────────────────────
-  const tl = gsap.timeline();
+  const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
 
   tl
     // Page fade-in
-    .from('#stage', { autoAlpha: 0, duration: 0.55, ease: 'power2.out' })
+    .from('#stage', { autoAlpha: 0, duration: 0.6, ease: 'power2.out' })
 
-    // Avatar pops in with back-ease bounce
+    // Avatar pops in with generous spring
     .to('.avatar-wrap', {
       autoAlpha: 1, scale: 1,
-      duration: 0.75, ease: 'back.out(1.5)',
-    }, 0.2)
+      duration: 0.85, ease: 'back.out(1.9)',
+    }, 0.15)
 
     // Name then badge
-    .to('.profile-name',     { autoAlpha: 1, y: 0, duration: 0.48, ease: 'power3.out' }, 0.50)
-    .to('.experience-badge', { autoAlpha: 1, y: 0, duration: 0.44, ease: 'power3.out' }, 0.62)
+    .to('.profile-name',     { autoAlpha: 1, y: 0, duration: 0.55 }, 0.45)
+    .to('.experience-badge', { autoAlpha: 1, y: 0, duration: 0.50 }, 0.58)
 
     // Social icons cascade left→right
     .to('.social-icon', {
       autoAlpha: 1, y: 0,
-      duration: 0.36, ease: 'power2.out', stagger: 0.07,
-    }, 0.72)
+      duration: 0.45, ease: 'power3.out', stagger: 0.07,
+    }, 0.68)
 
     // Pill buttons rise
     .to('.btn-pill', {
       autoAlpha: 1, y: 0,
-      duration: 0.50, ease: 'power3.out', stagger: 0.10,
-    }, 0.88)
+      duration: 0.55, stagger: 0.10,
+    }, 0.84)
 
     // Tools bar floats up
     .to('.tools-bar', {
       autoAlpha: 1, y: 0,
-      duration: 0.50, ease: 'power3.out',
-    }, 1.02)
+      duration: 0.55,
+    }, 0.98)
 
-    // Cards fade in — no transform touched, keeps CSS hover clean
+    // Cards slide up and fade — clearProps lets CSS hover take over cleanly
     .to('.service-card', {
-      autoAlpha: 1,
-      duration: 0.65, stagger: 0.12, ease: 'power2.out',
-    }, 0.38)
+      autoAlpha: 1, y: 0,
+      duration: 0.75, stagger: 0.13, ease: 'power4.out',
+      clearProps: 'transform',
+    }, 0.32)
 
     // Hero text sweeps up dramatically
     .to('.hero-line', {
       y: 0, autoAlpha: 1,
-      duration: 1.05, stagger: 0.13, ease: 'power4.out',
-    }, 0.65);
+      duration: 1.1, stagger: 0.14, ease: 'power4.out',
+    }, 0.60);
 
   // Ellipsis pulse — runs forever after intro settles
   gsap.to('.ellipsis-red', {
@@ -342,13 +344,91 @@ function initTypewriter() {
 }
 
 /* ============================================================
+   7. LOADER
+      Tracks bg texture + 3 card videos. Number counts 0→100
+      as each asset fires ready. Red bar fills in parallel.
+   ============================================================ */
+function initLoader() {
+  const loaderEl = document.getElementById('loader');
+  const barEl    = document.getElementById('loader-bar');
+  const numEl    = document.querySelector('.loader-number');
+  if (!loaderEl || !barEl) { initAnimation(); initTypewriter(); return; }
+
+  const TOTAL  = 4;    // bg texture + 3 card videos
+  const MIN_MS = 2400;
+  let loaded   = 0;
+  let current  = 0;    // displayed number
+  let target   = 0;    // target number
+  const t0     = Date.now();
+  let raf      = null;
+
+  // Smooth counter — exponential ease-out: fast start, decelerates near target
+  function tick() {
+    const delta = target - current;
+    if (delta < 0.35) {
+      current = target;
+      if (numEl) numEl.textContent = Math.floor(current);
+      raf = null;
+      return;
+    }
+    current += delta * 0.09;
+    if (numEl) numEl.textContent = Math.floor(current);
+    raf = requestAnimationFrame(tick);
+  }
+
+  function setTarget(pct) {
+    target = pct;
+    barEl.style.width = pct + '%';
+    if (!raf) raf = requestAnimationFrame(tick);
+  }
+
+  function advance() {
+    loaded = Math.min(loaded + 1, TOTAL);
+    setTarget(Math.round(loaded / TOTAL * 100));
+    if (loaded >= TOTAL) scheduleExit();
+  }
+
+  function scheduleExit() {
+    const wait = Math.max(0, MIN_MS - (Date.now() - t0));
+    setTimeout(() => {
+      setTarget(100);
+      // Wait until counter reaches 100 before fading
+      const waitForFull = () => {
+        if (current < 100) { setTimeout(waitForFull, 40); return; }
+        if (numEl) numEl.textContent = '100';
+        setTimeout(() => {
+          loaderEl.classList.add('fade-out');
+          initAnimation();
+          initTypewriter();
+          setTimeout(() => loaderEl.remove(), 700);
+        }, 280);
+      };
+      waitForFull();
+    }, wait);
+  }
+
+  // bg texture ready signal dispatched from initBackground
+  window.addEventListener('asset-loaded', advance, { once: true });
+
+  // card videos
+  document.querySelectorAll('.card-video').forEach((vid) => {
+    if (vid.readyState >= 3) { advance(); return; }
+    vid.addEventListener('canplay', advance, { once: true });
+  });
+
+  // hard fallback — force complete after 7 s
+  setTimeout(() => {
+    if (loaded < TOTAL) { loaded = TOTAL - 1; advance(); }
+  }, 7000);
+}
+
+/* ============================================================
    INIT
    ============================================================ */
 document.addEventListener('DOMContentLoaded', () => {
   injectAssets();
   initBackground();
-  initAnimation();
+  initLoader();     // manages initAnimation + initTypewriter timing
   initHover();
   initPillButtons();
-  initTypewriter();
 });
