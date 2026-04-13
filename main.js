@@ -105,10 +105,10 @@ function initBackground() {
   const mat = new THREE.ShaderMaterial({ vertexShader: VERT, fragmentShader: FRAG, uniforms });
   scene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), mat));
 
-  function applyTexture(img) {
-    const tex = new THREE.Texture(img);
+  function applyTexture(tex) {
     tex.needsUpdate = true;
     uniforms.u_texture.value = tex;
+    const img = tex.image;
     applyUvCrop(uniforms, img.naturalWidth || img.width, img.naturalHeight || img.height, window.innerWidth, window.innerHeight);
     uniforms.u_ready.value = true;
     canvas.style.opacity = '1';
@@ -134,10 +134,8 @@ function initBackground() {
     window.dispatchEvent(new Event('asset-loaded'));
   }
 
-  const img   = new Image();
-  img.onload  = () => applyTexture(img);
-  img.onerror = applyGrainFallback;
-  img.src     = ASSETS.bgPattern;
+  // THREE.TextureLoader handles CORS and HTTPS correctly — new THREE.Texture(img) does not
+  new THREE.TextureLoader().load(ASSETS.bgPattern, applyTexture, undefined, applyGrainFallback);
 
   const mouse = { x: 0.5, y: 0.5 };
   document.addEventListener('mousemove', (e) => {
@@ -259,14 +257,31 @@ function initHover() {
     });
   });
 
-  // JS loop fallback — fires if the browser stalls on loop (e.g. audio/video
-  // track length mismatch causes 'ended' before the native loop restarts)
-  document.querySelectorAll('.card-video').forEach((vid) => {
-    vid.addEventListener('ended', () => {
-      vid.currentTime = 0;
+  // Sequential video loader — loads one at a time so they don't compete for bandwidth.
+  // preload="none" in HTML; we trigger load here then chain to the next.
+  const videos = Array.from(document.querySelectorAll('.card-video'));
+  let loadIdx = 0;
+
+  function loadNext() {
+    if (loadIdx >= videos.length) return;
+    const vid = videos[loadIdx++];
+
+    // Loop fallback for browsers that fire 'ended' before native loop restarts
+    vid.addEventListener('ended', () => { vid.currentTime = 0; vid.play().catch(() => {}); });
+
+    vid.addEventListener('canplay', () => {
       vid.play().catch(() => {});
-    });
-  });
+      window.dispatchEvent(new Event('video-ready'));
+      loadNext(); // chain: start loading next once this one can play
+    }, { once: true });
+
+    // Hard fallback: if canplay never fires within 6s, move on anyway
+    setTimeout(loadNext, 6000);
+
+    vid.load();
+  }
+
+  loadNext();
 }
 
 /* ============================================================
@@ -410,16 +425,14 @@ function initLoader() {
   // bg texture ready signal dispatched from initBackground
   window.addEventListener('asset-loaded', advance, { once: true });
 
-  // card videos
-  document.querySelectorAll('.card-video').forEach((vid) => {
-    if (vid.readyState >= 3) { advance(); return; }
-    vid.addEventListener('canplay', advance, { once: true });
-  });
+  // Videos load sequentially (initiated by initHover), so listen on the window
+  // for a custom event fired each time one becomes ready
+  window.addEventListener('video-ready', advance);
 
-  // hard fallback — force complete after 7 s
+  // hard fallback — force complete after 10 s
   setTimeout(() => {
     if (loaded < TOTAL) { loaded = TOTAL - 1; advance(); }
-  }, 7000);
+  }, 10000);
 }
 
 /* ============================================================
