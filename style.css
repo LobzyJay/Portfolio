@@ -398,7 +398,7 @@ a { text-decoration: none; color: inherit; }
 }
 .card-video {
   position: absolute;
-  inset: clamp(6px, 0.8vw, 12px);
+  inset: 15%;
   object-fit: cover;
   border-radius: clamp(4px, 0.6vw, 8px);
   transition: transform 0.7s var(--ease-expo);
