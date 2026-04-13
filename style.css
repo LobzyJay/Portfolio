@@ -398,13 +398,12 @@ a { text-decoration: none; color: inherit; }
 }
 .card-video {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  inset: clamp(6px, 0.8vw, 12px);
   object-fit: cover;
+  border-radius: clamp(4px, 0.6vw, 8px);
   transition: transform 0.7s var(--ease-expo);
 }
-.service-card:hover .card-video { transform: scale(1.08); }
+.service-card:hover .card-video { transform: scale(1.05); }
 
 /* card-btn can be <button> or <a> */
 .card-btn {
