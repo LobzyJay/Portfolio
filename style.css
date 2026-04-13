@@ -378,13 +378,13 @@ a { text-decoration: none; color: inherit; }
 }
 .card-title-script { font-family: var(--font-script); font-style: italic; font-weight: var(--fw-regular); }
 .card-arrow {
-  font-size: clamp(0.7rem, 0.9vw, 0.9rem);
-  color: var(--text);
-  opacity: 0.6;
+  width:  clamp(14px, 1.4vw, 20px);
+  height: clamp(14px, 1.4vw, 20px);
   flex-shrink: 0;
+  opacity: 0.7;
   transition: transform 0.4s var(--ease-expo), opacity 0.3s var(--ease-expo);
 }
-.service-card:hover .card-arrow { transform: translate(4px,-4px); opacity: 1; }
+.service-card:hover .card-arrow { transform: translate(3px, -3px) scale(1.1); opacity: 1; }
 
 /* 1:1 thumbnail — full-width matching Figma */
 .card-thumb {
