@@ -392,7 +392,7 @@ a { text-decoration: none; color: inherit; }
   aspect-ratio: 1 / 1;
   border-radius: clamp(8px, 1vw, 16px);
   overflow: hidden;
-  background: rgba(228,228,228,0.08);
+  background: #000;
   position: relative;
   flex-shrink: 0;
 }
