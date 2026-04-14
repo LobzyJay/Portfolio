@@ -187,7 +187,7 @@ function initAnimation() {
   gsap.set('.social-icon',                         { autoAlpha: 0, y: 12 });
   gsap.set('.btn-pill',                            { autoAlpha: 0, y: 12 });
   gsap.set('.tools-bar',                           { autoAlpha: 0, y: 12 });
-  gsap.set('.press-badge',                         { autoAlpha: 0, y: 10 });
+  gsap.set('.press-credit',                        { autoAlpha: 0, y: 10 });
   gsap.set('.service-card',                        { autoAlpha: 0, y: 22 });
   gsap.set('.hero-line',                           { y: '110%', autoAlpha: 0 });
   gsap.set('#coming-soon',                         { autoAlpha: 0 });
@@ -228,11 +228,11 @@ function initAnimation() {
       duration: 0.55,
     }, 0.98)
 
-    // Press badge rises after tools
-    .to('.press-badge', {
+    // Press credit rises with social icons
+    .to('.press-credit', {
       autoAlpha: 1, y: 0,
-      duration: 0.50,
-    }, 1.08)
+      duration: 0.45,
+    }, 0.75)
 
     // Cards slide up and fade — clearProps lets CSS hover take over cleanly
     .to('.service-card', {
