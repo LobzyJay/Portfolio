@@ -663,7 +663,7 @@ a { text-decoration: none; color: inherit; }
     min-height: 100dvh;
     height: auto;
     padding: var(--page-y) var(--page-x) clamp(16px, 3vh, 28px);
-    gap: clamp(28px, 5vh, 48px);
+    gap: clamp(20px, 3.5vh, 36px);
   }
 
   .grid-area-profile  { order: 1; flex-shrink: 0; }
