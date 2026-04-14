@@ -365,7 +365,7 @@ a { text-decoration: none; color: inherit; }
 .profile-bottom {
   display: flex;
   flex-direction: column;
-  width: 100%;
+  width: fit-content;
   gap: var(--sp-4);
 }
 
@@ -424,12 +424,12 @@ a { text-decoration: none; color: inherit; }
 .tools-bar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: clamp(5px, 0.7vw, 12px);
   background: rgba(70,70,70,0.84);
   padding: clamp(6px, 0.7vh, 10px) clamp(10px, 1.2vw, 18px);
   border-radius: 20px;
   box-shadow: inset 0 0 5px rgba(255,255,255,0.22);
-  width: 100%;
+  width: fit-content;
 }
 
 /* Dark rounded box per tool — matches Figma */
@@ -710,6 +710,10 @@ a { text-decoration: none; color: inherit; }
     box-shadow: inset 0 0 4.6px rgba(255,255,255,0.18), 0 12px 28px rgba(0,0,0,0.4);
   }
 
+
+  /* Toolbox and buttons share the same full width on mobile */
+  .profile-bottom { width: 100%; }
+  .tools-bar { width: 100%; justify-content: space-between; }
 
   /* Force left-align on hero text and all its children */
   #hero-text,
