@@ -157,8 +157,6 @@ a { text-decoration: none; color: inherit; }
   flex-direction: column;
   gap: clamp(1px, 0.2vh, 4px);   /* tight: name ↔ badge */
   padding: 2px 0;
-  min-width: 0;
-  overflow: hidden;
 }
 /* Social icons anchor to the bottom of the meta column */
 .profile-meta .social-icons {
@@ -232,9 +230,6 @@ a { text-decoration: none; color: inherit; }
   border-radius: 100px;
   background: rgba(255,255,255,0.04);
   width: fit-content;
-  max-width: 100%;
-  min-width: 0;
-  overflow: hidden;
   transition: background 0.28s ease, border-color 0.28s ease;
 }
 .press-badge:hover {
@@ -254,9 +249,6 @@ a { text-decoration: none; color: inherit; }
   font-size: clamp(0.6rem, 0.8vw, 0.75rem);
   color: var(--text);
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  min-width: 0;
 }
 .press-badge__arrow {
   font-size: 0.65rem;
@@ -591,7 +583,6 @@ a { text-decoration: none; color: inherit; }
   .profile-name,
   .experience-badge { white-space: normal; }
   .profile-meta .social-icons { margin-top: 8px; }
-  .press-badge { margin-top: 2px; }
 
   /* Cards stack vertically on mobile */
   #services {
