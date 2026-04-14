@@ -253,6 +253,7 @@ a { text-decoration: none; color: inherit; }
 .press-badge__arrow {
   font-size: 0.65rem;
   color: var(--text-muted);
+  margin-left: auto;
   transition: transform 0.28s var(--ease-expo);
 }
 .press-badge:hover .press-badge__arrow { transform: translate(2px,-2px); color: var(--text); }
