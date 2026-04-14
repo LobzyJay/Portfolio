@@ -86,6 +86,12 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500&family=Carattere&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
+  <!-- Critical: hides content before external CSS/JS loads — prevents flash on reload -->
+  <style>
+    html,body { background:#171717; }
+    #stage { opacity:0; visibility:hidden; }
+    #loader { position:fixed; inset:0; z-index:2000; background:#171717; }
+  </style>
 </head>
 <body>
 

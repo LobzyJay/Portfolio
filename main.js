@@ -196,8 +196,8 @@ function initAnimation() {
   const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
 
   tl
-    // Page fade-in
-    .from('#stage', { autoAlpha: 0, duration: 0.6, ease: 'power2.out' })
+    // Page fade-in — #stage starts hidden via inline CSS, animate to visible
+    .to('#stage', { autoAlpha: 1, duration: 0.6, ease: 'power2.out' })
 
     // Avatar pops in with generous spring
     .to('.avatar-wrap', {
