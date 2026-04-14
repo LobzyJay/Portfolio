@@ -48,39 +48,106 @@
   <meta name="twitter:image" content="https://www.artbyade.com/assets/preview.png" />
   <meta name="twitter:image:alt" content="Aloba Adewale portfolio preview" />
 
-  <!-- JSON-LD structured data — Person schema for Google Knowledge Graph -->
+  <!-- JSON-LD structured data — Person + WebSite + ProfilePage + CreativeWorks -->
   <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Person",
-    "name": "Aloba Adewale",
-    "url": "https://www.artbyade.com/",
-    "image": "https://www.artbyade.com/assets/avatar.jpg",
-    "jobTitle": ["Multidisciplinary Designer", "Brand Designer", "Visual Designer", "Motion Designer", "Digital Designer", "Senior Designer"],
-    "description": "Senior multidisciplinary designer available remotely worldwide with 6+ years of experience. Specialising in brand identity, motion design, 3D visualisation and digital product design. Working with clients across the UK, Europe and globally.",
-    "email": "adewalealoba@outlook.com",
-    "address": {
-      "@type": "PostalAddress",
-      "addressCountry": "GB"
+  [
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "@id": "https://www.artbyade.com/#person",
+      "name": "Aloba Adewale",
+      "url": "https://www.artbyade.com/",
+      "image": "https://www.artbyade.com/assets/avatar.jpg",
+      "jobTitle": ["Multidisciplinary Designer", "Brand Designer", "Visual Designer", "Motion Designer", "3D Designer", "Digital Designer", "Senior Designer", "Creative Director"],
+      "description": "Senior multidisciplinary designer available remotely worldwide with 6+ years of experience. Specialising in brand identity, motion design, 3D visualisation and digital product design. Working with clients across the UK, Europe and globally.",
+      "email": "adewalealoba@outlook.com",
+      "address": { "@type": "PostalAddress", "addressCountry": "GB" },
+      "areaServed": ["United Kingdom", "Europe", "Worldwide"],
+      "hasOccupation": {
+        "@type": "Occupation",
+        "name": "Multidisciplinary Designer",
+        "occupationLocation": { "@type": "Country", "name": "Remote" },
+        "skills": "Brand Identity, Motion Design, 3D Visualisation, UI/UX Design, Adobe Creative Suite, Figma, Blender"
+      },
+      "sameAs": [
+        "https://www.linkedin.com/in/adewalealoba",
+        "https://www.behance.net/Adeink",
+        "https://www.instagram.com/Artby_ade",
+        "https://github.com/LobzyJay",
+        "https://contra.com/adewale_aloba2"
+      ],
+      "knowsAbout": [
+        "Brand Identity Design", "Visual Identity", "Branding", "Logo Design",
+        "Motion Design", "Animation", "Video Editing", "Motion Graphics",
+        "3D Visualisation", "3D Rendering", "3D Modelling", "Blender",
+        "Digital Product Design", "UI Design", "UX Design", "Web Design",
+        "Adobe After Effects", "Adobe Premiere Pro", "Adobe Photoshop", "Adobe Illustrator", "Figma"
+      ]
     },
-    "areaServed": ["United Kingdom", "Europe", "Worldwide"],
-    "sameAs": [
-      "https://www.linkedin.com/in/adewalealoba",
-      "https://www.behance.net/Adeink",
-      "https://instagram.com/Artby_ade",
-      "https://github.com/LobzyJay",
-      "https://contra.com/adewale_aloba2"
-    ],
-    "knowsAbout": [
-      "Brand Identity Design", "Visual Identity", "Branding",
-      "Motion Design", "Animation", "Video Editing",
-      "3D Visualisation", "3D Rendering", "Blender",
-      "Digital Product Design", "UI Design", "UX Design",
-      "Adobe After Effects", "Adobe Premiere Pro", "Adobe Photoshop", "Adobe Illustrator", "Figma"
-    ]
-  }
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "@id": "https://www.artbyade.com/#website",
+      "name": "Aloba Adewale — Multidisciplinary Designer",
+      "url": "https://www.artbyade.com/",
+      "description": "Portfolio of Aloba Adewale, senior multidisciplinary designer available remotely worldwide.",
+      "author": { "@id": "https://www.artbyade.com/#person" },
+      "inLanguage": "en-GB"
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "ProfilePage",
+      "@id": "https://www.artbyade.com/#profilepage",
+      "url": "https://www.artbyade.com/",
+      "name": "Aloba Adewale — Designer Portfolio",
+      "mainEntity": { "@id": "https://www.artbyade.com/#person" },
+      "dateModified": "2026-04-14"
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "CreativeWork",
+      "name": "Design Portfolio",
+      "url": "https://linkly.link/2gOnp",
+      "creator": { "@id": "https://www.artbyade.com/#person" },
+      "description": "Brand identity, visual identity and graphic design work by Aloba Adewale.",
+      "keywords": "brand identity design, visual identity, logo design, graphic design"
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "CreativeWork",
+      "name": "Motion Design Portfolio",
+      "url": "https://vimeo.com/user142082803",
+      "creator": { "@id": "https://www.artbyade.com/#person" },
+      "description": "Motion design, animation and video work by Aloba Adewale.",
+      "keywords": "motion design, animation, motion graphics, video editing"
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "CreativeWork",
+      "name": "3D Design Portfolio",
+      "url": "https://linkly.link/2gOnx",
+      "creator": { "@id": "https://www.artbyade.com/#person" },
+      "description": "3D visualisation and rendering work by Aloba Adewale.",
+      "keywords": "3D visualisation, 3D rendering, 3D design, Blender"
+    }
+  ]
   </script>
 
+  <!-- International targeting -->
+  <link rel="alternate" hreflang="en" href="https://www.artbyade.com/" />
+  <link rel="alternate" hreflang="en-GB" href="https://www.artbyade.com/" />
+  <link rel="alternate" hreflang="en-US" href="https://www.artbyade.com/" />
+  <link rel="alternate" hreflang="x-default" href="https://www.artbyade.com/" />
+
+  <!-- Social identity verification (helps Google connect profiles) -->
+  <link rel="me" href="https://www.linkedin.com/in/adewalealoba" />
+  <link rel="me" href="https://www.behance.net/Adeink" />
+  <link rel="me" href="https://www.instagram.com/Artby_ade" />
+  <link rel="me" href="https://github.com/LobzyJay" />
+
+  <!-- DNS prefetch for external resources -->
+  <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com" />
+  <link rel="dns-prefetch" href="https://cdn.simpleicons.org" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500&family=Carattere&display=swap" rel="stylesheet" />
