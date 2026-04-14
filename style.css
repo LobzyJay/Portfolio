@@ -265,6 +265,7 @@ a { text-decoration: none; color: inherit; }
 .btn-pill-group {
   display: flex;
   align-items: center;
+  gap: 5px;
   width: 100%;
 }
 
