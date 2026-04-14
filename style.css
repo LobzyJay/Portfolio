@@ -211,6 +211,44 @@ a { text-decoration: none; color: inherit; }
 .social-icon:active { transform: scale(0.92); }
 .social-icon:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
 
+/* ── Press feature badge ─────────────────────────────────── */
+.press-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  text-decoration: none;
+  padding: clamp(4px, 0.5vh, 7px) clamp(8px, 0.9vw, 14px);
+  border: 0.5px solid rgba(255,255,255,0.14);
+  border-radius: 100px;
+  background: rgba(255,255,255,0.04);
+  width: fit-content;
+  transition: background 0.28s ease, border-color 0.28s ease;
+}
+.press-badge:hover {
+  background: rgba(255,255,255,0.09);
+  border-color: rgba(255,255,255,0.3);
+}
+.press-badge__label {
+  font-family: var(--font-sans);
+  font-weight: var(--fw-light);
+  font-size: clamp(0.6rem, 0.8vw, 0.75rem);
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.press-badge__name {
+  font-family: var(--font-sans);
+  font-weight: var(--fw-medium);
+  font-size: clamp(0.6rem, 0.8vw, 0.75rem);
+  color: var(--text);
+  white-space: nowrap;
+}
+.press-badge__arrow {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  transition: transform 0.28s var(--ease-expo);
+}
+.press-badge:hover .press-badge__arrow { transform: translate(2px,-2px); color: var(--text); }
+
 /* ── Profile bottom: buttons + tools locked to toolbox width ── */
 /* fit-content on the wrapper means the toolbox (no % width) sets
    the reference width; buttons (width:100%) fill that same size. */
@@ -523,7 +561,20 @@ a { text-decoration: none; color: inherit; }
   .grid-area-hero     { order: 3; flex: 1 0 auto; align-self: stretch; width: 100%; display: flex; flex-direction: column; justify-content: flex-end; padding-bottom: 4px; }
   .grid-area-coming   { order: 4; flex-shrink: 0; text-align: left; padding-bottom: 0; }
 
-  .profile-card { align-items: center; }
+  .profile-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: clamp(10px, 2vh, 18px);
+  }
+  .avatar-wrap {
+    width:  clamp(64px, 18vw, 90px);
+    height: clamp(64px, 18vw, 90px);
+  }
+  .profile-meta { gap: 3px; }
+  .profile-name,
+  .experience-badge { white-space: normal; }
+  .profile-meta .social-icons { margin-top: 8px; }
+  .press-badge { margin-top: 2px; }
 
   /* Cards stack vertically on mobile */
   #services {
