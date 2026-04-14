@@ -189,6 +189,7 @@ function initAnimation() {
   gsap.set('.tools-bar',                           { autoAlpha: 0, y: 12 });
   gsap.set('.service-card',                        { autoAlpha: 0, y: 22 });
   gsap.set('.hero-line',                           { y: '110%', autoAlpha: 0 });
+  gsap.set('.press-credit',                        { autoAlpha: 0, y: 8 });
   gsap.set('#coming-soon',                         { autoAlpha: 0 });
 
   // ── Master timeline ──────────────────────────────────────
@@ -234,6 +235,12 @@ function initAnimation() {
       duration: 0.75, stagger: 0.13, ease: 'power4.out',
       clearProps: 'transform',
     }, 0.32)
+
+    // Press credit fades in just before hero
+    .to('.press-credit', {
+      autoAlpha: 1, y: 0,
+      duration: 0.5, ease: 'power3.out',
+    }, 0.50)
 
     // Hero text sweeps up dramatically
     .to('.hero-line', {
