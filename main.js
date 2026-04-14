@@ -183,9 +183,11 @@ function initAnimation() {
   // ── Initial states ───────────────────────────────────────
   gsap.set('.avatar-wrap',                         { autoAlpha: 0, scale: 0.72 });
   gsap.set(['.profile-name', '.experience-badge'], { autoAlpha: 0, y: 18 });
+  gsap.set('.avail-badge',                         { autoAlpha: 0, y: 12 });
   gsap.set('.social-icon',                         { autoAlpha: 0, y: 12 });
   gsap.set('.btn-pill',                            { autoAlpha: 0, y: 12 });
   gsap.set('.tools-bar',                           { autoAlpha: 0, y: 12 });
+  gsap.set('.press-badge',                         { autoAlpha: 0, y: 10 });
   gsap.set('.service-card',                        { autoAlpha: 0, y: 22 });
   gsap.set('.hero-line',                           { y: '110%', autoAlpha: 0 });
   gsap.set('#coming-soon',                         { autoAlpha: 0 });
@@ -203,9 +205,10 @@ function initAnimation() {
       duration: 0.85, ease: 'back.out(1.9)',
     }, 0.15)
 
-    // Name then badge
+    // Name then badge then availability
     .to('.profile-name',     { autoAlpha: 1, y: 0, duration: 0.55 }, 0.45)
     .to('.experience-badge', { autoAlpha: 1, y: 0, duration: 0.50 }, 0.58)
+    .to('.avail-badge',      { autoAlpha: 1, y: 0, duration: 0.45 }, 0.68)
 
     // Social icons cascade left→right
     .to('.social-icon', {
@@ -224,6 +227,12 @@ function initAnimation() {
       autoAlpha: 1, y: 0,
       duration: 0.55,
     }, 0.98)
+
+    // Press badge rises after tools
+    .to('.press-badge', {
+      autoAlpha: 1, y: 0,
+      duration: 0.50,
+    }, 1.08)
 
     // Cards slide up and fade — clearProps lets CSS hover take over cleanly
     .to('.service-card', {

@@ -189,7 +189,7 @@ a { text-decoration: none; color: inherit; }
 .experience-badge {
   font-family: var(--font-sans);
   font-weight: var(--fw-light);
-  font-size: var(--text-sm);
+  font-size: var(--text-md);
   color: var(--text-muted);
   line-height: 1.2;
 }
@@ -201,7 +201,7 @@ a { text-decoration: none; color: inherit; }
   gap: var(--sp-2);
   font-family: var(--font-sans);
   font-weight: var(--fw-light);
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   color: var(--text-muted);
   letter-spacing: 0.02em;
 }
