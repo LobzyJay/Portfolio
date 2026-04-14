@@ -40,6 +40,23 @@ a { text-decoration: none; color: inherit; }
 
   --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* ── Type scale ───────────────────────────────────────────── */
+  --text-xs:   clamp(0.58rem, 0.68vw, 0.65rem);   /* captions, labels    */
+  --text-sm:   clamp(0.68rem, 0.82vw, 0.78rem);   /* small UI, badges    */
+  --text-base: clamp(0.8rem,  1vw,    0.95rem);   /* body, buttons       */
+  --text-md:   clamp(0.9rem,  1.2vw,  1.1rem);    /* profile sub-labels  */
+  --text-lg:   clamp(1rem,    1.5vw,  1.4rem);    /* profile name, hero  */
+  --text-xl:   clamp(1.15rem, 2vw,    1.75rem);   /* section headings    */
+
+  /* ── Spacing scale ────────────────────────────────────────── */
+  --sp-1: clamp(2px,  0.3vh,  4px);
+  --sp-2: clamp(4px,  0.55vh, 7px);
+  --sp-3: clamp(6px,  0.85vh, 10px);
+  --sp-4: clamp(8px,  1.2vh,  14px);
+  --sp-5: clamp(12px, 1.7vh,  20px);
+  --sp-6: clamp(16px, 2.4vh,  28px);
+  --sp-8: clamp(22px, 3.2vh,  42px);
 }
 
 /* ============================================================
@@ -120,7 +137,7 @@ a { text-decoration: none; color: inherit; }
   align-items: start;
 }
 
-.grid-area-profile  { grid-column: 1 / 5;  grid-row: 1; display: flex; flex-direction: column; gap: clamp(8px, 1.6vh, 22px); }
+.grid-area-profile  { grid-column: 1 / 5;  grid-row: 1; display: flex; flex-direction: column; gap: var(--sp-5); }
 .grid-area-services { grid-column: 5 / 13; grid-row: 1; display: flex; align-items: center; }
 .grid-area-hero     { grid-column: 1 / 13; grid-row: 2; align-self: end; padding-bottom: clamp(4px, 0.8vh, 12px); }
 .grid-area-coming   {
@@ -139,7 +156,7 @@ a { text-decoration: none; color: inherit; }
 .profile-card {
   display: flex;
   align-items: stretch;  /* meta column stretches to avatar height */
-  gap: clamp(10px, 1.6vw, 24px);
+  gap: var(--sp-4);
 }
 
 .avatar-wrap {
@@ -155,8 +172,8 @@ a { text-decoration: none; color: inherit; }
 .profile-meta {
   display: flex;
   flex-direction: column;
-  gap: clamp(1px, 0.2vh, 4px);   /* tight: name ↔ badge */
-  padding: 2px 0;
+  gap: var(--sp-2);
+  padding: var(--sp-1) 0;
 }
 /* Social icons anchor to the bottom of the meta column */
 .profile-meta .social-icons {
@@ -165,25 +182,26 @@ a { text-decoration: none; color: inherit; }
 .profile-name {
   font-family: var(--font-sans);
   font-weight: var(--fw-light);
-  font-size: clamp(0.9rem, 1.5vw, 1.45rem);
-  line-height: 1.05;
+  font-size: var(--text-lg);
+  line-height: 1.1;
   white-space: nowrap;
 }
 .experience-badge {
   font-family: var(--font-sans);
   font-weight: var(--fw-light);
-  font-size: clamp(0.9rem, 1.5vw, 1.45rem);
-  line-height: 1.05;
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  line-height: 1.2;
 }
 
 /* ── Availability badge ──────────────────────────────────── */
 .avail-badge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--sp-2);
   font-family: var(--font-sans);
   font-weight: var(--fw-light);
-  font-size: clamp(0.6rem, 0.75vw, 0.7rem);
+  font-size: var(--text-xs);
   color: var(--text-muted);
   letter-spacing: 0.02em;
 }
@@ -272,14 +290,14 @@ a { text-decoration: none; color: inherit; }
 .press-badge__label {
   font-family: var(--font-sans);
   font-weight: var(--fw-light);
-  font-size: clamp(0.6rem, 0.8vw, 0.75rem);
+  font-size: var(--text-xs);
   color: var(--text-muted);
   white-space: nowrap;
 }
 .press-badge__name {
   font-family: var(--font-sans);
   font-weight: var(--fw-medium);
-  font-size: clamp(0.6rem, 0.8vw, 0.75rem);
+  font-size: var(--text-xs);
   color: var(--text);
   white-space: nowrap;
 }
@@ -297,7 +315,7 @@ a { text-decoration: none; color: inherit; }
   display: flex;
   flex-direction: column;
   width: fit-content;
-  gap: clamp(8px, 1.6vh, 22px);
+  gap: var(--sp-4);
 }
 
 /* ── CTA Buttons — fluid pill pair ──────────────────────── */
@@ -319,7 +337,7 @@ a { text-decoration: none; color: inherit; }
   border-radius: 100px;
   font-family: var(--font-sans);
   font-weight: var(--fw-regular);
-  font-size: clamp(0.78rem, 1vw, 1rem);
+  font-size: var(--text-base);
   letter-spacing: 0.006em;
   white-space: nowrap;
   overflow: hidden;
