@@ -221,7 +221,7 @@ a { text-decoration: none; color: inherit; }
   opacity: 0.85;
 }
 .press-badge {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 5px;
   text-decoration: none;
@@ -229,7 +229,7 @@ a { text-decoration: none; color: inherit; }
   border: 0.5px solid rgba(255,255,255,0.14);
   border-radius: 100px;
   background: rgba(255,255,255,0.04);
-  width: 100%;
+  width: fit-content;
   transition: background 0.28s ease, border-color 0.28s ease;
 }
 .press-badge:hover {
@@ -253,7 +253,6 @@ a { text-decoration: none; color: inherit; }
 .press-badge__arrow {
   font-size: 0.65rem;
   color: var(--text-muted);
-  margin-left: auto;
   transition: transform 0.28s var(--ease-expo);
 }
 .press-badge:hover .press-badge__arrow { transform: translate(2px,-2px); color: var(--text); }
