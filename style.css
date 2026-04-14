@@ -324,10 +324,17 @@ a { text-decoration: none; color: inherit; }
   gap: var(--sp-2);
   text-decoration: none;
   width: fit-content;
-  margin-bottom: var(--sp-3);
-  transition: opacity 0.25s ease;
+  padding: clamp(4px, 0.5vh, 7px) clamp(8px, 0.9vw, 14px);
+  border: 0.5px solid rgba(255,255,255,0.18);
+  border-radius: 100px;
+  background: rgba(255,255,255,0.04);
+  margin-bottom: var(--sp-5);
+  transition: background 0.28s ease, border-color 0.28s ease;
 }
-.press-credit:hover { opacity: 0.75; }
+.press-credit:hover {
+  background: rgba(255,255,255,0.09);
+  border-color: rgba(255,255,255,0.32);
+}
 .press-credit__logo {
   width: 14px;
   height: 14px;
