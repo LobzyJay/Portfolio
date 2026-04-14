@@ -189,7 +189,7 @@ a { text-decoration: none; color: inherit; }
 .experience-badge {
   font-family: var(--font-sans);
   font-weight: var(--fw-light);
-  font-size: var(--text-md);
+  font-size: var(--text-lg);
   color: var(--text-muted);
   line-height: 1.2;
 }
@@ -201,30 +201,39 @@ a { text-decoration: none; color: inherit; }
   gap: var(--sp-2);
   font-family: var(--font-sans);
   font-weight: var(--fw-light);
-  font-size: var(--text-sm);
+  font-size: var(--text-base);
   color: var(--text-muted);
   letter-spacing: 0.02em;
 }
 .avail-dot {
   position: relative;
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   background: #22c55e;
   flex-shrink: 0;
+  box-shadow: 0 0 6px rgba(34, 197, 94, 0.6);
+}
+.avail-dot::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  background: rgba(34, 197, 94, 0.2);
+  animation: pulse-ring 2.2s ease-out infinite;
 }
 .avail-dot::after {
   content: '';
   position: absolute;
-  inset: -3px;
+  inset: -7px;
   border-radius: 50%;
-  background: rgba(34, 197, 94, 0.3);
-  animation: pulse-ring 2s ease-out infinite;
+  background: rgba(34, 197, 94, 0.08);
+  animation: pulse-ring 2.2s ease-out 0.4s infinite;
 }
 @keyframes pulse-ring {
-  0%   { transform: scale(0.6); opacity: 0.8; }
-  70%  { transform: scale(1.8); opacity: 0; }
-  100% { transform: scale(1.8); opacity: 0; }
+  0%   { transform: scale(0.5); opacity: 1; }
+  80%  { transform: scale(1);   opacity: 0; }
+  100% { transform: scale(1);   opacity: 0; }
 }
 
 /* ── Social icons ─────────────────────────────────────────── */
