@@ -29,6 +29,7 @@ a { text-decoration: none; color: inherit; }
 
   --font-sans:    'DM Sans', sans-serif;
   --font-script:  'Carattere', cursive;
+  --fw-extralight: 200;
   --fw-light:     300;
   --fw-regular:   400;
   --fw-medium:    500;
@@ -568,7 +569,7 @@ a { text-decoration: none; color: inherit; }
 }
 .hero-body {
   font-family: var(--font-sans);
-  font-weight: var(--fw-light);
+  font-weight: var(--fw-extralight);
   font-size: clamp(2.8rem, 8.07vw, 9.6875rem);  /* Figma: 155px */
   letter-spacing: -0.078em;                     /* Figma: -12.09px @ 155px */
   color: var(--text);
