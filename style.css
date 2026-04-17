@@ -584,6 +584,7 @@ a { text-decoration: none; color: inherit; }
 }
 .hero-rotator .hero-body {
   font-weight: var(--fw-extralight);            /* Rotating word — Extra Light 200 */
+  letter-spacing: -0.039em;                     /* Figma: -6px @ 155px */
 }
 
 /* ============================================================
