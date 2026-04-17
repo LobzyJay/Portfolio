@@ -399,16 +399,16 @@ function initHeroRotator() {
     const [accent, body] = WORDS[idx];
 
     gsap.to(el, {
-      y: -40, autoAlpha: 0,
-      duration: 0.45, ease: 'power2.in',
+      y: -40, autoAlpha: 0, filter: 'blur(10px)',
+      duration: 0.5, ease: 'power2.in',
       onComplete: () => {
         accentEl.textContent = accent;
         bodyEl.textContent   = body;
         gsap.fromTo(el,
-          { y: 40, autoAlpha: 0 },
+          { y: 40, autoAlpha: 0, filter: 'blur(10px)' },
           {
-            y: 0, autoAlpha: 1,
-            duration: 0.6, ease: 'power3.out',
+            y: 0, autoAlpha: 1, filter: 'blur(0px)',
+            duration: 0.7, ease: 'power3.out',
             onComplete: () => setTimeout(next, HOLD_MS),
           }
         );

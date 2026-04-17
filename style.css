@@ -561,14 +561,16 @@ a { text-decoration: none; color: inherit; }
   font-style: italic;
   font-weight: var(--fw-regular);
   color: var(--accent);
-  font-size: clamp(3rem, 9.6vw, 10.2rem);
+  font-size: clamp(3.4rem, 9.9vw, 11.875rem);  /* Figma: 190px */
+  letter-spacing: 0;
   display: inline-block;
   vertical-align: bottom;
 }
 .hero-body {
   font-family: var(--font-sans);
-  font-weight: var(--fw-light);
-  font-size: clamp(2.7rem, 9.0vw, 9.6rem);
+  font-weight: var(--fw-medium);                /* Figma: Medium 500 */
+  font-size: clamp(2.8rem, 8.07vw, 9.6875rem);  /* Figma: 155px */
+  letter-spacing: -0.078em;                     /* Figma: -12.09px @ 155px */
   color: var(--text);
   display: inline-block;
   vertical-align: bottom;
@@ -576,7 +578,7 @@ a { text-decoration: none; color: inherit; }
 .hero-rotator {
   display: inline-block;
   vertical-align: bottom;
-  will-change: transform, opacity;
+  will-change: transform, opacity, filter;
 }
 
 /* ============================================================
