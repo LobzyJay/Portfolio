@@ -370,7 +370,7 @@ function initTypewriter() {
 
 /* ============================================================
    6b. HERO ROTATOR — cycles the first hero word
-       Multidisciplinary → Brand → Digital → Visual → Graphics → …
+       Multidisciplinary → Brand → Digital → Visual → Graphics → Motion → …
    ============================================================ */
 function initHeroRotator() {
   const el = document.getElementById('hero-rotator');
@@ -389,6 +389,7 @@ function initHeroRotator() {
     ['D', 'igital'],
     ['V', 'isual'],
     ['G', 'raphics'],
+    ['M', 'otion'],
   ];
   const HOLD_MS = 2200;
   let idx = 0;
