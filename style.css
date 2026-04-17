@@ -573,6 +573,11 @@ a { text-decoration: none; color: inherit; }
   display: inline-block;
   vertical-align: bottom;
 }
+.hero-rotator {
+  display: inline-block;
+  vertical-align: bottom;
+  will-change: transform, opacity;
+}
 
 /* ============================================================
    COMING SOON

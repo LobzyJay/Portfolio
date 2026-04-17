@@ -369,6 +369,57 @@ function initTypewriter() {
 }
 
 /* ============================================================
+   6b. HERO ROTATOR — cycles the first hero word
+       Multidisciplinary → Brand → Digital → Visual → Graphic → …
+   ============================================================ */
+function initHeroRotator() {
+  const el = document.getElementById('hero-rotator');
+  if (!el) return;
+  const accentEl = el.querySelector('.hero-accent');
+  const bodyEl   = el.querySelector('.hero-body');
+  if (!accentEl || !bodyEl) return;
+
+  const reduced = window.matchMedia &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduced) return;
+
+  const WORDS = [
+    ['M', 'ultidisciplinary'],
+    ['B', 'rand'],
+    ['D', 'igital'],
+    ['V', 'isual'],
+    ['G', 'raphic'],
+  ];
+  const HOLD_MS = 2200;
+  let idx = 0;
+
+  function next() {
+    idx = (idx + 1) % WORDS.length;
+    const [accent, body] = WORDS[idx];
+
+    gsap.to(el, {
+      y: -40, autoAlpha: 0,
+      duration: 0.45, ease: 'power2.in',
+      onComplete: () => {
+        accentEl.textContent = accent;
+        bodyEl.textContent   = body;
+        gsap.fromTo(el,
+          { y: 40, autoAlpha: 0 },
+          {
+            y: 0, autoAlpha: 1,
+            duration: 0.6, ease: 'power3.out',
+            onComplete: () => setTimeout(next, HOLD_MS),
+          }
+        );
+      },
+    });
+  }
+
+  // Start once the hero entrance (≈1.85 s) has fully settled
+  setTimeout(next, 2800);
+}
+
+/* ============================================================
    7. LOADER
       Tracks bg texture + 3 card videos. Number counts 0→100
       as each asset fires ready. Red bar fills in parallel.
@@ -377,7 +428,7 @@ function initLoader() {
   const loaderEl = document.getElementById('loader');
   const barEl    = document.getElementById('loader-bar');
   const numEl    = document.querySelector('.loader-number');
-  if (!loaderEl || !barEl) { initAnimation(); initTypewriter(); return; }
+  if (!loaderEl || !barEl) { initAnimation(); initTypewriter(); initHeroRotator(); return; }
 
   const TOTAL  = 4;    // bg texture + 3 card videos
   const MIN_MS = 2400;
@@ -425,6 +476,7 @@ function initLoader() {
           loaderEl.classList.add('fade-out');
           initAnimation();
           initTypewriter();
+          initHeroRotator();
           setTimeout(() => loaderEl.remove(), 700);
         }, 280);
       };
