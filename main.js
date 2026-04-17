@@ -7,8 +7,6 @@ const ASSETS = {
   bgPattern: 'assets/bg-pattern.png',
 };
 
-const AVATAR = 'assets/avatar.jpg';
-
 /* ============================================================
    1. THREE.JS — LIQUID RIPPLE BACKGROUND
       Mouse position drives expanding sine-wave rings.
@@ -105,10 +103,10 @@ function initBackground() {
   const mat = new THREE.ShaderMaterial({ vertexShader: VERT, fragmentShader: FRAG, uniforms });
   scene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), mat));
 
-  function applyTexture(img) {
-    const tex = new THREE.Texture(img);
+  function applyTexture(tex) {
     tex.needsUpdate = true;
     uniforms.u_texture.value = tex;
+    const img = tex.image;
     applyUvCrop(uniforms, img.naturalWidth || img.width, img.naturalHeight || img.height, window.innerWidth, window.innerHeight);
     uniforms.u_ready.value = true;
     canvas.style.opacity = '1';
@@ -134,10 +132,8 @@ function initBackground() {
     window.dispatchEvent(new Event('asset-loaded'));
   }
 
-  const img   = new Image();
-  img.onload  = () => applyTexture(img);
-  img.onerror = applyGrainFallback;
-  img.src     = ASSETS.bgPattern;
+  // THREE.TextureLoader handles CORS and HTTPS correctly — new THREE.Texture(img) does not
+  new THREE.TextureLoader().load(ASSETS.bgPattern, applyTexture, undefined, applyGrainFallback);
 
   const mouse = { x: 0.5, y: 0.5 };
   document.addEventListener('mousemove', (e) => {
@@ -171,33 +167,27 @@ function initBackground() {
 }
 
 /* ============================================================
-   2. INJECT FIGMA AVATAR (preloaded eagerly)
-   ============================================================ */
-function injectAssets() {
-  const av = document.getElementById('avatar-img');
-  if (av) av.src = AVATAR;  // local 300×300 JPEG — instant load
-}
-
-/* ============================================================
-   3. ENTRANCE ANIMATION — full sequenced reveal
+   2. ENTRANCE ANIMATION — full sequenced reveal
    ============================================================ */
 function initAnimation() {
   // ── Initial states ───────────────────────────────────────
   gsap.set('.avatar-wrap',                         { autoAlpha: 0, scale: 0.72 });
   gsap.set(['.profile-name', '.experience-badge'], { autoAlpha: 0, y: 18 });
+  gsap.set('.avail-badge',                         { autoAlpha: 0, y: 12 });
   gsap.set('.social-icon',                         { autoAlpha: 0, y: 12 });
   gsap.set('.btn-pill',                            { autoAlpha: 0, y: 12 });
   gsap.set('.tools-bar',                           { autoAlpha: 0, y: 12 });
   gsap.set('.service-card',                        { autoAlpha: 0, y: 22 });
   gsap.set('.hero-line',                           { y: '110%', autoAlpha: 0 });
+  gsap.set('.press-credit',                        { autoAlpha: 0, y: 8 });
   gsap.set('#coming-soon',                         { autoAlpha: 0 });
 
   // ── Master timeline ──────────────────────────────────────
   const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
 
   tl
-    // Page fade-in
-    .from('#stage', { autoAlpha: 0, duration: 0.6, ease: 'power2.out' })
+    // Page fade-in — #stage starts hidden via inline CSS, animate to visible
+    .to('#stage', { autoAlpha: 1, duration: 0.6, ease: 'power2.out' })
 
     // Avatar pops in with generous spring
     .to('.avatar-wrap', {
@@ -205,9 +195,10 @@ function initAnimation() {
       duration: 0.85, ease: 'back.out(1.9)',
     }, 0.15)
 
-    // Name then badge
+    // Name then badge then availability
     .to('.profile-name',     { autoAlpha: 1, y: 0, duration: 0.55 }, 0.45)
     .to('.experience-badge', { autoAlpha: 1, y: 0, duration: 0.50 }, 0.58)
+    .to('.avail-badge',      { autoAlpha: 1, y: 0, duration: 0.45 }, 0.68)
 
     // Social icons cascade left→right
     .to('.social-icon', {
@@ -227,12 +218,19 @@ function initAnimation() {
       duration: 0.55,
     }, 0.98)
 
+
     // Cards slide up and fade — clearProps lets CSS hover take over cleanly
     .to('.service-card', {
       autoAlpha: 1, y: 0,
       duration: 0.75, stagger: 0.13, ease: 'power4.out',
       clearProps: 'transform',
     }, 0.32)
+
+    // Press credit fades in just before hero
+    .to('.press-credit', {
+      autoAlpha: 1, y: 0,
+      duration: 0.5, ease: 'power3.out',
+    }, 0.50)
 
     // Hero text sweeps up dramatically
     .to('.hero-line', {
@@ -259,14 +257,31 @@ function initHover() {
     });
   });
 
-  // JS loop fallback — fires if the browser stalls on loop (e.g. audio/video
-  // track length mismatch causes 'ended' before the native loop restarts)
-  document.querySelectorAll('.card-video').forEach((vid) => {
-    vid.addEventListener('ended', () => {
-      vid.currentTime = 0;
+  // Sequential video loader — loads one at a time so they don't compete for bandwidth.
+  // preload="none" in HTML; we trigger load here then chain to the next.
+  const videos = Array.from(document.querySelectorAll('.card-video'));
+  let loadIdx = 0;
+
+  function loadNext() {
+    if (loadIdx >= videos.length) return;
+    const vid = videos[loadIdx++];
+
+    // Loop fallback for browsers that fire 'ended' before native loop restarts
+    vid.addEventListener('ended', () => { vid.currentTime = 0; vid.play().catch(() => {}); });
+
+    vid.addEventListener('canplay', () => {
       vid.play().catch(() => {});
-    });
-  });
+      window.dispatchEvent(new Event('video-ready'));
+      loadNext(); // chain: start loading next once this one can play
+    }, { once: true });
+
+    // Hard fallback: if canplay never fires within 6s, move on anyway
+    setTimeout(loadNext, 6000);
+
+    vid.load();
+  }
+
+  loadNext();
 }
 
 /* ============================================================
@@ -344,6 +359,58 @@ function initTypewriter() {
 }
 
 /* ============================================================
+   6b. HERO ROTATOR — cycles the first hero word
+       Multidisciplinary → Brand → Digital → Visual → Graphics → Motion → …
+   ============================================================ */
+function initHeroRotator() {
+  const el = document.getElementById('hero-rotator');
+  if (!el) return;
+  const accentEl = el.querySelector('.hero-accent');
+  const bodyEl   = el.querySelector('.hero-body');
+  if (!accentEl || !bodyEl) return;
+
+  const reduced = window.matchMedia &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduced) return;
+
+  const WORDS = [
+    ['M', 'ultidisciplinary'],
+    ['B', 'rand'],
+    ['D', 'igital'],
+    ['V', 'isual'],
+    ['G', 'raphics'],
+    ['M', 'otion'],
+  ];
+  const HOLD_MS = 2200;
+  let idx = 0;
+
+  function next() {
+    idx = (idx + 1) % WORDS.length;
+    const [accent, body] = WORDS[idx];
+
+    gsap.to(el, {
+      y: -40, autoAlpha: 0, filter: 'blur(10px)',
+      duration: 0.5, ease: 'power2.in',
+      onComplete: () => {
+        accentEl.textContent = accent;
+        bodyEl.textContent   = body;
+        gsap.fromTo(el,
+          { y: 40, autoAlpha: 0, filter: 'blur(10px)' },
+          {
+            y: 0, autoAlpha: 1, filter: 'blur(0px)',
+            duration: 0.7, ease: 'power3.out',
+            onComplete: () => setTimeout(next, HOLD_MS),
+          }
+        );
+      },
+    });
+  }
+
+  // Start once the hero entrance (≈1.85 s) has fully settled
+  setTimeout(next, 2800);
+}
+
+/* ============================================================
    7. LOADER
       Tracks bg texture + 3 card videos. Number counts 0→100
       as each asset fires ready. Red bar fills in parallel.
@@ -352,7 +419,7 @@ function initLoader() {
   const loaderEl = document.getElementById('loader');
   const barEl    = document.getElementById('loader-bar');
   const numEl    = document.querySelector('.loader-number');
-  if (!loaderEl || !barEl) { initAnimation(); initTypewriter(); return; }
+  if (!loaderEl || !barEl) { initAnimation(); initTypewriter(); initHeroRotator(); return; }
 
   const TOTAL  = 4;    // bg texture + 3 card videos
   const MIN_MS = 2400;
@@ -400,6 +467,7 @@ function initLoader() {
           loaderEl.classList.add('fade-out');
           initAnimation();
           initTypewriter();
+          initHeroRotator();
           setTimeout(() => loaderEl.remove(), 700);
         }, 280);
       };
@@ -410,23 +478,20 @@ function initLoader() {
   // bg texture ready signal dispatched from initBackground
   window.addEventListener('asset-loaded', advance, { once: true });
 
-  // card videos
-  document.querySelectorAll('.card-video').forEach((vid) => {
-    if (vid.readyState >= 3) { advance(); return; }
-    vid.addEventListener('canplay', advance, { once: true });
-  });
+  // Videos load sequentially (initiated by initHover), so listen on the window
+  // for a custom event fired each time one becomes ready
+  window.addEventListener('video-ready', advance);
 
-  // hard fallback — force complete after 7 s
+  // hard fallback — force complete after 10 s
   setTimeout(() => {
     if (loaded < TOTAL) { loaded = TOTAL - 1; advance(); }
-  }, 7000);
+  }, 10000);
 }
 
 /* ============================================================
    INIT
    ============================================================ */
 document.addEventListener('DOMContentLoaded', () => {
-  injectAssets();
   initBackground();
   initLoader();     // manages initAnimation + initTypewriter timing
   initHover();

@@ -2,7 +2,7 @@
    RESET
    ============================================================ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: auto; }
+html { scroll-behavior: auto; background: #171717; }
 body {
   background: #171717;
   color: #fff;
@@ -29,6 +29,7 @@ a { text-decoration: none; color: inherit; }
 
   --font-sans:    'DM Sans', sans-serif;
   --font-script:  'Carattere', cursive;
+  --fw-extralight: 200;
   --fw-light:     300;
   --fw-regular:   400;
   --fw-medium:    500;
@@ -40,6 +41,23 @@ a { text-decoration: none; color: inherit; }
 
   --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* ── Type scale ───────────────────────────────────────────── */
+  --text-xs:   clamp(0.58rem, 0.68vw, 0.65rem);   /* captions, labels    */
+  --text-sm:   clamp(0.68rem, 0.82vw, 0.78rem);   /* small UI, badges    */
+  --text-base: clamp(0.8rem,  1vw,    0.95rem);   /* body, buttons       */
+  --text-md:   clamp(0.9rem,  1.2vw,  1.1rem);    /* profile sub-labels  */
+  --text-lg:   clamp(1rem,    1.5vw,  1.4rem);    /* profile name, hero  */
+  --text-xl:   clamp(1.15rem, 2vw,    1.75rem);   /* section headings    */
+
+  /* ── Spacing scale ────────────────────────────────────────── */
+  --sp-1: clamp(2px,  0.3vh,  4px);
+  --sp-2: clamp(4px,  0.55vh, 7px);
+  --sp-3: clamp(6px,  0.85vh, 10px);
+  --sp-4: clamp(8px,  1.2vh,  14px);
+  --sp-5: clamp(12px, 1.7vh,  20px);
+  --sp-6: clamp(16px, 2.4vh,  28px);
+  --sp-8: clamp(22px, 3.2vh,  42px);
 }
 
 /* ============================================================
@@ -120,7 +138,7 @@ a { text-decoration: none; color: inherit; }
   align-items: start;
 }
 
-.grid-area-profile  { grid-column: 1 / 5;  grid-row: 1; display: flex; flex-direction: column; gap: clamp(8px, 1.6vh, 22px); }
+.grid-area-profile  { grid-column: 1 / 5;  grid-row: 1; display: flex; flex-direction: column; gap: var(--sp-5); }
 .grid-area-services { grid-column: 5 / 13; grid-row: 1; display: flex; align-items: center; }
 .grid-area-hero     { grid-column: 1 / 13; grid-row: 2; align-self: end; padding-bottom: clamp(4px, 0.8vh, 12px); }
 .grid-area-coming   {
@@ -139,7 +157,7 @@ a { text-decoration: none; color: inherit; }
 .profile-card {
   display: flex;
   align-items: stretch;  /* meta column stretches to avatar height */
-  gap: clamp(10px, 1.6vw, 24px);
+  gap: var(--sp-4);
 }
 
 .avatar-wrap {
@@ -155,8 +173,8 @@ a { text-decoration: none; color: inherit; }
 .profile-meta {
   display: flex;
   flex-direction: column;
-  gap: clamp(1px, 0.2vh, 4px);   /* tight: name ↔ badge */
-  padding: 2px 0;
+  gap: var(--sp-2);
+  padding: var(--sp-1) 0;
 }
 /* Social icons anchor to the bottom of the meta column */
 .profile-meta .social-icons {
@@ -165,15 +183,58 @@ a { text-decoration: none; color: inherit; }
 .profile-name {
   font-family: var(--font-sans);
   font-weight: var(--fw-light);
-  font-size: clamp(0.9rem, 1.5vw, 1.45rem);
-  line-height: 1.05;
+  font-size: var(--text-lg);
+  line-height: 1.1;
   white-space: nowrap;
 }
 .experience-badge {
   font-family: var(--font-sans);
   font-weight: var(--fw-light);
-  font-size: clamp(0.9rem, 1.5vw, 1.45rem);
-  line-height: 1.05;
+  font-size: var(--text-base);
+  color: var(--text-muted);
+  line-height: 1.2;
+}
+
+/* ── Availability badge ──────────────────────────────────── */
+.avail-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-family: var(--font-sans);
+  font-weight: var(--fw-light);
+  font-size: var(--text-base);
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+}
+.avail-dot {
+  position: relative;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #22c55e;
+  flex-shrink: 0;
+  box-shadow: 0 0 6px rgba(34, 197, 94, 0.6);
+}
+.avail-dot::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  background: rgba(34, 197, 94, 0.2);
+  animation: pulse-ring 2.2s ease-out infinite;
+}
+.avail-dot::after {
+  content: '';
+  position: absolute;
+  inset: -7px;
+  border-radius: 50%;
+  background: rgba(34, 197, 94, 0.08);
+  animation: pulse-ring 2.2s ease-out 0.4s infinite;
+}
+@keyframes pulse-ring {
+  0%   { transform: scale(0.5); opacity: 1; }
+  80%  { transform: scale(1);   opacity: 0; }
+  100% { transform: scale(1);   opacity: 0; }
 }
 
 /* ── Social icons ─────────────────────────────────────────── */
@@ -211,6 +272,48 @@ a { text-decoration: none; color: inherit; }
 .social-icon:active { transform: scale(0.92); }
 .social-icon:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
 
+/* ── Press credit ────────────────────────────────────────── */
+.press-credit {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  text-decoration: none;
+  width: fit-content;
+  padding: clamp(8px, 1vh, 12px) clamp(10px, 1vw, 16px);
+  border: 0.5px solid rgba(255,255,255,0.18);
+  border-radius: 100px;
+  background: rgba(255,255,255,0.04);
+  margin-bottom: var(--sp-8);
+  transition: background 0.28s ease, border-color 0.28s ease;
+}
+.press-credit:hover {
+  background: rgba(255,255,255,0.09);
+  border-color: rgba(255,255,255,0.32);
+}
+.press-credit__logo {
+  width: 14px;
+  height: 14px;
+  border-radius: 2px;
+  object-fit: cover;
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+.press-credit__label {
+  font-family: var(--font-sans);
+  font-weight: var(--fw-light);
+  font-size: var(--text-base);
+  color: var(--text-muted);
+  white-space: nowrap;
+  opacity: 0.6;
+}
+.press-credit__name {
+  font-family: var(--font-sans);
+  font-weight: var(--fw-regular);
+  font-size: var(--text-base);
+  color: var(--text);
+  white-space: nowrap;
+}
+
 /* ── Profile bottom: buttons + tools locked to toolbox width ── */
 /* fit-content on the wrapper means the toolbox (no % width) sets
    the reference width; buttons (width:100%) fill that same size. */
@@ -218,7 +321,7 @@ a { text-decoration: none; color: inherit; }
   display: flex;
   flex-direction: column;
   width: fit-content;
-  gap: clamp(8px, 1.6vh, 22px);
+  gap: var(--sp-4);
 }
 
 /* ── CTA Buttons — fluid pill pair ──────────────────────── */
@@ -227,6 +330,7 @@ a { text-decoration: none; color: inherit; }
 .btn-pill-group {
   display: flex;
   align-items: center;
+  gap: 5px;
   width: 100%;
 }
 
@@ -239,7 +343,7 @@ a { text-decoration: none; color: inherit; }
   border-radius: 100px;
   font-family: var(--font-sans);
   font-weight: var(--fw-regular);
-  font-size: clamp(0.78rem, 1vw, 1rem);
+  font-size: var(--text-base);
   letter-spacing: 0.006em;
   white-space: nowrap;
   overflow: hidden;
@@ -355,10 +459,10 @@ a { text-decoration: none; color: inherit; }
   transition: transform 0.5s var(--ease-expo), box-shadow 0.5s var(--ease-expo);
 }
 .service-card:hover {
-  transform: translateY(-10px) scale(1.03);
+  transform: translateY(-6px) scale(1.012);
   box-shadow: inset 0 0 4.6px rgba(255,255,255,0.28), 0 28px 56px rgba(0,0,0,0.55);
 }
-.service-card:active { transform: translateY(-3px) scale(1.008); transition-duration: 0.12s; }
+.service-card:active { transform: translateY(-2px) scale(1.004); transition-duration: 0.12s; }
 .service-card:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 
 .card-header {
@@ -378,13 +482,13 @@ a { text-decoration: none; color: inherit; }
 }
 .card-title-script { font-family: var(--font-script); font-style: italic; font-weight: var(--fw-regular); }
 .card-arrow {
-  font-size: clamp(0.7rem, 0.9vw, 0.9rem);
-  color: var(--text);
-  opacity: 0.6;
+  width:  clamp(14px, 1.4vw, 20px);
+  height: clamp(14px, 1.4vw, 20px);
   flex-shrink: 0;
+  opacity: 0.7;
   transition: transform 0.4s var(--ease-expo), opacity 0.3s var(--ease-expo);
 }
-.service-card:hover .card-arrow { transform: translate(4px,-4px); opacity: 1; }
+.service-card:hover .card-arrow { transform: translate(3px, -3px) scale(1.1); opacity: 1; }
 
 /* 1:1 thumbnail — full-width matching Figma */
 .card-thumb {
@@ -392,19 +496,28 @@ a { text-decoration: none; color: inherit; }
   aspect-ratio: 1 / 1;
   border-radius: clamp(8px, 1vw, 16px);
   overflow: hidden;
-  background: rgba(228,228,228,0.08);
+  background: #000;
   position: relative;
   flex-shrink: 0;
 }
 .card-video {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  top: 15%;
+  left: 15%;
+  width: 70%;
+  height: 70%;
   object-fit: cover;
-  transition: transform 0.7s var(--ease-expo);
+  border-radius: clamp(4px, 0.6vw, 8px);
+  /* Crush near-blacks to pure black */
+  filter: brightness(0.85) contrast(1.2);
+  /* Inset shadow blends edges into the black card bg */
+  box-shadow: inset 0 0 18px 6px #000;
+  transition: transform 0.7s var(--ease-expo), filter 0.5s ease;
 }
-.service-card:hover .card-video { transform: scale(1.08); }
+.service-card:hover .card-video {
+  filter: brightness(0.9) contrast(1.15);
+}
+.service-card:hover .card-video { transform: scale(1.05); }
 
 /* card-btn can be <button> or <a> */
 .card-btn {
@@ -435,7 +548,7 @@ a { text-decoration: none; color: inherit; }
    HERO TEXT — no overflow clip, text can breathe
    ============================================================ */
 #hero-text {
-  line-height: 0.87;
+  line-height: 0.95;
   letter-spacing: -0.048em;
   /* NO overflow:hidden — text must not clip */
   padding-bottom: 0;
@@ -443,23 +556,41 @@ a { text-decoration: none; color: inherit; }
 .hero-line {
   display: block;
   /* NO overflow:hidden */
+  animation: hero-drift 8s ease-in-out infinite;
+}
+.hero-line:nth-child(2) {
+  animation-delay: -3s;
+}
+@keyframes hero-drift {
+  0%, 100% { transform: translateY(0px);   opacity: 1; }
+  50%       { transform: translateY(-4px);  opacity: 0.88; }
 }
 .hero-accent {
   font-family: var(--font-script);
   font-style: italic;
   font-weight: var(--fw-regular);
   color: var(--accent);
-  font-size: clamp(3rem, 9.6vw, 10.2rem);
+  font-size: clamp(3.4rem, 9.9vw, 11.875rem);  /* Figma: 190px */
+  letter-spacing: 0;
+  margin-right: 0.12em;                        /* gap between accent letter and body text */
   display: inline-block;
   vertical-align: bottom;
+  position: relative;
+  top: 0.06em;                                 /* push red letter down to align with body */
 }
 .hero-body {
   font-family: var(--font-sans);
-  font-weight: var(--fw-light);
-  font-size: clamp(2.7rem, 9.0vw, 9.6rem);
+  font-weight: var(--fw-extralight);             /* "Designer" — Extra Light 200 */
+  font-size: clamp(2.8rem, 8.07vw, 9.6875rem);  /* Figma: 155px */
+  letter-spacing: -0.039em;                     /* Figma: -6px @ 155px */
   color: var(--text);
   display: inline-block;
   vertical-align: bottom;
+}
+.hero-rotator {
+  display: inline-block;
+  vertical-align: bottom;
+  will-change: transform, opacity, filter;
 }
 
 /* ============================================================
@@ -505,16 +636,28 @@ a { text-decoration: none; color: inherit; }
     min-height: 100dvh;
     height: auto;
     padding: var(--page-y) var(--page-x) clamp(16px, 3vh, 28px);
-    gap: 18px;
+    gap: clamp(20px, 3.5vh, 36px);
   }
 
   .grid-area-profile  { order: 1; flex-shrink: 0; }
   .grid-area-services { order: 2; flex-shrink: 0; padding-left: 0; }
   /* Grows to push hero text down to the bottom of the viewport */
-  .grid-area-hero     { order: 3; flex: 1 0 auto; align-self: stretch; width: 100%; display: flex; flex-direction: column; justify-content: flex-end; padding-bottom: 4px; }
+  .grid-area-hero     { order: 3; flex: 1 0 auto; align-self: stretch; width: 100%; display: flex; flex-direction: column; justify-content: flex-end; padding-top: clamp(12px, 2.5vh, 24px); padding-bottom: 4px; }
   .grid-area-coming   { order: 4; flex-shrink: 0; text-align: left; padding-bottom: 0; }
 
-  .profile-card { align-items: center; }
+  .profile-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: clamp(10px, 2vh, 18px);
+  }
+  .avatar-wrap {
+    width:  clamp(64px, 18vw, 90px);
+    height: clamp(64px, 18vw, 90px);
+  }
+  .profile-meta { gap: 3px; }
+  .profile-name,
+  .experience-badge { white-space: normal; }
+  .profile-meta .social-icons { margin-top: 8px; }
 
   /* Cards stack vertically on mobile */
   #services {
@@ -533,11 +676,17 @@ a { text-decoration: none; color: inherit; }
     max-height: none;
   }
 
-  /* On mobile the toolbox is too narrow to constrain buttons —
-     let the buttons fill full width and the toolbox scroll freely */
+  /* No scale on mobile — just a subtle shadow on touch */
+  .service-card:hover,
+  .service-card:active {
+    transform: none;
+    box-shadow: inset 0 0 4.6px rgba(255,255,255,0.18), 0 12px 28px rgba(0,0,0,0.4);
+  }
+
+
+  /* Toolbox and buttons share the same full width on mobile */
   .profile-bottom { width: 100%; }
-  .tools-bar { flex-wrap: nowrap; overflow-x: auto; width: fit-content; }
-  .tools-bar::-webkit-scrollbar { display: none; }
+  .tools-bar { width: 100%; justify-content: space-between; }
 
   /* Force left-align on hero text and all its children */
   #hero-text,
