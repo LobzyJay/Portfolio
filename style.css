@@ -564,6 +564,7 @@ a { text-decoration: none; color: inherit; }
   color: var(--accent);
   font-size: clamp(3.4rem, 9.9vw, 11.875rem);  /* Figma: 190px */
   letter-spacing: 0;
+  margin-right: 0.05em;                        /* breathing room — script flourishes */
   display: inline-block;
   vertical-align: bottom;
 }
