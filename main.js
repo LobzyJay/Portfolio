@@ -415,35 +415,53 @@ function initHeroRotator() {
    7. TIME CLOCKS — Lagos (WAT) + London (GMT/BST)
    ============================================================ */
 function initTimeClocks() {
-  const lagosTimeEl   = document.getElementById('time-lagos');
-  const lagosUtcEl    = document.getElementById('time-lagos-utc');
-  const londonTimeEl  = document.getElementById('time-london');
-  const londonUtcEl   = document.getElementById('time-london-utc');
-  if (!lagosTimeEl || !londonTimeEl) return;
+  const pillEl   = document.getElementById('time-pill');
+  const cityEl   = document.getElementById('time-city');
+  const timeEl   = document.getElementById('time-display');
+  const abbrEl   = document.getElementById('time-abbr');
+  if (!pillEl || !cityEl || !timeEl) return;
+
+  const ZONES = [
+    { city: 'Lagos',  tz: 'Africa/Lagos'  },
+    { city: 'London', tz: 'Europe/London' },
+  ];
+  let idx = 0;
+  let ticker = null;
 
   const fmtTime = (tz) => new Intl.DateTimeFormat('en-GB', { timeZone: tz, hour: '2-digit', minute: '2-digit', hour12: false });
-  const fmtOffset = (tz) => {
-    const s = new Intl.DateTimeFormat('en', { timeZone: tz, timeZoneName: 'shortOffset' })
-      .formatToParts(new Date())
-      .find(p => p.type === 'timeZoneName');
-    // Normalise "GMT+1" → "UTC+1", "GMT" → "UTC+0"
-    return s ? s.value.replace('GMT', 'UTC').replace(/^UTC$/, 'UTC+0') : '';
-  };
+  const getAbbr = (tz) => new Intl.DateTimeFormat('en', { timeZone: tz, timeZoneName: 'short' })
+    .formatToParts(new Date()).find(p => p.type === 'timeZoneName')?.value ?? '';
 
-  const lagosFmt  = fmtTime('Africa/Lagos');
-  const londonFmt = fmtTime('Europe/London');
-
-  function update() {
-    const now = new Date();
-    lagosTimeEl.textContent  = lagosFmt.format(now);
-    londonTimeEl.textContent = londonFmt.format(now);
-    // Offset only needs updating once (no DST mid-session edge case worth handling)
-    if (lagosUtcEl && !lagosUtcEl.textContent)  lagosUtcEl.textContent  = fmtOffset('Africa/Lagos');
-    if (londonUtcEl && !londonUtcEl.textContent) londonUtcEl.textContent = fmtOffset('Europe/London');
+  function render() {
+    const { city, tz } = ZONES[idx];
+    cityEl.textContent = city;
+    timeEl.textContent = fmtTime(tz).format(new Date());
+    if (abbrEl) abbrEl.textContent = getAbbr(tz);
   }
 
-  update();
-  setInterval(update, 1000);
+  function swap() {
+    gsap.to(pillEl, {
+      autoAlpha: 0, y: -6, filter: 'blur(6px)',
+      duration: 0.35, ease: 'power2.in',
+      onComplete: () => {
+        idx = (idx + 1) % ZONES.length;
+        render();
+        gsap.fromTo(pillEl,
+          { autoAlpha: 0, y: 6, filter: 'blur(6px)' },
+          { autoAlpha: 1, y: 0, filter: 'blur(0px)', duration: 0.45, ease: 'power3.out' }
+        );
+      },
+    });
+  }
+
+  render();
+  ticker = setInterval(render, 1000);
+  // Swap every 4 s — pause ticker during transition to avoid flicker
+  setInterval(() => {
+    clearInterval(ticker);
+    swap();
+    setTimeout(() => { ticker = setInterval(render, 1000); }, 900);
+  }, 4000);
 }
 
 /* ============================================================
