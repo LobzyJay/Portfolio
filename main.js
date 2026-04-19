@@ -174,6 +174,7 @@ function initAnimation() {
   gsap.set('.avatar-wrap',                         { autoAlpha: 0, scale: 0.72 });
   gsap.set(['.profile-name', '.experience-badge'], { autoAlpha: 0, y: 18 });
   gsap.set('.avail-badge',                         { autoAlpha: 0, y: 12 });
+  gsap.set('.time-clocks',                         { autoAlpha: 0, y: 12 });
   gsap.set('.social-icon',                         { autoAlpha: 0, y: 12 });
   gsap.set('.btn-pill',                            { autoAlpha: 0, y: 12 });
   gsap.set('.tools-bar',                           { autoAlpha: 0, y: 12 });
@@ -199,6 +200,7 @@ function initAnimation() {
     .to('.profile-name',     { autoAlpha: 1, y: 0, duration: 0.55 }, 0.45)
     .to('.experience-badge', { autoAlpha: 1, y: 0, duration: 0.50 }, 0.58)
     .to('.avail-badge',      { autoAlpha: 1, y: 0, duration: 0.45 }, 0.68)
+    .to('.time-clocks',      { autoAlpha: 1, y: 0, duration: 0.45 }, 0.75)
 
     // Social icons cascade left→right
     .to('.social-icon', {
@@ -410,7 +412,28 @@ function initHeroRotator() {
 }
 
 /* ============================================================
-   7. LOADER
+   7. TIME CLOCKS — Lagos (WAT) + London (GMT/BST)
+   ============================================================ */
+function initTimeClocks() {
+  const lagosEl  = document.getElementById('time-lagos');
+  const londonEl = document.getElementById('time-london');
+  if (!lagosEl || !londonEl) return;
+
+  const fmtLagos  = new Intl.DateTimeFormat('en-GB', { timeZone: 'Africa/Lagos',   hour: '2-digit', minute: '2-digit', hour12: true });
+  const fmtLondon = new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/London',  hour: '2-digit', minute: '2-digit', hour12: true });
+
+  function update() {
+    const now = new Date();
+    lagosEl.textContent  = fmtLagos.format(now);
+    londonEl.textContent = fmtLondon.format(now);
+  }
+
+  update();
+  setInterval(update, 1000);
+}
+
+/* ============================================================
+   8. LOADER
       Tracks bg texture + 3 card videos. Number counts 0→100
       as each asset fires ready. Red bar fills in parallel.
    ============================================================ */
@@ -418,7 +441,7 @@ function initLoader() {
   const loaderEl = document.getElementById('loader');
   const barEl    = document.getElementById('loader-bar');
   const numEl    = document.querySelector('.loader-number');
-  if (!loaderEl || !barEl) { initAnimation(); initTypewriter(); initHeroRotator(); return; }
+  if (!loaderEl || !barEl) { initAnimation(); initTypewriter(); initHeroRotator(); initTimeClocks(); return; }
 
   // Only track the bg texture — videos load silently in the background
   // so the page is never held hostage by slow video connections.
@@ -460,6 +483,7 @@ function initLoader() {
           initAnimation();
           initTypewriter();
           initHeroRotator();
+          initTimeClocks();
           setTimeout(() => loaderEl.remove(), 700);
         }, 280);
       };

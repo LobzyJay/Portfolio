@@ -237,6 +237,37 @@ a { text-decoration: none; color: inherit; }
   100% { transform: scale(1);   opacity: 0; }
 }
 
+/* ── Time clocks ─────────────────────────────────────────── */
+.time-clocks {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+.time-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-3);
+}
+.time-city {
+  font-family: var(--font-sans);
+  font-weight: var(--fw-light);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  opacity: 0.6;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.time-value {
+  font-family: var(--font-sans);
+  font-weight: var(--fw-light);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  opacity: 0.6;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
 /* ── Social icons ─────────────────────────────────────────── */
 .social-icons {
   display: flex;
