@@ -435,20 +435,17 @@ function initTimeClocks() {
   }, 1000);
 
   function swapCity() {
-    // Slide city out upward
     gsap.to(cityEl, {
-      y: -10, autoAlpha: 0,
-      duration: 0.22, ease: 'power2.in',
+      y: -8, opacity: 0, duration: 0.2, ease: 'power2.in',
       onComplete() {
         idx = (idx + 1) % ZONES.length;
         const { city, tz } = ZONES[idx];
         cityEl.textContent = city;
         timeEl.textContent = fmtTime(tz).format(new Date());
-        if (abbrEl) abbrEl.textContent = getAbbr(tz); // abbr updates instantly, no animation
-        // Wavy elastic slide in from below
+        if (abbrEl) abbrEl.textContent = getAbbr(tz);
         gsap.fromTo(cityEl,
-          { y: 12, autoAlpha: 0 },
-          { y: 0, autoAlpha: 1, duration: 0.7, ease: 'elastic.out(1, 0.45)',
+          { y: 10, opacity: 0 },
+          { y: 0, opacity: 0.6, duration: 0.65, ease: 'elastic.out(1, 0.5)',
             onComplete() { setTimeout(swapCity, 4000); },
           }
         );
@@ -463,9 +460,9 @@ function initTimeClocks() {
   if (abbrEl) abbrEl.textContent = getAbbr(tz);
 
   // Fade whole clock in, then begin swapping
-  gsap.set(wrapEl, { autoAlpha: 0, y: 5 });
+  gsap.set(wrapEl, { opacity: 0, y: 5 });
   gsap.to(wrapEl, {
-    autoAlpha: 1, y: 0, duration: 0.5, ease: 'power3.out', delay: 1.0,
+    opacity: 1, y: 0, duration: 0.5, ease: 'power3.out', delay: 1.0,
     onComplete() { setTimeout(swapCity, 4000); },
   });
 }

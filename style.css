@@ -255,13 +255,27 @@ a { text-decoration: none; color: inherit; }
 }
 .time-pill__label {
   display: inline-flex;
+  align-items: baseline;
   gap: 4px;
+  overflow: hidden; /* clips elastic overshoot */
+}
+#time-city {
+  display: inline-block; /* required for GSAP y-transforms */
   font-family: var(--font-sans);
   font-weight: var(--fw-light);
   font-size: var(--text-xs);
   color: var(--text-muted);
   opacity: 0.6;
   letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+#time-abbr {
+  font-family: var(--font-sans);
+  font-weight: var(--fw-light);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  opacity: 0.45;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 .time-pill__dots {
