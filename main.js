@@ -271,8 +271,7 @@ function initHover() {
 
     vid.addEventListener('canplay', () => {
       vid.play().catch(() => {});
-      window.dispatchEvent(new Event('video-ready'));
-      loadNext(); // chain: start loading next once this one can play
+      loadNext();
     }, { once: true });
 
     // Hard fallback: if canplay never fires within 6s, move on anyway
@@ -421,15 +420,15 @@ function initLoader() {
   const numEl    = document.querySelector('.loader-number');
   if (!loaderEl || !barEl) { initAnimation(); initTypewriter(); initHeroRotator(); return; }
 
-  const TOTAL  = 4;    // bg texture + 3 card videos
-  const MIN_MS = 2400;
-  let loaded   = 0;
-  let current  = 0;    // displayed number
-  let target   = 0;    // target number
+  // Only track the bg texture — videos load silently in the background
+  // so the page is never held hostage by slow video connections.
+  const MIN_MS = 900;
+  let current  = 0;
+  let target   = 0;
   const t0     = Date.now();
   let raf      = null;
 
-  // Smooth counter — exponential ease-out: fast start, decelerates near target
+  // Smooth counter — exponential ease-out
   function tick() {
     const delta = target - current;
     if (delta < 0.35) {
@@ -449,17 +448,10 @@ function initLoader() {
     if (!raf) raf = requestAnimationFrame(tick);
   }
 
-  function advance() {
-    loaded = Math.min(loaded + 1, TOTAL);
-    setTarget(Math.round(loaded / TOTAL * 100));
-    if (loaded >= TOTAL) scheduleExit();
-  }
-
   function scheduleExit() {
     const wait = Math.max(0, MIN_MS - (Date.now() - t0));
     setTimeout(() => {
       setTarget(100);
-      // Wait until counter reaches 100 before fading
       const waitForFull = () => {
         if (current < 100) { setTimeout(waitForFull, 40); return; }
         if (numEl) numEl.textContent = '100';
@@ -475,17 +467,14 @@ function initLoader() {
     }, wait);
   }
 
-  // bg texture ready signal dispatched from initBackground
-  window.addEventListener('asset-loaded', advance, { once: true });
+  // Animate bar to 60% immediately so it feels alive while bg loads
+  setTarget(60);
 
-  // Videos load sequentially (initiated by initHover), so listen on the window
-  // for a custom event fired each time one becomes ready
-  window.addEventListener('video-ready', advance);
+  // bg texture ready → jump to 100 and exit
+  window.addEventListener('asset-loaded', () => scheduleExit(), { once: true });
 
-  // hard fallback — force complete after 10 s
-  setTimeout(() => {
-    if (loaded < TOTAL) { loaded = TOTAL - 1; advance(); }
-  }, 10000);
+  // Hard fallback — exit after 6 s regardless
+  setTimeout(() => scheduleExit(), 6000);
 }
 
 /* ============================================================
