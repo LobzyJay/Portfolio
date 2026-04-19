@@ -240,32 +240,55 @@ a { text-decoration: none; color: inherit; }
 /* ── Time clocks ─────────────────────────────────────────── */
 .time-clocks {
   display: flex;
-  flex-direction: column;
-  gap: var(--sp-1);
+  gap: var(--sp-2);
+  flex-wrap: wrap;
+  align-self: flex-start;
 }
-.time-row {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--sp-3);
+.time-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: clamp(4px, 0.5vw, 7px);
+  padding: clamp(5px, 0.6vh, 8px) clamp(8px, 0.9vw, 13px);
+  border: 0.5px solid rgba(255,255,255,0.18);
+  border-radius: 100px;
+  background: rgba(255,255,255,0.04);
+  white-space: nowrap;
 }
-.time-city {
+.time-pill__city {
   font-family: var(--font-sans);
   font-weight: var(--fw-light);
   font-size: var(--text-xs);
   color: var(--text-muted);
   opacity: 0.6;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
 }
-.time-value {
+.time-pill__time {
   font-family: var(--font-sans);
   font-weight: var(--fw-light);
   font-size: var(--text-xs);
   color: var(--text-muted);
-  opacity: 0.6;
   font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+}
+.time-pill__utc {
+  font-family: var(--font-sans);
+  font-weight: var(--fw-light);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  opacity: 0.45;
   letter-spacing: 0.02em;
+}
+.time-pill__dots {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  opacity: 0.45;
+  letter-spacing: 0.05em;
+  animation: dots-pulse 1s step-start infinite;
+}
+@keyframes dots-pulse {
+  0%, 100% { opacity: 0.45; }
+  50%       { opacity: 0;    }
 }
 
 /* ── Social icons ─────────────────────────────────────────── */

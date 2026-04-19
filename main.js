@@ -415,17 +415,31 @@ function initHeroRotator() {
    7. TIME CLOCKS — Lagos (WAT) + London (GMT/BST)
    ============================================================ */
 function initTimeClocks() {
-  const lagosEl  = document.getElementById('time-lagos');
-  const londonEl = document.getElementById('time-london');
-  if (!lagosEl || !londonEl) return;
+  const lagosTimeEl   = document.getElementById('time-lagos');
+  const lagosUtcEl    = document.getElementById('time-lagos-utc');
+  const londonTimeEl  = document.getElementById('time-london');
+  const londonUtcEl   = document.getElementById('time-london-utc');
+  if (!lagosTimeEl || !londonTimeEl) return;
 
-  const fmtLagos  = new Intl.DateTimeFormat('en-GB', { timeZone: 'Africa/Lagos',   hour: '2-digit', minute: '2-digit', hour12: true });
-  const fmtLondon = new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/London',  hour: '2-digit', minute: '2-digit', hour12: true });
+  const fmtTime = (tz) => new Intl.DateTimeFormat('en-GB', { timeZone: tz, hour: '2-digit', minute: '2-digit', hour12: false });
+  const fmtOffset = (tz) => {
+    const s = new Intl.DateTimeFormat('en', { timeZone: tz, timeZoneName: 'shortOffset' })
+      .formatToParts(new Date())
+      .find(p => p.type === 'timeZoneName');
+    // Normalise "GMT+1" → "UTC+1", "GMT" → "UTC+0"
+    return s ? s.value.replace('GMT', 'UTC').replace(/^UTC$/, 'UTC+0') : '';
+  };
+
+  const lagosFmt  = fmtTime('Africa/Lagos');
+  const londonFmt = fmtTime('Europe/London');
 
   function update() {
     const now = new Date();
-    lagosEl.textContent  = fmtLagos.format(now);
-    londonEl.textContent = fmtLondon.format(now);
+    lagosTimeEl.textContent  = lagosFmt.format(now);
+    londonTimeEl.textContent = londonFmt.format(now);
+    // Offset only needs updating once (no DST mid-session edge case worth handling)
+    if (lagosUtcEl && !lagosUtcEl.textContent)  lagosUtcEl.textContent  = fmtOffset('Africa/Lagos');
+    if (londonUtcEl && !londonUtcEl.textContent) londonUtcEl.textContent = fmtOffset('Europe/London');
   }
 
   update();
