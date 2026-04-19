@@ -174,7 +174,6 @@ function initAnimation() {
   gsap.set('.avatar-wrap',                         { autoAlpha: 0, scale: 0.72 });
   gsap.set(['.profile-name', '.experience-badge'], { autoAlpha: 0, y: 18 });
   gsap.set('.avail-badge',                         { autoAlpha: 0, y: 12 });
-  gsap.set('.time-clocks',                         { autoAlpha: 0, y: 12 });
   gsap.set('.social-icon',                         { autoAlpha: 0, y: 12 });
   gsap.set('.btn-pill',                            { autoAlpha: 0, y: 12 });
   gsap.set('.tools-bar',                           { autoAlpha: 0, y: 12 });
@@ -200,7 +199,6 @@ function initAnimation() {
     .to('.profile-name',     { autoAlpha: 1, y: 0, duration: 0.55 }, 0.45)
     .to('.experience-badge', { autoAlpha: 1, y: 0, duration: 0.50 }, 0.58)
     .to('.avail-badge',      { autoAlpha: 1, y: 0, duration: 0.45 }, 0.68)
-    .to('.time-clocks',      { autoAlpha: 1, y: 0, duration: 0.45 }, 0.75)
 
     // Social icons cascade left→right
     .to('.social-icon', {
@@ -415,53 +413,63 @@ function initHeroRotator() {
    7. TIME CLOCKS — Lagos (WAT) + London (GMT/BST)
    ============================================================ */
 function initTimeClocks() {
-  const pillEl   = document.getElementById('time-pill');
-  const cityEl   = document.getElementById('time-city');
-  const timeEl   = document.getElementById('time-display');
-  const abbrEl   = document.getElementById('time-abbr');
+  const pillEl = document.getElementById('time-pill');
+  const cityEl = document.getElementById('time-city');
+  const timeEl = document.getElementById('time-display');
+  const abbrEl = document.getElementById('time-abbr');
   if (!pillEl || !cityEl || !timeEl) return;
 
   const ZONES = [
     { city: 'Lagos',  tz: 'Africa/Lagos'  },
     { city: 'London', tz: 'Europe/London' },
   ];
-  let idx = 0;
-  let ticker = null;
+  let idx     = 0;
+  let tickId  = null;
+  let swapId  = null;
 
   const fmtTime = (tz) => new Intl.DateTimeFormat('en-GB', { timeZone: tz, hour: '2-digit', minute: '2-digit', hour12: false });
   const getAbbr = (tz) => new Intl.DateTimeFormat('en', { timeZone: tz, timeZoneName: 'short' })
     .formatToParts(new Date()).find(p => p.type === 'timeZoneName')?.value ?? '';
 
-  function render() {
+  function updateTime() {
+    timeEl.textContent = fmtTime(ZONES[idx].tz).format(new Date());
+  }
+
+  function populate() {
     const { city, tz } = ZONES[idx];
     cityEl.textContent = city;
-    timeEl.textContent = fmtTime(tz).format(new Date());
+    updateTime();
     if (abbrEl) abbrEl.textContent = getAbbr(tz);
   }
 
   function swap() {
+    clearInterval(tickId);
     gsap.to(pillEl, {
-      autoAlpha: 0, y: -6, filter: 'blur(6px)',
-      duration: 0.35, ease: 'power2.in',
-      onComplete: () => {
+      autoAlpha: 0, y: -5, filter: 'blur(5px)',
+      duration: 0.32, ease: 'power2.in',
+      onComplete() {
         idx = (idx + 1) % ZONES.length;
-        render();
+        populate();
         gsap.fromTo(pillEl,
-          { autoAlpha: 0, y: 6, filter: 'blur(6px)' },
-          { autoAlpha: 1, y: 0, filter: 'blur(0px)', duration: 0.45, ease: 'power3.out' }
+          { autoAlpha: 0, y: 5, filter: 'blur(5px)' },
+          {
+            autoAlpha: 1, y: 0, filter: 'blur(0px)',
+            duration: 0.42, ease: 'power3.out',
+            onComplete() {
+              tickId = setInterval(updateTime, 1000);
+              swapId = setTimeout(swap, 4000);
+            },
+          }
         );
       },
     });
   }
 
-  render();
-  ticker = setInterval(render, 1000);
-  // Swap every 4 s — pause ticker during transition to avoid flicker
-  setInterval(() => {
-    clearInterval(ticker);
-    swap();
-    setTimeout(() => { ticker = setInterval(render, 1000); }, 900);
-  }, 4000);
+  gsap.set(pillEl, { autoAlpha: 0, y: 6 });
+  populate();
+  gsap.to(pillEl, { autoAlpha: 1, y: 0, duration: 0.5, ease: 'power3.out', delay: 1.0 });
+  tickId = setInterval(updateTime, 1000);
+  swapId = setTimeout(swap, 4000);
 }
 
 /* ============================================================
