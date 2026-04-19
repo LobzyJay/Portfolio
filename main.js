@@ -426,8 +426,15 @@ function initTimeClocks() {
   let idx = 0;
 
   const fmtTime = (tz) => new Intl.DateTimeFormat('en-GB', { timeZone: tz, hour: '2-digit', minute: '2-digit', hour12: false });
-  const getAbbr = (tz) => new Intl.DateTimeFormat('en', { timeZone: tz, timeZoneName: 'short' })
-    .formatToParts(new Date()).find(p => p.type === 'timeZoneName')?.value ?? '';
+
+  // Hardcoded — Lagos is always WAT; London is BST (summer) or GMT (winter)
+  const getAbbr = (tz) => {
+    if (tz === 'Africa/Lagos') return 'WAT';
+    // London: if UTC offset is +1 it's BST, otherwise GMT
+    const offset = new Intl.DateTimeFormat('en', { timeZone: tz, timeZoneName: 'shortOffset' })
+      .formatToParts(new Date()).find(p => p.type === 'timeZoneName')?.value ?? '';
+    return offset === 'GMT+1' ? 'BST' : 'GMT';
+  };
 
   // Time ticks every second — no animation
   setInterval(() => {
