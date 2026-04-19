@@ -273,7 +273,19 @@
       </aside>
 
       <!-- ── Service Cards  col 5–13 ── -->
-      <section id="services" class="grid-area-services" aria-label="Portfolio services">
+      <div class="grid-area-services">
+
+        <!-- Time clock — sits above cards -->
+        <div class="time-clocks" aria-label="Local times">
+          <span class="time-pill__time" id="time-display">--:--</span>
+          <span class="time-pill__label">
+            <span id="time-city">Lagos</span>
+            <span id="time-abbr"></span>
+          </span>
+          <span class="time-pill__dots" aria-hidden="true">::</span>
+        </div>
+
+        <section id="services" aria-label="Portfolio services">
 
         <article class="service-card" tabindex="0" data-service="design" data-url="https://linkly.link/2gOnp">
           <div class="card-header">
@@ -314,7 +326,8 @@
           <a class="card-btn" href="https://linkly.link/2gOnx" target="_blank" rel="noopener">View <span>→</span></a>
         </article>
 
-      </section>
+        </section>
+      </div>
 
       <!-- ── Hero text  col 1–11 ── -->
       <div id="hero-text" class="grid-area-hero" aria-label="Multidisciplinary Designer">
@@ -337,15 +350,6 @@
     </div>
   </div>
 
-  <!-- ── Time clock — fixed bottom-left ── -->
-  <div class="time-clocks" aria-label="Local times">
-    <span class="time-pill__time" id="time-display">--:--</span>
-    <span class="time-pill__label" id="time-label">
-      <span id="time-city">Lagos</span>
-      <span id="time-abbr"></span>
-    </span>
-    <span class="time-pill__dots" aria-hidden="true">::</span>
-  </div>
 
   <!-- SEO text block — crawlable by search engines, visually hidden -->
   <div class="sr-only" aria-hidden="true">

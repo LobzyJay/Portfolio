@@ -139,7 +139,7 @@ a { text-decoration: none; color: inherit; }
 }
 
 .grid-area-profile  { grid-column: 1 / 5;  grid-row: 1; display: flex; flex-direction: column; gap: var(--sp-5); }
-.grid-area-services { grid-column: 5 / 13; grid-row: 1; display: flex; align-items: center; }
+.grid-area-services { grid-column: 5 / 13; grid-row: 1; display: flex; flex-direction: column; justify-content: center; gap: var(--sp-3); }
 .grid-area-hero     { grid-column: 1 / 13; grid-row: 2; align-self: end; padding-bottom: clamp(4px, 0.8vh, 12px); }
 .grid-area-coming   {
   /* position: fixed takes it completely out of grid flow —
@@ -237,16 +237,13 @@ a { text-decoration: none; color: inherit; }
   100% { transform: scale(1);   opacity: 0; }
 }
 
-/* ── Time clocks — fixed bottom-left ────────────────────── */
+/* ── Time clocks — above service cards ──────────────────── */
 .time-clocks {
-  position: fixed;
-  bottom: clamp(6px, 1vh, 16px);
-  left:   clamp(28px, 3.8vw, 68px);
-  z-index: 10;
   display: flex;
   align-items: baseline;
   gap: clamp(4px, 0.5vw, 7px);
   white-space: nowrap;
+  align-self: flex-start;
 }
 .time-pill__time {
   font-family: var(--font-sans);
@@ -654,7 +651,7 @@ a { text-decoration: none; color: inherit; }
 @media (max-width: 1199px) {
   .layout-grid { grid-template-columns: repeat(8, 1fr); }
   .grid-area-profile  { grid-column: 1 / 4; }
-  .grid-area-services { grid-column: 4 / 9; }
+  .grid-area-services { grid-column: 4 / 9; justify-content: center; }
   .grid-area-hero     { grid-column: 1 / 8; }
   .grid-area-coming   { grid-column: 8 / 9; }
   #services { gap: var(--col-gap); }
@@ -682,7 +679,9 @@ a { text-decoration: none; color: inherit; }
   }
 
   .grid-area-profile  { order: 1; flex-shrink: 0; }
-  .grid-area-services { order: 2; flex-shrink: 0; padding-left: 0; }
+  .grid-area-services { order: 2; flex-shrink: 0; padding-left: 0; gap: var(--sp-2); }
+  /* Clock takes too much space on mobile — hide it */
+  .time-clocks { display: none; }
   /* Grows to push hero text down to the bottom of the viewport */
   .grid-area-hero     { order: 3; flex: 1 0 auto; align-self: stretch; width: 100%; display: flex; flex-direction: column; justify-content: flex-end; padding-top: clamp(12px, 2.5vh, 24px); padding-bottom: 4px; }
   .grid-area-coming   { order: 4; flex-shrink: 0; text-align: left; padding-bottom: 0; }
