@@ -237,27 +237,16 @@ a { text-decoration: none; color: inherit; }
   100% { transform: scale(1);   opacity: 0; }
 }
 
-/* ── Time clocks — fixed top-right ──────────────────────── */
+/* ── Time clocks — fixed bottom-left ────────────────────── */
 .time-clocks {
   position: fixed;
-  top:   clamp(16px, 2.8vh, 48px);
-  right: clamp(28px, 3.8vw, 68px);
+  bottom: clamp(6px, 1vh, 16px);
+  left:   clamp(28px, 3.8vw, 68px);
   z-index: 10;
-}
-.time-pill {
-  display: inline-flex;
-  align-items: center;
+  display: flex;
+  align-items: baseline;
   gap: clamp(4px, 0.5vw, 7px);
   white-space: nowrap;
-}
-.time-pill__city {
-  font-family: var(--font-sans);
-  font-weight: var(--fw-light);
-  font-size: var(--text-xs);
-  color: var(--text-muted);
-  opacity: 0.6;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
 }
 .time-pill__time {
   font-family: var(--font-sans);
@@ -267,13 +256,16 @@ a { text-decoration: none; color: inherit; }
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.04em;
 }
-.time-pill__utc {
+.time-pill__label {
+  display: inline-flex;
+  gap: 4px;
   font-family: var(--font-sans);
   font-weight: var(--fw-light);
   font-size: var(--text-xs);
   color: var(--text-muted);
-  opacity: 0.45;
-  letter-spacing: 0.02em;
+  opacity: 0.6;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 .time-pill__dots {
   font-size: var(--text-xs);

@@ -413,63 +413,59 @@ function initHeroRotator() {
    7. TIME CLOCKS — Lagos (WAT) + London (GMT/BST)
    ============================================================ */
 function initTimeClocks() {
-  const pillEl = document.getElementById('time-pill');
-  const cityEl = document.getElementById('time-city');
-  const timeEl = document.getElementById('time-display');
-  const abbrEl = document.getElementById('time-abbr');
-  if (!pillEl || !cityEl || !timeEl) return;
+  const wrapEl  = document.querySelector('.time-clocks');
+  const timeEl  = document.getElementById('time-display');
+  const labelEl = document.getElementById('time-label');
+  const cityEl  = document.getElementById('time-city');
+  const abbrEl  = document.getElementById('time-abbr');
+  if (!wrapEl || !timeEl || !labelEl) return;
 
   const ZONES = [
     { city: 'Lagos',  tz: 'Africa/Lagos'  },
     { city: 'London', tz: 'Europe/London' },
   ];
-  let idx     = 0;
-  let tickId  = null;
-  let swapId  = null;
+  let idx = 0;
 
   const fmtTime = (tz) => new Intl.DateTimeFormat('en-GB', { timeZone: tz, hour: '2-digit', minute: '2-digit', hour12: false });
   const getAbbr = (tz) => new Intl.DateTimeFormat('en', { timeZone: tz, timeZoneName: 'short' })
     .formatToParts(new Date()).find(p => p.type === 'timeZoneName')?.value ?? '';
 
-  function updateTime() {
+  // Time ticks every second — no animation, just updates in place
+  setInterval(() => {
     timeEl.textContent = fmtTime(ZONES[idx].tz).format(new Date());
-  }
+  }, 1000);
 
-  function populate() {
-    const { city, tz } = ZONES[idx];
-    cityEl.textContent = city;
-    updateTime();
-    if (abbrEl) abbrEl.textContent = getAbbr(tz);
-  }
-
-  function swap() {
-    clearInterval(tickId);
-    gsap.to(pillEl, {
-      autoAlpha: 0, y: -5, filter: 'blur(5px)',
-      duration: 0.32, ease: 'power2.in',
+  function swapLabel() {
+    gsap.to(labelEl, {
+      autoAlpha: 0, y: -4, filter: 'blur(4px)',
+      duration: 0.28, ease: 'power2.in',
       onComplete() {
         idx = (idx + 1) % ZONES.length;
-        populate();
-        gsap.fromTo(pillEl,
-          { autoAlpha: 0, y: 5, filter: 'blur(5px)' },
-          {
-            autoAlpha: 1, y: 0, filter: 'blur(0px)',
-            duration: 0.42, ease: 'power3.out',
-            onComplete() {
-              tickId = setInterval(updateTime, 1000);
-              swapId = setTimeout(swap, 4000);
-            },
+        const { city, tz } = ZONES[idx];
+        cityEl.textContent = city;
+        timeEl.textContent = fmtTime(tz).format(new Date());
+        if (abbrEl) abbrEl.textContent = getAbbr(tz);
+        gsap.fromTo(labelEl,
+          { autoAlpha: 0, y: 4, filter: 'blur(4px)' },
+          { autoAlpha: 1, y: 0, filter: 'blur(0px)', duration: 0.38, ease: 'power3.out',
+            onComplete() { setTimeout(swapLabel, 4000); },
           }
         );
       },
     });
   }
 
-  gsap.set(pillEl, { autoAlpha: 0, y: 6 });
-  populate();
-  gsap.to(pillEl, { autoAlpha: 1, y: 0, duration: 0.5, ease: 'power3.out', delay: 1.0 });
-  tickId = setInterval(updateTime, 1000);
-  swapId = setTimeout(swap, 4000);
+  // Initial populate
+  const { city, tz } = ZONES[idx];
+  cityEl.textContent = city;
+  timeEl.textContent = fmtTime(tz).format(new Date());
+  if (abbrEl) abbrEl.textContent = getAbbr(tz);
+
+  // Fade whole clock in, then start swapping labels
+  gsap.set(wrapEl, { autoAlpha: 0, y: 5 });
+  gsap.to(wrapEl, { autoAlpha: 1, y: 0, duration: 0.5, ease: 'power3.out', delay: 1.0,
+    onComplete() { setTimeout(swapLabel, 4000); },
+  });
 }
 
 /* ============================================================
