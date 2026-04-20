@@ -548,20 +548,6 @@ function initLoader() {
 }
 
 /* ============================================================
-   9. MOBILE SCROLL LOCK
-      iOS Safari ignores overflow:hidden on body for touch-pan.
-      Block touchmove everywhere except inside #services so only
-      the card strip responds to horizontal swipes.
-   ============================================================ */
-function initMobileScrollLock() {
-  if (window.matchMedia('(min-width: 768px)').matches) return;
-
-  document.addEventListener('touchmove', (e) => {
-    if (!e.target.closest('#services')) e.preventDefault();
-  }, { passive: false });
-}
-
-/* ============================================================
    INIT
    ============================================================ */
 document.addEventListener('DOMContentLoaded', () => {
@@ -569,5 +555,4 @@ document.addEventListener('DOMContentLoaded', () => {
   initLoader();     // manages initAnimation + initTypewriter timing
   initHover();
   initPillButtons();
-  initMobileScrollLock();
 });

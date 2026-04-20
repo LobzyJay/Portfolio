@@ -678,22 +678,27 @@ a { text-decoration: none; color: inherit; }
 @media (max-width: 767px) {
   :root { --page-x: 20px; --page-y: 18px; }
 
-  body { overflow-y: auto; overflow-x: hidden; }
+  /* Lock the whole page — same approach as the fixed bg canvas.
+     Nothing can pan except #services which owns its own horizontal scroll. */
+  html, body { overflow: hidden; height: 100%; }
 
-  #stage { height: auto; min-height: 100dvh; }
+  #stage {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+  }
 
-  /* Switch to flex-column — hero text naturally anchors to bottom */
   .layout-grid {
     display: flex;
     flex-direction: column;
-    min-height: 100dvh;
-    height: auto;
+    height: 100%;
     padding: var(--page-y) var(--page-x) clamp(16px, 3vh, 28px);
     gap: clamp(20px, 3.5vh, 36px);
+    overflow: hidden;
   }
 
   .grid-area-profile  { order: 1; flex-shrink: 0; }
-  .grid-area-services { order: 2; flex-shrink: 0; padding-left: 0; gap: var(--sp-2); }
+  .grid-area-services { order: 2; flex-shrink: 0; padding-left: 0; gap: var(--sp-2); overflow: hidden; }
   /* Grows to push hero text down to the bottom of the viewport */
   .grid-area-hero     { order: 3; flex: 1 0 auto; align-self: stretch; width: 100%; display: flex; flex-direction: column; justify-content: flex-end; padding-top: clamp(12px, 2.5vh, 24px); padding-bottom: 4px; }
   .grid-area-coming   { display: none; }
@@ -711,11 +716,6 @@ a { text-decoration: none; color: inherit; }
   .profile-name,
   .experience-badge { white-space: normal; }
   .profile-meta .social-icons { margin-top: 8px; }
-
-  /* Clip any horizontal bleed from the card strip */
-  .grid-area-services {
-    overflow: hidden;
-  }
 
   /* Swipeable card strip */
   #services {
