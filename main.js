@@ -240,7 +240,7 @@ function initAnimation() {
 
   // Ellipsis pulse — runs forever after intro settles
   gsap.to('.ellipsis-red', {
-    opacity: 0.2, duration: 0.9,
+    opacity: 0.45, duration: 0.9,
     repeat: -1, yoyo: true, ease: 'sine.inOut', delay: 2.2,
   });
 }

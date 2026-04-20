@@ -555,11 +555,11 @@ a { text-decoration: none; color: inherit; }
 }
 .card-video {
   position: absolute;
-  top: 15%;
-  left: 15%;
-  width: 70%;
-  height: 70%;
-  object-fit: cover;
+  top: 10%;
+  left: 10%;
+  width: 80%;
+  height: 80%;
+  object-fit: contain;
   border-radius: clamp(4px, 0.6vw, 8px);
   /* Crush near-blacks to pure black */
   filter: brightness(0.85) contrast(1.2);
@@ -657,7 +657,7 @@ a { text-decoration: none; color: inherit; }
   white-space: nowrap;
   line-height: 1.2;
 }
-.ellipsis-red { color: var(--accent); }
+.ellipsis-red { color: var(--accent); opacity: 1; }
 
 /* ============================================================
    TABLET  768–1199px
@@ -696,8 +696,8 @@ a { text-decoration: none; color: inherit; }
   .grid-area-services { order: 2; flex-shrink: 0; padding-left: 0; gap: var(--sp-2); }
   /* Grows to push hero text down to the bottom of the viewport */
   .grid-area-hero     { order: 3; flex: 1 0 auto; align-self: stretch; width: 100%; display: flex; flex-direction: column; justify-content: flex-end; padding-top: clamp(12px, 2.5vh, 24px); padding-bottom: 4px; }
-  /* Override fixed so typewriter flows in the layout on mobile */
-  .grid-area-coming   { order: 4; flex-shrink: 0; text-align: left; padding-bottom: 0; position: static; bottom: auto; right: auto; }
+  /* Keep fixed to prevent layout reflow on textContent changes */
+  .grid-area-coming   { position: fixed; bottom: clamp(6px, 1vh, 16px); left: var(--page-x); right: auto; text-align: left; }
 
   .profile-card {
     flex-direction: column;
