@@ -572,6 +572,14 @@ a { text-decoration: none; color: inherit; }
 }
 .service-card:hover .card-video { transform: scale(1.05); }
 
+/* 3D card — objects appear larger */
+[data-service="3d"] .card-video {
+  top: 5%;
+  left: 5%;
+  width: 90%;
+  height: 90%;
+}
+
 /* card-btn can be <button> or <a> */
 .card-btn {
   display: flex;
