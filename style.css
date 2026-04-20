@@ -694,11 +694,10 @@ a { text-decoration: none; color: inherit; }
 
   .grid-area-profile  { order: 1; flex-shrink: 0; }
   .grid-area-services { order: 2; flex-shrink: 0; padding-left: 0; gap: var(--sp-2); }
-  /* Clock takes too much space on mobile — hide it */
-  .time-clocks { display: none; }
   /* Grows to push hero text down to the bottom of the viewport */
   .grid-area-hero     { order: 3; flex: 1 0 auto; align-self: stretch; width: 100%; display: flex; flex-direction: column; justify-content: flex-end; padding-top: clamp(12px, 2.5vh, 24px); padding-bottom: 4px; }
-  .grid-area-coming   { order: 4; flex-shrink: 0; text-align: left; padding-bottom: 0; }
+  /* Override fixed so typewriter flows in the layout on mobile */
+  .grid-area-coming   { order: 4; flex-shrink: 0; text-align: left; padding-bottom: 0; position: static; bottom: auto; right: auto; }
 
   .profile-card {
     flex-direction: column;
