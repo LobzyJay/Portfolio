@@ -691,7 +691,16 @@ a { text-decoration: none; color: inherit; }
   }
 
   .grid-area-profile  { order: 1; flex-shrink: 0; }
-  .grid-area-services { order: 2; flex-shrink: 0; width: 100%; min-width: 0; padding-left: 0; gap: var(--sp-2); overflow-x: clip; }
+  .grid-area-services { order: 2; flex-shrink: 0; width: 100%; min-width: 0; padding-left: 0; gap: 0; overflow-x: clip; }
+
+  /* Time clocks — top-right corner on mobile, fixed so it stays visible while scrolling */
+  .time-clocks {
+    position: fixed;
+    top: var(--page-y);
+    right: var(--page-x);
+    z-index: 20;
+    align-items: baseline;
+  }
   .grid-area-hero     { order: 3; flex-shrink: 0; align-self: stretch; width: 100%; display: flex; flex-direction: column; justify-content: flex-start; padding-top: clamp(8px, 2vh, 20px); padding-bottom: 0; }
   /* Typewriter lives in the normal flow at the bottom on mobile */
   .grid-area-coming   {
