@@ -548,6 +548,34 @@ function initLoader() {
 }
 
 /* ============================================================
+   9. MOBILE CARD SWIPE
+      Attach touch handlers directly to #services and stop propagation
+      so only the card strip moves — nothing else on the page reacts.
+   ============================================================ */
+function initMobileCardSwipe() {
+  if (window.matchMedia('(min-width: 768px)').matches) return;
+  const el = document.getElementById('services');
+  if (!el) return;
+
+  let startX = 0, startLeft = 0;
+
+  el.addEventListener('touchstart', (e) => {
+    startX     = e.touches[0].clientX;
+    startLeft  = el.scrollLeft;
+    e.stopPropagation();
+  }, { passive: true });
+
+  el.addEventListener('touchmove', (e) => {
+    el.scrollLeft = startLeft + (startX - e.touches[0].clientX);
+    e.stopPropagation();
+  }, { passive: true });
+
+  el.addEventListener('touchend', (e) => {
+    e.stopPropagation();
+  }, { passive: true });
+}
+
+/* ============================================================
    INIT
    ============================================================ */
 document.addEventListener('DOMContentLoaded', () => {
@@ -555,4 +583,5 @@ document.addEventListener('DOMContentLoaded', () => {
   initLoader();     // manages initAnimation + initTypewriter timing
   initHover();
   initPillButtons();
+  initMobileCardSwipe();
 });
