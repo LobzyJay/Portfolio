@@ -712,16 +712,29 @@ a { text-decoration: none; color: inherit; }
   .experience-badge { white-space: normal; }
   .profile-meta .social-icons { margin-top: 8px; }
 
-  /* Cards stack vertically on mobile */
+  /* Cards scroll horizontally — each card is 80vw so the next one peeks in */
   #services {
-    flex-direction: column;
-    gap: clamp(24px, 4vh, 40px);
-    overflow: visible;
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: visible;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    gap: clamp(10px, 2.5vw, 16px);
+    padding-bottom: 4px;
+    /* bleed to page edge, restore inner padding so first card aligns to grid */
+    margin-left: calc(-1 * var(--page-x));
+    margin-right: calc(-1 * var(--page-x));
+    padding-left: var(--page-x);
+    padding-right: var(--page-x);
+    /* hide scrollbar — swiping is the cue */
+    scrollbar-width: none;
   }
+  #services::-webkit-scrollbar { display: none; }
 
   .service-card {
-    flex: none;
-    width: 100%;
+    flex: 0 0 80vw;
+    width: 80vw;
+    scroll-snap-align: start;
   }
 
   /* Always honour the 1:1 aspect-ratio — never override it */
