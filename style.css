@@ -698,9 +698,10 @@ a { text-decoration: none; color: inherit; }
     order: 4;
     position: static;
     display: block;
-    text-align: left;
+    text-align: right;
     padding-bottom: clamp(8px, 1.5vh, 16px);
   }
+  #coming-soon { white-space: normal; }
 
   .profile-card {
     flex-direction: column;
