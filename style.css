@@ -555,12 +555,11 @@ a { text-decoration: none; color: inherit; }
 }
 .card-video {
   position: absolute;
-  top: 5%;
-  left: 5%;
-  width: 90%;
-  height: 90%;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
-  border-radius: clamp(4px, 0.6vw, 8px);
   /* Crush near-blacks to pure black */
   filter: brightness(0.85) contrast(1.2);
   /* Inset shadow blends edges into the black card bg */

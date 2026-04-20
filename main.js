@@ -232,10 +232,11 @@ function initAnimation() {
       duration: 0.5, ease: 'power3.out',
     }, 0.50)
 
-    // Hero text sweeps up dramatically
+    // Hero text sweeps up dramatically — clearProps lets CSS hero-drift take over after entrance
     .to('.hero-line', {
       y: 0, autoAlpha: 1,
       duration: 1.1, stagger: 0.14, ease: 'power4.out',
+      clearProps: 'transform',
     }, 0.60);
 
   // Ellipsis pulse — runs forever after intro settles
@@ -492,6 +493,7 @@ function initLoader() {
   let target   = 0;
   const t0     = Date.now();
   let raf      = null;
+  let exited   = false;
 
   // Smooth counter — exponential ease-out
   function tick() {
@@ -514,6 +516,8 @@ function initLoader() {
   }
 
   function scheduleExit() {
+    if (exited) return;
+    exited = true;
     const wait = Math.max(0, MIN_MS - (Date.now() - t0));
     setTimeout(() => {
       setTarget(100);
