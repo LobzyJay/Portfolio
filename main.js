@@ -548,6 +548,43 @@ function initLoader() {
 }
 
 /* ============================================================
+   9. MOBILE CARD SCROLL — vertical swipe drives horizontal card strip
+      Anywhere on the page: swipe down = cards move left.
+      Swipe direction is decided on first 6px of movement.
+   ============================================================ */
+function initMobileCardScroll() {
+  if (window.matchMedia('(min-width: 768px)').matches) return;
+  const services = document.getElementById('services');
+  if (!services) return;
+
+  let touch = null;
+
+  document.addEventListener('touchstart', e => {
+    const t = e.touches[0];
+    touch = { x: t.clientX, y: t.clientY, sl: services.scrollLeft, vertical: null };
+  }, { passive: true });
+
+  document.addEventListener('touchmove', e => {
+    if (!touch) return;
+    const t  = e.touches[0];
+    const dx = t.clientX - touch.x;
+    const dy = t.clientY - touch.y;
+
+    // Decide gesture direction once past threshold
+    if (touch.vertical === null && (Math.abs(dx) > 6 || Math.abs(dy) > 6)) {
+      touch.vertical = Math.abs(dy) >= Math.abs(dx);
+    }
+
+    if (touch.vertical) {
+      services.scrollLeft = touch.sl - dy;  // swipe down → cards left
+      e.preventDefault();                   // block page scroll
+    }
+  }, { passive: false });
+
+  document.addEventListener('touchend', () => { touch = null; });
+}
+
+/* ============================================================
    INIT
    ============================================================ */
 document.addEventListener('DOMContentLoaded', () => {
@@ -555,4 +592,5 @@ document.addEventListener('DOMContentLoaded', () => {
   initLoader();     // manages initAnimation + initTypewriter timing
   initHover();
   initPillButtons();
+  initMobileCardScroll();
 });

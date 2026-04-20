@@ -678,7 +678,7 @@ a { text-decoration: none; color: inherit; }
 @media (max-width: 767px) {
   :root { --page-x: 20px; --page-y: 18px; }
 
-  body { overflow-y: auto; }
+  body { overflow-y: auto; overflow-x: hidden; }
 
   #stage { height: auto; min-height: 100dvh; }
 
