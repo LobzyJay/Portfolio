@@ -555,10 +555,10 @@ a { text-decoration: none; color: inherit; }
 }
 .card-video {
   position: absolute;
-  top: 10%;
-  left: 10%;
-  width: 80%;
-  height: 80%;
+  top: 5%;
+  left: 5%;
+  width: 90%;
+  height: 90%;
   object-fit: contain;
   border-radius: clamp(4px, 0.6vw, 8px);
   /* Crush near-blacks to pure black */
@@ -572,13 +572,6 @@ a { text-decoration: none; color: inherit; }
 }
 .service-card:hover .card-video { transform: scale(1.05); }
 
-/* 3D card — objects appear larger */
-[data-service="3d"] .card-video {
-  top: 5%;
-  left: 5%;
-  width: 90%;
-  height: 90%;
-}
 
 /* card-btn can be <button> or <a> */
 .card-btn {
