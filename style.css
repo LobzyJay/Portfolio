@@ -712,22 +712,20 @@ a { text-decoration: none; color: inherit; }
   .experience-badge { white-space: normal; }
   .profile-meta .social-icons { margin-top: 8px; }
 
-  /* Services wrapper clips horizontal overflow so cards never push page width */
+  /* Clip any horizontal bleed from the card strip */
   .grid-area-services {
     overflow: hidden;
-    transform: scale(0.88);
-    transform-origin: top left;
   }
 
-  /* Swipeable card strip — contained entirely within grid-area-services */
+  /* Swipeable card strip */
   #services {
     flex-direction: row;
     overflow-x: scroll;
     overflow-y: visible;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
-    overscroll-behavior-x: contain;  /* stops scroll chaining to page */
-    touch-action: pan-x;             /* browser owns horizontal panning here */
+    overscroll-behavior-x: contain;
+    touch-action: pan-x;
     gap: clamp(10px, 2.5vw, 16px);
     padding-bottom: 4px;
     scrollbar-width: none;
