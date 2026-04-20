@@ -712,28 +712,31 @@ a { text-decoration: none; color: inherit; }
   .experience-badge { white-space: normal; }
   .profile-meta .social-icons { margin-top: 8px; }
 
-  /* Cards scroll horizontally — each card is 80vw so the next one peeks in */
+  /* Services wrapper clips horizontal overflow so cards never push page width */
+  .grid-area-services {
+    overflow: hidden;
+    transform: scale(0.88);
+    transform-origin: top left;
+  }
+
+  /* Swipeable card strip — contained entirely within grid-area-services */
   #services {
     flex-direction: row;
-    overflow-x: auto;
+    overflow-x: scroll;
     overflow-y: visible;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;  /* stops scroll chaining to page */
+    touch-action: pan-x;             /* browser owns horizontal panning here */
     gap: clamp(10px, 2.5vw, 16px);
     padding-bottom: 4px;
-    /* bleed to page edge, restore inner padding so first card aligns to grid */
-    margin-left: calc(-1 * var(--page-x));
-    margin-right: calc(-1 * var(--page-x));
-    padding-left: var(--page-x);
-    padding-right: var(--page-x);
-    /* hide scrollbar — swiping is the cue */
     scrollbar-width: none;
   }
   #services::-webkit-scrollbar { display: none; }
 
   .service-card {
-    flex: 0 0 80vw;
-    width: 80vw;
+    flex: 0 0 78vw;
+    width: 78vw;
     scroll-snap-align: start;
   }
 
