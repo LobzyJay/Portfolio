@@ -690,8 +690,8 @@ a { text-decoration: none; color: inherit; }
     display: flex;
     flex-direction: column;
     height: 100%;
-    padding: var(--page-y) var(--page-x) clamp(16px, 3vh, 28px);
-    gap: clamp(20px, 3.5vh, 36px);
+    padding: var(--page-y) var(--page-x) clamp(12px, 2vh, 20px);
+    gap: clamp(12px, 2vh, 20px);
   }
 
   .grid-area-profile  { order: 1; flex-shrink: 0; }
@@ -735,9 +735,9 @@ a { text-decoration: none; color: inherit; }
     scroll-snap-align: start;
   }
 
-  /* Always honour the 1:1 aspect-ratio — never override it */
+  /* Landscape ratio on mobile — frees vertical space for the hero text */
   .card-thumb {
-    max-height: none;
+    aspect-ratio: 3 / 2;
   }
 
   /* No scale on mobile — just a subtle shadow on touch */
