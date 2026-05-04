@@ -4,9 +4,13 @@
    ============================================================ */
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+  overscroll-behavior-y: none;
+}
 body {
   background: var(--bg);
+  overscroll-behavior-y: none;
   color: var(--text);
   font-family: var(--font-sans);
   font-weight: 300;
@@ -94,29 +98,31 @@ ul { list-style: none; }
   min-height: 100dvh;
   height: 100vh;
   height: 100dvh;
-  background: #0c0c0c;
+  background: #171717;
   overflow: hidden;
   isolation: isolate;
 }
-/* Three.js liquid-ripple canvas — overlays hero image (screen blend) */
+/* Three.js liquid-ripple canvas — sits BEHIND the hero image so its
+   mouse-driven ripple FX reads through the semi-transparent mockup. */
 .cover #bg-canvas {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  z-index: 2;
+  z-index: 0;
   pointer-events: none;
   display: block;
-  mix-blend-mode: screen;
-  opacity: 0.55;
+  opacity: 1;
 }
 
-/* ── Profile sidebar (transplanted from main portfolio) ──── */
+/* ── Profile sidebar (transplanted from main portfolio).
+   top/left match homepage's --page-y / --page-x exactly so the
+   profile sits at the identical pixel position from the viewport. */
 .cover-profile {
   position: absolute;
   z-index: 3;
-  top: clamp(28px, 4vh, 52px);
-  left: clamp(20px, 4vw, 68px);
+  top: clamp(16px, 2.8vh, 48px);
+  left: clamp(28px, 3.8vw, 68px);
   width: min(440px, 80vw);
   display: flex;
   flex-direction: column;
@@ -337,12 +343,11 @@ ul { list-style: none; }
 }
 .cover-mockup img {
   position: absolute;
-  inset: 0;
+  inset: auto 0 -110px 0;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center center;
+  height: auto;
   transform: scale(1.10);
+  transform-origin: center bottom;
   transition: transform 3.6s cubic-bezier(0.16, 1, 0.3, 1);
   will-change: transform;
 }
@@ -361,7 +366,7 @@ body.is-loaded .cover-mockup img {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(to bottom, rgba(12,12,12,0.55) 0%, rgba(12,12,12,0.18) 14%, rgba(12,12,12,0) 28%, rgba(12,12,12,0) 60%, rgba(12,12,12,0.85) 92%),
+    linear-gradient(to bottom, rgba(12,12,12,0.55) 0%, rgba(12,12,12,0.18) 14%, rgba(12,12,12,0) 28%, rgba(12,12,12,0) 50%, rgba(12,12,12,0.6) 75%, rgba(12,12,12,0.95) 100%),
     linear-gradient(to right, rgba(12,12,12,0.6) 0%, rgba(12,12,12,0) 30%);
   pointer-events: none;
 }
@@ -432,7 +437,10 @@ body.is-loaded .cover-mockup img {
 /* ── Tablet (≤1024px): tighten cover ──────────────────────── */
 @media (max-width: 1024px) {
   .cover-mockup img { object-position: 55% center; }
-  .cover-title { font-size: clamp(2.6rem, 9vw, 5.4rem); }
+  /* Override the span ramp directly — parent .cover-title font-size is inert
+     because inner spans set their own size. */
+  .cover-line > span:not(.cover-script) { font-size: clamp(2.6rem, 8.6vw, 5.4rem); }
+  .cover-script { font-size: clamp(3.1rem, 10.4vw, 6.4rem); }
 }
 
 /* ── Tablet-mid (≤900px): stronger top fade for legibility ── */
@@ -448,10 +456,11 @@ body.is-loaded .cover-mockup img {
   .experience-badge,
   .avail-badge { font-size: 0.85rem; }
   .cover-title {
-    font-size: clamp(2.2rem, 12vw, 4.8rem);
     bottom: clamp(56px, 9vh, 96px);
     line-height: 0.98;
   }
+  .cover-line > span:not(.cover-script) { font-size: clamp(2.2rem, 9.6vw, 4.8rem); }
+  .cover-script { font-size: clamp(2.6rem, 11.4vw, 5.6rem); }
   .cover-status { bottom: 22px; font-size: 12px; }
 }
 
@@ -645,6 +654,8 @@ body.is-loaded .cover-mockup img {
   color: var(--text-light);
   min-width: 0;          /* allow wrap inside flex chapter-head */
   flex: 1 1 auto;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 
 .chapter-body > p,
@@ -1087,24 +1098,65 @@ body.is-loaded .cover-mockup img {
 }
 
 /* Swiss (Day 1 accordion AND Ch 8 section): chapter-body is a 12-col
-   grid; paragraphs occupy cols 1-7, chapter-side anchors cols 9-12. */
+   grid; paragraphs occupy cols 1-7, chapter-side anchors cols 9-12.
+   Live-frame artefacts (esp. tabbed design-system iframe) break out
+   to FULL width like the other live-frame embeds in the article. */
 .chapter--swiss > .chapter-body > p,
 .chapter--swiss > .chapter-body > ul,
 .chapter--swiss > .chapter-body > ol,
 .chapter--swiss > .chapter-body > .demo-card,
-.chapter--swiss > .chapter-body > .live-frame,
 .chapter--swiss > .chapter-body > .prompt-callout,
 .chapter--swiss > .chapter-body > .pull-quote {
   grid-column: 1 / span 7;
 }
+.chapter--swiss > .chapter-body > .live-frame,
+.chapter--swiss > .chapter-body > .live-frame--tabbed {
+  grid-column: 1 / -1;
+}
 .chapter--swiss > .chapter-body > .chapter-side {
   grid-column: 9 / span 4;
-  grid-row: 1 / span 99;
+  /* Ch 8 chapter-body grid: 9 prose items + 1 prompt-callout fill rows 1-9.
+     Side spans rows 1-8 so it tracks alongside the prose run, matching
+     the previous build's behaviour. */
+  grid-row: 1 / span 8;
   position: sticky;
   top: clamp(28px, 4vh, 56px);
   align-self: start;
   z-index: 1;
   margin-top: clamp(28px, 4vh, 44px);
+  max-height: calc(100vh - 80px);
+  overflow: hidden;
+}
+
+/* Day 1 prose-rail — wraps the prose run (paragraphs + pull-quote + aside)
+   so the sticky chapter-side has a containing block that ENDS before the
+   design system iframe. Without this, sticky's containing block would be
+   the whole chapter-body (which extends through the iframe), and the
+   mockup would scroll right into the artefact. The rail is its own
+   12-col sub-grid so the prose/aside split still reads as Swiss. */
+.chapter--swiss > .chapter-body > .chapter-prose-rail {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  column-gap: var(--grid-gap);
+  row-gap: 0;
+}
+.chapter--swiss .chapter-prose-rail > p,
+.chapter--swiss .chapter-prose-rail > ul,
+.chapter--swiss .chapter-prose-rail > ol,
+.chapter--swiss .chapter-prose-rail > .pull-quote {
+  grid-column: 1 / span 7;
+  max-width: none;
+}
+.chapter--swiss .chapter-prose-rail > .chapter-side {
+  grid-column: 9 / span 4;
+  position: sticky;
+  top: clamp(28px, 4vh, 56px);
+  align-self: start;
+  z-index: 1;
+  margin-top: clamp(28px, 4vh, 44px);
+  max-height: calc(100vh - 80px);
+  overflow: hidden;
 }
 
 /* Day 2 — first paragraph is a large lead, rest flows full-width
@@ -1129,12 +1181,26 @@ body.is-loaded .cover-mockup img {
     margin-top: clamp(18px, 2.5vh, 24px) !important;
     max-width: none !important;
   }
-  .chapter--swiss > .chapter-body > .chapter-side {
+  .chapter--swiss > .chapter-body > .chapter-side,
+  .chapter--swiss .chapter-prose-rail > .chapter-side {
     position: static;
     margin: clamp(28px, 4vh, 44px) 0 clamp(8px, 1vh, 16px);
     max-width: 480px;
     grid-row: unset;
     z-index: auto;
+    max-height: none;
+    overflow: visible;
+  }
+  /* Day 1 prose-rail flattens to single column on mobile */
+  .chapter--swiss > .chapter-body > .chapter-prose-rail {
+    display: block;
+  }
+  .chapter--swiss .chapter-prose-rail > p,
+  .chapter--swiss .chapter-prose-rail > ul,
+  .chapter--swiss .chapter-prose-rail > ol,
+  .chapter--swiss .chapter-prose-rail > .pull-quote {
+    grid-column: unset;
+    max-width: none;
   }
   /* Ch 8 swiss (non-accordion): collapse the inner 12-col grid so prose
      no longer pins to cols 1-7 and leaves the right side empty. */
@@ -1168,7 +1234,10 @@ body.is-loaded .cover-mockup img {
 }
 .chapter--swiss > .chapter-body > p,
 .chapter--swiss > .chapter-body > ul,
-.chapter--swiss > .chapter-body > ol {
+.chapter--swiss > .chapter-body > ol,
+.chapter--swiss .chapter-prose-rail > p,
+.chapter--swiss .chapter-prose-rail > ul,
+.chapter--swiss .chapter-prose-rail > ol {
   font-family: var(--font-sans);
   font-weight: 400;
   font-size: clamp(16px, 1.12vw, 19px);
@@ -1177,7 +1246,8 @@ body.is-loaded .cover-mockup img {
   margin-top: clamp(20px, 3vh, 28px);
   margin-bottom: 0;
 }
-.chapter--swiss > .chapter-body > .pull-quote {
+.chapter--swiss > .chapter-body > .pull-quote,
+.chapter--swiss .chapter-prose-rail > .pull-quote {
   margin-top: clamp(48px, 7vh, 80px);
 }
 .chapter--swiss > .chapter-body > .live-frame {
@@ -1289,6 +1359,29 @@ body.is-loaded .cover-mockup img {
   .chapter--overview > .overview-meta {
     grid-column: 1 / -1;
   }
+}
+
+/* ── Tablet portrait (541–900): titles + tabs fit-pass ───
+   Bridges the gap between desktop-wide rules and ≤540 mobile.
+   - Chapter titles at clamp() upper bound feel oversized in a 320–500px
+     toggle row; this scales them down so "Day 1, System before pages"
+     never touches the toggle.
+   - Tabbed live-frame tabs were sprawling onto 2 wide rows because
+     `flex: 1 1 auto + min-width:max-content` lets each grow.
+   - Prompt-callout's `1 / span 9` is moot here since accordion grids
+     collapse at 900, but pad it back so it doesn't feel huge. */
+@media (min-width: 541px) and (max-width: 900px) {
+  .chapter-title { font-size: clamp(1.5rem, 3.8vw, 2.1rem); }
+  .live-frame--tabbed .lf-tabs { gap: 3px; padding: 5px; }
+  .lf-tab { padding: 9px 12px; font-size: 12px; flex: 1 1 auto; }
+  .live-frame--tabbed .lf-open { padding: 0 10px; }
+  .prompt-callout { max-width: none; }
+}
+
+/* ── Tablet landscape / small laptop (901–1180): give chapter
+   titles a touch more room before the desktop max kicks in. ── */
+@media (min-width: 901px) and (max-width: 1180px) {
+  .chapter-title { font-size: clamp(1.8rem, 2.8vw, 2.3rem); }
 }
 
 /* ── Tighter mobile (≤540): smaller iframe floor ─── */
@@ -2043,4 +2136,87 @@ body.is-loaded .cover-mockup img {
 @media (prefers-reduced-motion: reduce) {
   [data-reveal] { opacity: 1; transform: none; transition: none; }
   html { scroll-behavior: auto; }
+}
+
+/* ============================================================
+   TOOLTIP — inline term with hover-revealed definition pill.
+   Currently only used inside Day 0 (.chapter--accordion) prose.
+   ============================================================ */
+.tip {
+  position: relative;
+  border-bottom: 1px dotted var(--accent);
+  cursor: help;
+  font-weight: 500;
+  color: inherit;
+  transition: color 0.22s var(--ease-expo);
+}
+.tip:hover { color: var(--accent); }
+.tip::before,
+.tip::after {
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s var(--ease-expo), transform 0.25s var(--ease-expo);
+  position: absolute;
+  z-index: 10;
+}
+.tip::before {
+  content: "";
+  bottom: calc(100% + 4px);
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid var(--accent);
+  transform: translateX(-50%) translateY(4px);
+}
+.tip::after {
+  content: attr(data-tip);
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  width: max-content;
+  max-width: 320px;
+  background: var(--accent);
+  color: #ffffff;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: 12px;
+  letter-spacing: -0.005em;
+  line-height: 1.45;
+  text-transform: none;
+  text-align: left;
+  white-space: normal;
+  box-shadow: 0 12px 32px -10px rgba(228, 2, 2, 0.55);
+}
+.tip:hover::before,
+.tip:hover::after,
+.tip:focus::before,
+.tip:focus::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+@media (max-width: 540px) {
+  .tip::after { max-width: 240px; font-size: 11px; padding: 8px 12px; }
+}
+
+/* ============================================================
+   ULTRA-WIDE COMFORT (≥1600): only cap prose where there IS a
+   right-side element to break against (Overview meta sidebar,
+   chapter--swiss side-rails on Day 1 and Working with Claude).
+   Default accordion chapters and standalone chapters flow the
+   full grid width — no big empty right-side gutter on wide screens.
+   ============================================================ */
+@media (min-width: 1600px) {
+  /* Overview lead reads larger — keep it tighter than body prose. */
+  .chapter--overview > .chapter-body > p { max-width: 48ch; }
+  /* Swiss chapters have side-rails at cols 9-12, so prose is already
+     constrained to 7 cols. Cap is mostly defensive on huge viewports. */
+  .chapter--swiss > .chapter-body > p,
+  .chapter--swiss > .chapter-body > ul,
+  .chapter--swiss > .chapter-body > ol {
+    max-width: 72ch;
+  }
 }

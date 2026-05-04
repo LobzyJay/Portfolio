@@ -3,19 +3,26 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Case Study — SystemSpecs Technology Solutions | Aloba Adewale</title>
+  <title>Case Study, SystemSpecs Technology Solutions | Aloba Adewale</title>
 
   <meta name="description" content="A 3.5-day rebuild of SystemSpecs Technology Solutions (STSL). One designer, three deliverables, Claude as a collaborator. The full case study." />
   <meta name="author" content="Aloba Adewale" />
   <link rel="canonical" href="https://www.artbyade.com/case-study/stsl/" />
 
-  <meta property="og:title" content="Case Study — SystemSpecs Technology Solutions" />
+  <meta property="og:title" content="Case Study, SystemSpecs Technology Solutions" />
   <meta property="og:description" content="A 3.5-day rebuild of a 32-year-old Nigerian fintech holding company. Marketing site, design system, UI kit. One designer, one weekend, Claude." />
   <meta property="og:type" content="article" />
   <meta property="og:url" content="https://www.artbyade.com/case-study/stsl/" />
-  <meta property="og:image" content="https://www.artbyade.com/case-study/stsl/media/laptop-hero.jpg" />
+  <meta property="og:image" content="https://www.artbyade.com/case-study/stsl/media/og-image.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="STSL case study, three deliverables in 3.5 days" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://www.artbyade.com/case-study/stsl/media/og-image.jpg" />
 
   <link rel="icon" type="image/svg+xml" href="../../assets/logo.svg" />
+  <link rel="shortcut icon" href="../../assets/logo.svg" />
+  <link rel="apple-touch-icon" href="../../assets/avatar.jpg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,200;0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=Carattere&display=swap" rel="stylesheet" />
@@ -25,7 +32,7 @@
 </head>
 <body>
 
-  <!-- ── Loader — same shape as main portfolio ────────────────── -->
+  <!-- ── Loader, same shape as main portfolio ────────────────── -->
   <div id="loader">
     <span class="loader-number">0</span>
     <div class="loader-bar-track">
@@ -33,7 +40,7 @@
     </div>
   </div>
 
-  <!-- ── Scroll to top — glass pill with red progress ring ────── -->
+  <!-- ── Scroll to top, glass pill with red progress ring ────── -->
   <button type="button" class="scroll-top" aria-label="Scroll to top" hidden>
     <svg class="st-arrow" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
       <path d="M12 19V5M5 12l7-7 7 7"/>
@@ -59,7 +66,7 @@
       <!-- Three.js liquid-ripple bg canvas (matches main portfolio) -->
       <canvas id="bg-canvas" aria-hidden="true"></canvas>
 
-      <!-- Profile sidebar — copied verbatim from main portfolio -->
+      <!-- Profile sidebar, copied verbatim from main portfolio -->
       <aside class="cover-profile" data-reveal>
 
         <div class="profile-card">
@@ -149,7 +156,7 @@
 
       <!-- Layered hero composition (image + bg pattern + radial gradient) -->
       <div class="cover-mockup" data-reveal>
-        <img src="media/hero-bg.jpg" alt="STSL homepage on a laptop, dark perforated surface, atmospheric green light" loading="eager" fetchpriority="high" />
+        <img src="media/new-hero-image.png" alt="STSL homepage on a laptop, dark perforated surface, atmospheric green light" loading="eager" fetchpriority="high" decoding="async" />
       </div>
 
       <!-- Massive title at bottom -->
@@ -198,8 +205,8 @@
           <span class="chapter-toggle" aria-hidden="true"></span>
         </summary>
         <div class="chapter-body">
-          <p>I started before I started. The day before the build began, I sat down and wrote the PRD myself. I didn't want a freeform "redesign" brief that drifts into vibes. I wanted a document a real team could ship against, even though I was the team.</p>
-          <p>The prompt to Claude was short. Be the PM. Run a UX/UI audit of the current site first. Then write the redesign PRD. Anchor the audit around a specific question: why doesn't the current site work for SystemSpecs's actual position as a 32-year-old technology infrastructure company. That last bit was important. I didn't want a critique of font choices. I wanted a diagnosis of the credibility gap.</p>
+          <p>I started before I started. The day before the build began, I sat down and wrote the <span class="tip" data-tip="Product Requirements Document, what a PM normally hands a design team. Problem statement, target audience, success metrics, scope, page sections, design system direction, all in one place.">PRD</span> myself. I didn't want a freeform "redesign" brief that drifts into vibes. I wanted a document a real team could ship against, even though I was the team.</p>
+          <p>The prompt to Claude was short. Be the PM. Run a UX/UI audit of the current site first. Then write the redesign PRD. Anchor the audit around a specific question: why doesn't the current site work for SystemSpecs's actual position as a 32-year-old technology infrastructure company. That last bit was important. I didn't want a critique of font choices. I wanted a diagnosis of the <span class="tip" data-tip="The space between who SystemSpecs actually is (32 years of fintech infrastructure, federal Treasury rails, every tier-1 Nigerian bank) and how their site was presenting them (generic B2B SaaS template).">credibility gap</span>.</p>
 
           <aside class="prompt-callout">
             <p class="pc-header">
@@ -209,7 +216,7 @@
             <p class="pc-body">I want to rebuild a landing page so I need you to be the PM and prepare a PRD doc, also include why this current website doesn't work for their current position as a technology solution, basically like a UX and UI audit then a PRD doc for the redesign.<span class="pc-meta">Day 0, the brief that started everything</span></p>
           </aside>
           <p>What came back was a 22-kilobyte document. Executive summary, IA audit, visual audit, messaging audit, CTA analysis, mobile, accessibility, and then the actual PRD with problem statement, target audience, success metrics, scope, page sections, design system direction, technical requirements, and a phased timeline. It read like something a senior PM would have spent a week on.</p>
-          <p>Two lines from it stayed with me through the rest of the build. The first was about who STSL actually is versus how their site presents them. The second was about the editorial direction. The brief called for what it named "Editorial Luxury", which sounds pretentious written down, but the spirit of it was simple. Treat the marketing pages like a long-form publication, not a SaaS template. Use restraint. Let the system do the work.</p>
+          <p>Two lines from it stayed with me through the rest of the build. The first was about who STSL actually is versus how their site presents them. The second was about the editorial direction. The brief called for what it named <span class="tip" data-tip="Treat marketing pages like a long-form publication, not a SaaS template. Restraint over noise. Type stack over template. Let the system do the work, not the chrome.">"Editorial Luxury"</span>, which sounds pretentious written down, but the spirit of it was simple. Treat the marketing pages like a long-form publication, not a SaaS template. Use restraint. Let the system do the work.</p>
           <p>That set up a few refusals before any pixel got pushed. No purple gradients. No generic dashboard chrome. No AI-generated imagery. No Inter, no Roboto, no defaults. The type stack landed on Plus Jakarta Sans for display, Geist for body, Source Serif 4 italic for pull-quotes, and JetBrains Mono for captions and code. Four typefaces, each chosen for what it does that the defaults don't.</p>
           <p>I also locked the max content width at 88rem, which is wider than most marketing sites. The reason was that the site needed to feel like it had room to breathe. A 32-year-old infrastructure company doesn't need to act small.</p>
           <p>The thing I noticed about writing the PRD as Day 0 is how much it changed Day 1. I wasn't designing into the void. Every choice on Day 1 referenced a line in the brief. The brief became the alignment partner I'd normally have a stakeholder for.</p>
@@ -222,22 +229,24 @@
           <span class="chapter-toggle" aria-hidden="true"></span>
         </summary>
         <div class="chapter-body">
-          <aside class="chapter-side">
-            <div class="chapter-side-frame">
-              <img src="media/mobile-1.jpg" alt="STSL on mobile, snap-scroll on the solutions tiles" loading="lazy" />
-            </div>
-            <p class="chapter-side-caption"><span class="csc-num">01</span><span>Mobile · solutions snap-scroll. The system on the smallest viewport.</span></p>
-          </aside>
-          <p>The bet on Day 1 was that the design system goes first, even though nobody sees it yet. No marketing pages, no homepage, no hero. Just tokens, primitives, and the first round of layout components. By the end of the day, the only thing on screen was a docs page that listed swatches, type scales, and a few buttons. Most people would call that a wasted Saturday. I think it was the most important decision I made all four days.</p>
-          <p>The architecture was three layers. Primitive tokens at the bottom (raw color values, spacing scale, type ramp), semantic tokens in the middle (bg-canvas, text-primary, accent-default — names that describe meaning, not appearance), and component tokens on top (button-bg, card-radius, nav-blur — names that describe usage). Every color the marketing site would later use referenced a semantic token. Every semantic token referenced a primitive. That's three lookups for any given pixel, which sounds like overhead, but it's actually how a system stays sane when you start adding pages.</p>
-          <p>I put the system in a separate package inside the monorepo. Foundations sat in <code>packages/foundations</code>. STSL's brand bindings sat in <code>packages/brand-stsl</code>. The marketing app and UI kit both consumed those packages. That structure made one thing true: if I wanted to change a token (say, the cream canvas hue), I'd touch one file and every page would update. If I wanted to swap brands later, I'd add a second brand package and the system would adopt it.</p>
-          <p>Type was where I spent the most time. The brief had said "no Inter, no Roboto, no defaults". I went looking for typefaces with personality that weren't trying to look expensive. The display ended up being Plus Jakarta Sans at medium weight, which has a quiet authority and pairs well with serif italic. The body went to Geist, which is technical without being cold. Pull-quotes used Source Serif 4 italic, which has the slightly slanted warmth of editorial writing. Captions and code went to JetBrains Mono. Four typefaces, each pulling its weight.</p>
-          <figure class="pull-quote">
-            <p><span class="quote-script">T</span>he design system isn't a deliverable at the end, it's the load-bearing infrastructure on day one.</p>
-          </figure>
-          <p>Motion was the other token category that had to land on Day 1. I picked four easing curves and three durations and gave them names: ease-expressive for the soft cinematic curve, ease-snappy for click feedback, ease-natural for content reveal, and ease-precise for UI states. Then I locked them into a single CSS variable file. Every transition on the marketing site later referenced one of those four. Nothing freelanced.</p>
-          <p>By the end of Day 1, the design system docs page existed at <code>/design</code>. Empty marketing pages. No hero. No content. But every primitive that the rest of the build would need — Button, Link, Card, Field, Tabs, Accordion, Dialog, Tooltip, Select, Checkbox, Radio, Skeleton — had been built and demoed against the tokens. Day 2 onward, I never had to invent a new component. I just composed the ones already built.</p>
-          <p>That's why Day 1 looked the way it did.</p>
+          <div class="chapter-prose-rail">
+            <aside class="chapter-side">
+              <div class="chapter-side-frame">
+                <img src="media/mobile-1.jpg" alt="STSL on mobile, snap-scroll on the solutions tiles" loading="lazy" />
+              </div>
+              <p class="chapter-side-caption"><span class="csc-num">01</span><span>Mobile · solutions snap-scroll. The system on the smallest viewport.</span></p>
+            </aside>
+            <p>The bet on Day 1 was that the design system goes first, even though nobody sees it yet. No marketing pages, no homepage, no hero. Just tokens, primitives, and the first round of layout components. By the end of the day, the only thing on screen was a docs page that listed swatches, type scales, and a few buttons. Most people would call that a wasted Saturday. I think it was the most important decision I made all four days.</p>
+            <p>The architecture was three layers. Primitive tokens at the bottom (raw color values, spacing scale, type ramp), semantic tokens in the middle (bg-canvas, text-primary, accent-default, names that describe meaning, not appearance), and component tokens on top (button-bg, card-radius, nav-blur, names that describe usage). Every color the marketing site would later use referenced a semantic token. Every semantic token referenced a primitive. That's three lookups for any given pixel, which sounds like overhead, but it's actually how a system stays sane when you start adding pages.</p>
+            <p>I put the system in a separate package inside the monorepo. Foundations sat in <code>packages/foundations</code>. STSL's brand bindings sat in <code>packages/brand-stsl</code>. The marketing app and UI kit both consumed those packages. That structure made one thing true: if I wanted to change a token (say, the cream canvas hue), I'd touch one file and every page would update. If I wanted to swap brands later, I'd add a second brand package and the system would adopt it.</p>
+            <p>Type was where I spent the most time. The brief had said "no Inter, no Roboto, no defaults". I went looking for typefaces with personality that weren't trying to look expensive. The display ended up being Plus Jakarta Sans at medium weight, which has a quiet authority and pairs well with serif italic. The body went to Geist, which is technical without being cold. Pull-quotes used Source Serif 4 italic, which has the slightly slanted warmth of editorial writing. Captions and code went to JetBrains Mono. Four typefaces, each pulling its weight.</p>
+            <figure class="pull-quote">
+              <p><span class="quote-script">T</span>he design system isn't a deliverable at the end, it's the load-bearing infrastructure on day one.</p>
+            </figure>
+            <p>Motion was the other token category that had to land on Day 1. I picked four easing curves and three durations and gave them names: ease-expressive for the soft cinematic curve, ease-snappy for click feedback, ease-natural for content reveal, and ease-precise for UI states. Then I locked them into a single CSS variable file. Every transition on the marketing site later referenced one of those four. Nothing freelanced.</p>
+            <p>By the end of Day 1, the design system docs page existed at <code>/design</code>. Empty marketing pages. No hero. No content. But every primitive that the rest of the build would need (Button, Link, Card, Field, Tabs, Accordion, Dialog, Tooltip, Select, Checkbox, Radio, Skeleton) had been built and demoed against the tokens. Day 2 onward, I never had to invent a new component. I just composed the ones already built.</p>
+            <p>That's why Day 1 looked the way it did.</p>
+          </div>
           <figure class="live-frame live-frame--tabbed" data-lf-base="https://lobzyjay.github.io/Systemspec-website-redesign/design/">
             <div class="lf-tabs" role="tablist" aria-label="Design system sections">
               <button class="lf-tab is-active" type="button" role="tab" data-hash="#brand">Brand</button>
@@ -253,8 +262,8 @@
               <span class="lf-dot lf-dot--g" aria-hidden="true"></span>
               <span class="lf-url" data-lf-url>/design/#brand</span>
             </div>
-            <iframe class="lf-iframe" src="https://lobzyjay.github.io/Systemspec-website-redesign/design/#brand" title="Live artifact — design system" loading="eager"></iframe>
-            <figcaption><strong>Artifact</strong> — Design system. Five sections, one frame. Click a tab to navigate.</figcaption>
+            <iframe class="lf-iframe" src="https://lobzyjay.github.io/Systemspec-website-redesign/design/#brand" title="Live artifact, design system" loading="eager"></iframe>
+            <figcaption><strong>Artifact</strong>, Design system. Five sections, one frame. Click a tab to navigate.</figcaption>
           </figure>
         </div>
       </details>
@@ -265,16 +274,16 @@
           <span class="chapter-toggle" aria-hidden="true"></span>
         </summary>
         <div class="chapter-body">
-          <figure class="bleed-shot bleed-shot--scroll" data-reveal>
-            <div class="bleed-scroll-track">
-              <img src="media/mobile-2.jpg" alt="Mobile pathway tiles, snap-scroll" loading="lazy" />
-            </div>
-          </figure>
           <p>Two commits. That's all Day 2 produced. A mobile-responsive sweep on the design system docs page and a flatten-icon-tile fix that nobody would notice. From the outside, it looks like I lost a day.</p>
           <p>From the inside, Day 2 was the day the build didn't blow up.</p>
           <p>Most of Day 2 wasn't in code. It was in Figma. I went back to the brief, scrolled through the audit notes, and started laying out static frames of every marketing page at the right max-width, with the type stack from Day 1 plugged in. No interaction, no motion, no component logic. Just composition. What does the homepage hero feel like with the actual headline. What does the solutions page rhythm look like with three real paragraphs. Where does the footer sit on a 16-inch laptop versus a 13-inch.</p>
           <p>Doing this in static Figma instead of in code meant I caught the things that would've been three commits each in code. The wordmark needed a tighter scale on the homepage hero. The audience tiles needed two breakpoints, not one. The footer atmosphere had to read on dark mode without the green tint going neon.</p>
           <p>Day 2 saved me at least eight hours on Day 3. The rebuild went fast not because I worked fast on Day 3, but because I had already decided on Day 2 what the rebuild was going to be. The slow day is a discipline. It's the day where you don't ship, on purpose.</p>
+          <figure class="bleed-shot bleed-shot--scroll" data-reveal>
+            <div class="bleed-scroll-track">
+              <img src="media/mobile-2.jpg" alt="Mobile pathway tiles, snap-scroll" loading="lazy" />
+            </div>
+          </figure>
         </div>
       </details>
 
@@ -284,7 +293,7 @@
           <span class="chapter-toggle" aria-hidden="true"></span>
         </summary>
         <div class="chapter-body">
-          <p>Day 3 was 22 commits and most of them were fixing things. The single big one was tagged "STSL marketing site v1 — full rebuild" and it was the only commit that actually built new pages. Everything else was the system reacting to itself.</p>
+          <p>Day 3 was 22 commits and most of them were fixing things. The single big one was tagged "STSL marketing site v1, full rebuild" and it was the only commit that actually built new pages. Everything else was the system reacting to itself.</p>
           <p>Two of those reactions are worth telling, because they're the kind of moment that doesn't show up in a portfolio shot but tells you what the day actually was.</p>
           <p>The first was the GitHub Pages basePath. The site was deploying from <code>/docs</code> on the main branch, which means the public URL becomes <code>github.io/Systemspec-website-redesign/</code>. That subpath has to be threaded through every internal link, every asset reference, every fetch. Next.js's <code>basePath</code> handles most of it automatically, but static export plus client-side routing plus an aggressive transition layer meant the bridge wasn't watertight. Internal links that worked locally went 404 on the deploy. I wrote a tiny <code>route()</code> helper that fixed every internal href in one place and re-ran the export. That fix is exactly two characters longer than it needs to be. It works.</p>
           <p>The second was the bigger one, and the more honest one. I'd built a clever route-transition wrapper that intercepted clicks on internal links to add a soft cross-fade between pages. Nice idea. It also broke every internal link because the click interception fired before the browser could navigate, and the transition's promise resolution was racing the route push. The pages just stopped going anywhere.</p>
@@ -311,8 +320,8 @@
               <span class="lf-url">/contact</span>
               <a class="lf-open" href="https://lobzyjay.github.io/Systemspec-website-redesign/contact/" target="_blank" rel="noopener">Open ↗</a>
             </div>
-            <iframe src="https://lobzyjay.github.io/Systemspec-website-redesign/contact/" title="Live artifact — contact form" loading="lazy"></iframe>
-            <figcaption><strong>Artifact</strong> — Contact form. Day 3 ditched the Grid plumbing and rebuilt this in a dedicated layout.</figcaption>
+            <iframe src="https://lobzyjay.github.io/Systemspec-website-redesign/contact/" title="Live artifact, contact form" loading="lazy"></iframe>
+            <figcaption><strong>Artifact</strong>, Contact form. Day 3 ditched the Grid plumbing and rebuilt this in a dedicated layout.</figcaption>
           </figure>
         </div>
       </details>
@@ -339,8 +348,8 @@
               <span class="lf-url">/products/pouchii</span>
               <a class="lf-open" href="https://lobzyjay.github.io/Systemspec-website-redesign/products/pouchii/" target="_blank" rel="noopener">Open ↗</a>
             </div>
-            <iframe src="https://lobzyjay.github.io/Systemspec-website-redesign/products/pouchii/" title="Live artifact — Pouchii product page" loading="lazy"></iframe>
-            <figcaption><strong>Artifact</strong> — Product page. The full polish stack, splash to footer.</figcaption>
+            <iframe src="https://lobzyjay.github.io/Systemspec-website-redesign/products/pouchii/" title="Live artifact, Pouchii product page" loading="lazy"></iframe>
+            <figcaption><strong>Artifact</strong>, Product page. The full polish stack, splash to footer.</figcaption>
           </figure>
         </div>
       </details>
@@ -365,7 +374,7 @@
         </header>
         <div class="chapter-body">
           <p>Three deliverables, one repo. A 17-route marketing site that covers solutions, products, company, developers, and contact. A design system docs page that lays out tokens, primitives, patterns, and compositions in five sections. A static UI kit that lets a developer pull components without bringing the whole brand. All of it deployed on GitHub Pages from a single static export, free to host, ~30 seconds to redeploy.</p>
-          <p>The marketing site has light and dark mode that flip cleanly because the tokens are theme-aware. The dark mode isn't an inversion of the light mode — it's a separate brand binding that re-references the same primitive tokens. Cards that need to feel "always dramatic" got a frozen-dark surface utility that ignores theme. The rest of the site flips.</p>
+          <p>The marketing site has light and dark mode that flip cleanly because the tokens are theme-aware. The dark mode isn't an inversion of the light mode, it's a separate brand binding that re-references the same primitive tokens. Cards that need to feel "always dramatic" got a frozen-dark surface utility that ignores theme. The rest of the site flips.</p>
           <p>The design system page is the artifact I'm most proud of. It documents what the build is made of. Brand. Foundations. Primitives. Patterns. Compositions. Each section is interactive. You can hover the buttons, type in the fields, open the dialogs. It's a working artifact, not a screenshot reel.</p>
           <p>The UI kit is the smallest deliverable and the most useful one. It's a static HTML page that pulls the foundations package without the brand layer. A developer who wants STSL's primitives but not STSL's color palette can reach into the kit and take what they need.</p>
           <figure class="live-frame">
@@ -376,8 +385,8 @@
               <span class="lf-url">/developers</span>
               <a class="lf-open" href="https://lobzyjay.github.io/Systemspec-website-redesign/developers/" target="_blank" rel="noopener">Open ↗</a>
             </div>
-            <iframe src="https://lobzyjay.github.io/Systemspec-website-redesign/developers/" title="Live artifact — developers page" loading="lazy"></iframe>
-            <figcaption><strong>Artifact</strong> — Developer page. Code samples, API tour. The frozen-dark surfaces in action.</figcaption>
+            <iframe src="https://lobzyjay.github.io/Systemspec-website-redesign/developers/" title="Live artifact, developers page" loading="lazy"></iframe>
+            <figcaption><strong>Artifact</strong>, Developer page. Code samples, API tour. The frozen-dark surfaces in action.</figcaption>
           </figure>
         </div>
       </section>
@@ -431,8 +440,8 @@
         <dl class="how-built-list">
           <div><dt>Stack</dt><dd>Next.js 16 (static export), React 19, Tailwind 3, TypeScript 5</dd></div>
           <div><dt>Workspace</dt><dd>npm workspaces, foundations + brand-stsl + apps/web + apps/uikit</dd></div>
-          <div><dt>Type</dt><dd>Plus Jakarta Sans · Geist · Source Serif 4 · JetBrains Mono</dd></div>
-          <div><dt>Deploy</dt><dd>GitHub Pages from /docs on main</dd></div>
+          <div><dt>Tools</dt><dd>Figma · Claude · Photoshop</dd></div>
+          <div><dt>Deploy</dt><dd><a href="https://systemspec-website-redesign-web.vercel.app/" target="_blank" rel="noopener">systemspec-website-redesign-web.vercel.app ↗</a></dd></div>
           <div><dt>Repo</dt><dd><a href="https://github.com/LobzyJay/Systemspec-website-redesign" target="_blank" rel="noopener">github.com/LobzyJay/Systemspec-website-redesign</a></dd></div>
         </dl>
       </aside>

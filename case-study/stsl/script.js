@@ -31,7 +31,7 @@ const FRAG = `
   varying vec2  vUv;
 
   void main() {
-    vec3 bg = vec3(0.047, 0.047, 0.047);
+    vec3 bg = vec3(0.09, 0.09, 0.09);
     if (!u_ready) { gl_FragColor = vec4(bg, 1.0); return; }
     vec2 uv = vUv;
     vec2 toMouse = uv - u_mouse;
