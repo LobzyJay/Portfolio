@@ -479,6 +479,9 @@ body.is-loaded .cover-mockup img {
 
 /* ── Mobile (≤540px): collapse profile, full-strength top fade ── */
 @media (max-width: 540px) {
+  /* Laptop mockup hides on phones — never sits cleanly at this width.
+     Keep the WebGL ripple bg alone, the title and profile carry the cover. */
+  .cover-mockup { display: none; }
   .cover-mockup img { object-position: 50% 38%; }
   .cover-mockup::after {
     background:
