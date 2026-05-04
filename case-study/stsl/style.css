@@ -445,6 +445,11 @@ body.is-loaded .cover-mockup img {
 
 /* ── Tablet-mid (≤900px): stronger top fade for legibility ── */
 @media (max-width: 900px) {
+  /* Laptop mockup hides ≤900: at 768 the laptop frame overlaps the
+     cover title and there's no clean intermediate position between
+     desktop-full and phone-hidden. Title + profile + ripple bg carry
+     the cover at tablet portrait and below. */
+  .cover-mockup { display: none; }
   .cover-mockup img { object-position: 50% 35%; }
   .cover-mockup::after {
     background:
@@ -475,9 +480,8 @@ body.is-loaded .cover-mockup img {
 
 /* ── Mobile (≤540px): collapse profile, full-strength top fade ── */
 @media (max-width: 540px) {
-  /* Laptop mockup hides on phones — never sits cleanly at this width.
-     Keep the WebGL ripple bg alone, the title and profile carry the cover. */
-  .cover-mockup { display: none; }
+  /* Mockup already hidden at @900; this block keeps the rest of the
+     phone-only chrome adjustments. */
   .cover-mockup img { object-position: 50% 38%; }
   .cover-mockup::after {
     background:
