@@ -2,3 +2,7 @@
 Thumbs.db
 node_modules/
 *.log
+
+# Working folders
+.claude/
+Case study article/
