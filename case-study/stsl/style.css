@@ -7,14 +7,10 @@
 html {
   scroll-behavior: smooth;
   overscroll-behavior-y: none;
-  /* Kill any horizontal scroll caused by edge-clipping artefacts on mobile
-     (tooltips, scaled mockups, iframes that don't shrink quite small enough). */
-  overflow-x: hidden;
 }
 body {
   background: var(--bg);
   overscroll-behavior-y: none;
-  overflow-x: hidden;
   color: var(--text);
   font-family: var(--font-sans);
   font-weight: 300;
