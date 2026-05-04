@@ -7,10 +7,14 @@
 html {
   scroll-behavior: smooth;
   overscroll-behavior-y: none;
+  /* Kill any horizontal scroll caused by edge-clipping artefacts on mobile
+     (tooltips, scaled mockups, iframes that don't shrink quite small enough). */
+  overflow-x: hidden;
 }
 body {
   background: var(--bg);
   overscroll-behavior-y: none;
+  overflow-x: hidden;
   color: var(--text);
   font-family: var(--font-sans);
   font-weight: 300;
@@ -2199,7 +2203,24 @@ body.is-loaded .cover-mockup img {
   transform: translateX(-50%) translateY(0);
 }
 @media (max-width: 540px) {
-  .tip::after { max-width: 240px; font-size: 11px; padding: 8px 12px; }
+  /* Pin the pill to the prose run so it never clips off the viewport edge.
+     The translate-X centering doesn't survive narrow widths when the tip
+     word sits near the gutter. */
+  .tip::after {
+    left: 0;
+    right: auto;
+    width: min(86vw, 320px);
+    max-width: none;
+    font-size: 11px;
+    padding: 8px 12px;
+    transform: translateX(0) translateY(4px);
+  }
+  .tip:hover::after,
+  .tip:focus::after {
+    transform: translateX(0) translateY(0);
+  }
+  /* Hide the centred caret on mobile — pill is no longer centred on the word. */
+  .tip::before { display: none; }
 }
 
 /* ============================================================
