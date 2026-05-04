@@ -367,6 +367,58 @@ a { text-decoration: none; color: inherit; }
   white-space: nowrap;
 }
 
+/* ── Hero credits row — press credit + case study link ─────── */
+.hero-credits {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-8);
+}
+.hero-credits .press-credit { margin-bottom: 0; }
+
+.case-study-credit {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  text-decoration: none;
+  width: fit-content;
+  padding: clamp(8px, 1vh, 12px) clamp(10px, 1vw, 16px);
+  border: 0.5px solid rgba(255, 255, 255, 0.18);
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.04);
+  transition: background 0.28s ease, border-color 0.28s ease, transform 0.28s var(--ease-back);
+}
+.case-study-credit:hover {
+  background: rgba(228, 2, 2, 0.10);
+  border-color: rgba(228, 2, 2, 0.45);
+  transform: translateY(-1px);
+}
+.csc-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+  box-shadow: 0 0 6px rgba(228, 2, 2, 0.55);
+}
+.csc-label {
+  font-family: var(--font-sans);
+  font-weight: var(--fw-light);
+  font-size: var(--text-base);
+  color: var(--text-muted);
+  white-space: nowrap;
+  opacity: 0.6;
+  letter-spacing: 0.02em;
+}
+.csc-name {
+  font-family: var(--font-sans);
+  font-weight: var(--fw-regular);
+  font-size: var(--text-base);
+  color: var(--text);
+  white-space: nowrap;
+}
+
 /* ── Profile bottom: buttons + tools locked to toolbox width ── */
 /* fit-content on the wrapper means the toolbox (no % width) sets
    the reference width; buttons (width:100%) fill that same size. */
