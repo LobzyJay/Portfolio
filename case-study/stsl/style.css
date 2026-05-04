@@ -1630,6 +1630,10 @@ body.is-loaded .cover-mockup img {
 @media (max-width: 720px) {
   .end-title { white-space: normal; }
   .article-end__row { gap: 24px; }
+  /* Row flips to flex-direction: column at <=720, which makes the
+     copy's `flex: 1 1 360px` basis apply to HEIGHT instead of width.
+     Reset to auto so the copy block sizes to its text content. */
+  .article-end__copy { flex: 0 0 auto; }
 }
 
 /* Magnetic pill button — mouse-follow via JS, color/scale via CSS */
