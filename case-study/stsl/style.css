@@ -553,11 +553,21 @@ body.is-loaded .cover-mockup img {
   border-radius: 0;
   padding: clamp(56px, 9vh, 120px) clamp(28px, 3vw, 56px);
   position: relative;
+  /* overflow-x: clip contains tooltip pseudo-elements (which absolutely
+     position past their inline .tip parents) and any other rogue overflow,
+     WITHOUT creating a scroll context — sticky positioning still works. */
+  overflow-x: clip;
 
   display: grid;
-  grid-template-columns: repeat(var(--grid-cols), 1fr);
+  /* minmax(0, 1fr) prevents intrinsic-size children (esp. wide images
+     in .bleed-shot and .bleed-shot--scroll) from pushing the track
+     wider than the viewport on mobile. Plain 1fr resolves to
+     minmax(auto, 1fr) which honours min-content. */
+  grid-template-columns: repeat(var(--grid-cols), minmax(0, 1fr));
   column-gap: var(--grid-gap);
   row-gap: 0;
+  /* Clamp the body itself so a stray wide child can never blow it out */
+  min-width: 0;
 }
 
 /* Chapter wrappers vanish — children participate in the article-body grid */
@@ -1064,9 +1074,12 @@ body.is-loaded .cover-mockup img {
 /* Accordion body IS the grid. 12 cols, full width of the article. */
 .chapter--accordion > .chapter-body {
   display: grid;
-  grid-template-columns: repeat(12, 1fr);
+  /* minmax(0, 1fr) prevents intrinsic-size children (wide images, etc.)
+     from blowing the track wider than the viewport. */
+  grid-template-columns: repeat(12, minmax(0, 1fr));
   column-gap: var(--grid-gap);
   width: 100%;
+  min-width: 0;
   padding-bottom: clamp(56px, 8vh, 96px);
   animation: accordion-fade 0.5s var(--ease-expo);
 }
@@ -1140,8 +1153,9 @@ body.is-loaded .cover-mockup img {
 .chapter--swiss > .chapter-body > .chapter-prose-rail {
   grid-column: 1 / -1;
   display: grid;
-  grid-template-columns: repeat(12, 1fr);
+  grid-template-columns: repeat(12, minmax(0, 1fr));
   column-gap: var(--grid-gap);
+  min-width: 0;
   row-gap: 0;
 }
 .chapter--swiss .chapter-prose-rail > p,
@@ -1231,9 +1245,10 @@ body.is-loaded .cover-mockup img {
 .chapter--swiss > .chapter-body {
   grid-column: 1 / -1;
   display: grid;
-  grid-template-columns: repeat(12, 1fr);
+  grid-template-columns: repeat(12, minmax(0, 1fr));
   column-gap: var(--grid-gap);
   width: 100%;
+  min-width: 0;
 }
 .chapter--swiss > .chapter-body > p,
 .chapter--swiss > .chapter-body > ul,
@@ -1293,8 +1308,39 @@ body.is-loaded .cover-mockup img {
 
 /* Mobile: side-rail collapses inline */
 @media (max-width: 900px) {
-  .chapter--swiss { display: block; }
+  .chapter--swiss {
+    display: block;
+    /* When the chapter switches from `display: contents` (lets summary
+       and body participate directly in article-body's grid) to a block
+       container, it needs to span the full grid track itself — otherwise
+       it auto-places into a single 1/12 cell and the title wraps one
+       letter per line. */
+    grid-column: 1 / -1;
+  }
   .chapter--swiss > .chapter-head { margin-top: clamp(80px, 12vh, 128px); }
+  /* CRITICAL: this re-asserts the collapse from the earlier @900 block
+     which loses the cascade because the unconditional `display: grid`
+     declaration at the swiss-section block sits AFTER it in source order.
+     Without this, chapter-body stays a 12-col grid on mobile and forces
+     1228px page width. */
+  .chapter--swiss > .chapter-body {
+    display: block;
+    width: 100%;
+    grid-template-columns: none;
+  }
+  .chapter--swiss > .chapter-body > p,
+  .chapter--swiss > .chapter-body > ul,
+  .chapter--swiss > .chapter-body > ol,
+  .chapter--swiss > .chapter-body > .demo-card,
+  .chapter--swiss > .chapter-body > .live-frame,
+  .chapter--swiss > .chapter-body > .live-frame--tabbed,
+  .chapter--swiss > .chapter-body > .prompt-callout,
+  .chapter--swiss > .chapter-body > .pull-quote,
+  .chapter--swiss > .chapter-body > .chapter-prose-rail {
+    grid-column: unset;
+    max-width: none;
+    width: auto;
+  }
   .chapter--swiss > .chapter-side {
     position: static;
     margin-top: clamp(28px, 4vh, 44px);
@@ -1308,7 +1354,7 @@ body.is-loaded .cover-mockup img {
 /* Mobile collapse — single col, prose fills width */
 @media (max-width: 720px) {
   .article-body {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     column-gap: 0;
   }
   .chapter-head,
