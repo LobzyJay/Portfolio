@@ -475,6 +475,9 @@ body.is-loaded .cover-mockup img {
 
 /* ── Mobile (≤540px): collapse profile, full-strength top fade ── */
 @media (max-width: 540px) {
+  /* Laptop mockup hides on phones — never sits cleanly at this width.
+     Keep the WebGL ripple bg alone, the title and profile carry the cover. */
+  .cover-mockup { display: none; }
   .cover-mockup img { object-position: 50% 38%; }
   .cover-mockup::after {
     background:
@@ -2199,7 +2202,24 @@ body.is-loaded .cover-mockup img {
   transform: translateX(-50%) translateY(0);
 }
 @media (max-width: 540px) {
-  .tip::after { max-width: 240px; font-size: 11px; padding: 8px 12px; }
+  /* Pin the pill to the prose run so it never clips off the viewport edge.
+     The translate-X centering doesn't survive narrow widths when the tip
+     word sits near the gutter. */
+  .tip::after {
+    left: 0;
+    right: auto;
+    width: min(86vw, 320px);
+    max-width: none;
+    font-size: 11px;
+    padding: 8px 12px;
+    transform: translateX(0) translateY(4px);
+  }
+  .tip:hover::after,
+  .tip:focus::after {
+    transform: translateX(0) translateY(0);
+  }
+  /* Hide the centred caret on mobile — pill is no longer centred on the word. */
+  .tip::before { display: none; }
 }
 
 /* ============================================================
