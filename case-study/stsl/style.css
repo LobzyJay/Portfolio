@@ -443,17 +443,49 @@ body.is-loaded .cover-mockup img {
   .cover-script { font-size: clamp(3.1rem, 10.4vw, 6.4rem); }
 }
 
-/* ── Tablet-mid (≤900px): stronger top fade for legibility ── */
+/* ── iPad Pro 12.9 portrait window (901–1024): the desktop scale (1.10)
+   reads small at this width; bump it so the laptop has presence. ── */
+@media (min-width: 901px) and (max-width: 1024px) {
+  .cover-mockup img {
+    transform: scale(1.7);
+    transform-origin: center bottom;
+  }
+  body.is-loaded .cover-mockup img {
+    transform: scale(1.55);
+  }
+}
+
+/* ── Tablet-mid (≤900px): scale up + shift left so the laptop sits
+   centred on screen; right-weight of the source frame overflows off ── */
 @media (max-width: 900px) {
-  /* Laptop mockup hides ≤900: at 768 the laptop frame overlaps the
-     cover title and there's no clean intermediate position between
-     desktop-full and phone-hidden. Title + profile + ripple bg carry
-     the cover at tablet portrait and below. */
-  .cover-mockup { display: none; }
-  .cover-mockup img { object-position: 50% 35%; }
+  /* The source image carries more visual weight on the right (perforated
+     surface, shadow). Shift the crop window LEFT (object-position: 32%)
+     so the laptop screen ends up roughly centred on the viewport, then
+     scale up so the laptop reads at the right size for tablet portrait.
+     Image base is hooked to the cover's base via inset: auto 0 0 0. */
+  .cover-mockup img {
+    inset: auto 0 0 0;
+    width: 100%;
+    height: 80%;
+    left: 0;
+    object-fit: cover;
+    object-position: 65% 32%;
+    /* Same scale as iPad Pro range (901-1024) so Mini/Air read at the
+       same laptop size as Pro — proportional across the tablet tier. */
+    transform: scale(1.7);
+    transform-origin: center bottom;
+  }
+  body.is-loaded .cover-mockup img {
+    transform: scale(1.55);
+  }
   .cover-mockup::after {
     background:
-      linear-gradient(to bottom, rgba(12,12,12,0.85) 0%, rgba(12,12,12,0.5) 14%, rgba(12,12,12,0.15) 30%, rgba(12,12,12,0) 50%, rgba(12,12,12,0.92) 95%);
+      /* left-to-right title-protection gradient */
+      linear-gradient(to right, rgba(12,12,12,0.72) 0%, rgba(12,12,12,0.18) 36%, rgba(12,12,12,0) 60%),
+      /* top-darken for profile readability — held deeper through ~28% so the
+         scaled-up laptop image (transform: scale(2.4)) doesn't bleed bright
+         pixels into the profile-card / CTA / tools-bar zone at 720–900px */
+      linear-gradient(to bottom, rgba(12,12,12,0.92) 0%, rgba(12,12,12,0.78) 12%, rgba(12,12,12,0.55) 22%, rgba(12,12,12,0.22) 32%, rgba(12,12,12,0.05) 42%, rgba(12,12,12,0) 52%, rgba(12,12,12,0.92) 95%);
   }
   .cover-profile { width: calc(100% - 40px); top: clamp(20px, 3vh, 36px); }
   .profile-card { gap: 16px; }
@@ -480,12 +512,30 @@ body.is-loaded .cover-mockup img {
 
 /* ── Mobile (≤540px): collapse profile, full-strength top fade ── */
 @media (max-width: 540px) {
-  /* Mockup already hidden at @900; this block keeps the rest of the
-     phone-only chrome adjustments. */
-  .cover-mockup img { object-position: 50% 38%; }
+  /* Phone tier (covers 14 Pro Max @ 430 too): smaller scale than tablet
+     so the laptop doesn't dominate the title, but still enlarged + left-
+     shifted so the laptop screen reads as the focal point. */
+  .cover-mockup img {
+    width: 100%;
+    height: 64%;
+    /* Use object-position 70% (instead of translateX) to visually shift
+       the laptop toward the left of the viewport: cover crops more of
+       the right of source, so the laptop sits in the left half of the
+       visible window. */
+    object-fit: cover;
+    object-position: 70% 36%;
+    /* translateX lives BEFORE scale in the chain so it stays an exact
+       pixel shift in screen pixels (translate-after-scale would
+       multiply by the scale factor). */
+    transform: translateX(10px) scale(1.23);
+  }
+  body.is-loaded .cover-mockup img {
+    transform: translateX(10px) scale(1.11);
+  }
   .cover-mockup::after {
     background:
-      linear-gradient(to bottom, rgba(12,12,12,0.92) 0%, rgba(12,12,12,0.65) 18%, rgba(12,12,12,0.2) 36%, rgba(12,12,12,0) 55%, rgba(12,12,12,0.96) 96%);
+      linear-gradient(to right, rgba(12,12,12,0.82) 0%, rgba(12,12,12,0.25) 42%, rgba(12,12,12,0) 65%),
+      linear-gradient(to bottom, rgba(12,12,12,0.92) 0%, rgba(12,12,12,0.55) 16%, rgba(12,12,12,0.15) 36%, rgba(12,12,12,0) 55%, rgba(12,12,12,0.96) 96%);
   }
   .cover #bg-canvas { opacity: 0.32; }
   .cover-profile {
@@ -499,10 +549,22 @@ body.is-loaded .cover-mockup img {
   .profile-meta { padding: 0; gap: 6px; width: 100%; }
   .profile-meta .social-icons { margin-top: 8px; flex-wrap: wrap; gap: 12px; }
   .social-icon { width: 20px; height: 20px; opacity: 0.7; }
-  .btn-pill-group { gap: 4px; }
-  .btn-pill { font-size: 0.86rem; height: 40px; padding: 0 14px; min-width: 0; }
-  .btn-pill--contact { flex: 2 1 0; }
-  .btn-pill--resume  { flex: 1 1 0; }
+  /* Buttons + tools share the same horizontal footprint on mobile —
+     button group goes content-shaped so its width equals the tools-bar
+     row below it. cta-group + profile-bottom also collapse to
+     fit-content so the row hugs its labels. */
+  .profile-bottom { width: fit-content; }
+  .cta-group { width: fit-content; }
+  .btn-pill-group { gap: 6px; width: fit-content; }
+  .btn-pill {
+    font-size: 0.92rem;
+    height: 44px;
+    padding: 0 16px;
+    min-width: 0;
+    flex: 0 0 auto;
+  }
+  .btn-pill--contact,
+  .btn-pill--resume { flex: 0 0 auto; }
   .tools-bar {
     gap: 6px;
     padding: 5px 10px;
@@ -870,6 +932,14 @@ body.is-loaded .cover-mockup img {
 .bleed-scroll-track:has(> img:only-child) {
   /* When there's a single image, drop padding so it fills the frame edge-to-edge */
   padding: 0;
+  /* Single image = nothing to scroll. Kill the horizontal scrollbar
+     (was rendering as a white line at the bottom of the mockup frame
+     just above Day 3's accordion). */
+  overflow-x: hidden;
+  scrollbar-width: none;
+}
+.bleed-scroll-track:has(> img:only-child)::-webkit-scrollbar {
+  display: none;
 }
 .bleed-scroll-track:has(> img:only-child) img {
   border-radius: 0;
@@ -1454,10 +1524,23 @@ body.is-loaded .cover-mockup img {
      sit beside a thin column of italic. */
   .pull-quote p { font-size: clamp(20px, 5.4vw, 24px); }
   /* Article-end padding tighter for narrow widths */
-  .article-end { padding: clamp(32px, 5vh, 56px) clamp(20px, 4vw, 32px); }
+  .article-end {
+    padding: clamp(32px, 5vh, 56px) clamp(20px, 4vw, 32px);
+    /* Match the how-built card's outer width — both sit on the same
+       column so their edges align. how-built uses page-x + article-
+       body's mobile padding-x (clamp 16-28); mirror that here. */
+    margin-left: calc(var(--page-x) + clamp(16px, 4vw, 28px));
+    margin-right: calc(var(--page-x) + clamp(16px, 4vw, 28px));
+  }
   .end-title { font-size: clamp(1.5rem, 7vw, 2rem); }
-  /* Magnetic button: don't let it stretch to full row */
-  .article-end__row { flex-direction: column; align-items: flex-start; gap: 20px; }
+  /* Centred copy block on phone, button under it */
+  .article-end__row {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 20px;
+  }
+  .article-end__copy { text-align: center; }
   .magnetic-btn { gap: 12px; padding: 12px 18px; font-size: 14px; }
   .mb-arrow { width: 30px; height: 30px; }
 }
@@ -1887,7 +1970,9 @@ body.is-loaded .cover-mockup img {
      desktop top:108px lands inside the iframe rather than over content.
      Pin it just below the chrome bar with a generous offset. */
   .live-frame--tabbed .lf-shield { top: auto; bottom: 14px; right: 14px; }
-  .live-frame .lf-shield { padding: 6px 12px; font-size: 11px; }
+  /* Keep font size tight on phones, but DON'T override padding here — the
+     coarse-pointer rule below sets a 44px tap target. */
+  .live-frame .lf-shield { font-size: 11px; }
 }
 .live-frame figcaption {
   font-family: var(--font-sans);
@@ -2200,6 +2285,157 @@ body.is-loaded .cover-mockup img {
 }
 
 /* ============================================================
+   LINE-BY-LINE REVEAL — chapter titles split into words.
+   JS injects .reveal-word spans; mask hides them until in view.
+   Stagger handled via per-word --i index.
+   ============================================================ */
+[data-reveal-lines] {
+  /* No outer mask — let the script clip per-word so layout
+     doesn't shift. Just sets up children. */
+  --reveal-stagger: 38ms;
+  --reveal-duration: 760ms;
+}
+.reveal-word {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  /* preserve spaces between words by keeping inline whitespace */
+}
+.reveal-word > span {
+  display: inline-block;
+  transform: translateY(108%);
+  opacity: 0;
+  transition:
+    transform var(--reveal-duration) var(--ease-expo),
+    opacity calc(var(--reveal-duration) * 0.7) var(--ease-expo);
+  transition-delay: calc(var(--i, 0) * var(--reveal-stagger));
+  will-change: transform, opacity;
+}
+[data-reveal-lines].is-visible .reveal-word > span {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* Paragraph cascade — gentle stagger on .chapter-body > p when
+   the chapter enters view. Subtle, editorial pacing. */
+.chapter-body > p[data-reveal-p],
+.chapter-body > ul[data-reveal-p],
+.chapter-body > ol[data-reveal-p] {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity 0.68s var(--ease-expo),
+    transform 0.68s var(--ease-expo);
+  transition-delay: calc(var(--i, 0) * 70ms);
+  will-change: opacity, transform;
+}
+.chapter-body > p[data-reveal-p].is-visible,
+.chapter-body > ul[data-reveal-p].is-visible,
+.chapter-body > ol[data-reveal-p].is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-word > span,
+  .chapter-body > p[data-reveal-p],
+  .chapter-body > ul[data-reveal-p],
+  .chapter-body > ol[data-reveal-p] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* ============================================================
+   MOUSE-AWARE INTERACTIONS
+   Gated to fine-pointer hover devices. Mobile falls back to
+   :active press states declared further down.
+   ============================================================ */
+@media (hover: hover) and (pointer: fine) {
+  /* Parallax tilt on image frames — subtle, ≤6deg */
+  .bleed-shot,
+  .chapter-side-frame {
+    transform-style: preserve-3d;
+    perspective: 1200px;
+  }
+  .bleed-shot img,
+  .chapter-side-frame img {
+    transition: transform 0.5s var(--ease-expo);
+    will-change: transform;
+  }
+  .bleed-shot.is-tilting img,
+  .chapter-side-frame.is-tilting img {
+    transition: transform 0.18s linear;
+  }
+
+  /* Pull-quote spotlight — radial gradient follows cursor */
+  .pull-quote {
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.4s var(--ease-expo);
+  }
+  .pull-quote::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(
+      260px circle at var(--mx, 50%) var(--my, 50%),
+      rgba(228, 2, 2, 0.10),
+      rgba(228, 2, 2, 0) 65%
+    );
+    opacity: 0;
+    transition: opacity 0.45s var(--ease-expo);
+    z-index: 0;
+  }
+  .pull-quote.is-lit::after { opacity: 1; }
+  .pull-quote > * { position: relative; z-index: 1; }
+
+  /* Magnetic shield pill — translate via --mag-x/--mag-y */
+  .lf-shield {
+    transform: translate(var(--mag-x, 0px), var(--mag-y, 0px));
+  }
+  .lf-shield.is-magnetic {
+    transition: transform 0.18s linear,
+                background 0.22s var(--ease-expo),
+                opacity 0.22s var(--ease-expo);
+  }
+  .lf-shield:hover {
+    /* Keep existing hover tone, but compose translate */
+    transform: translate(var(--mag-x, 0px), calc(var(--mag-y, 0px) - 1px));
+  }
+}
+
+/* Mobile / coarse-pointer fallbacks — tactile press feedback */
+@media (hover: none), (pointer: coarse) {
+  .bleed-shot,
+  .chapter-side-frame {
+    transition: transform 0.32s var(--ease-expo), box-shadow 0.32s var(--ease-expo);
+  }
+  .bleed-shot:active,
+  .chapter-side-frame:active {
+    transform: scale(0.985);
+  }
+  .pull-quote {
+    transition: background 0.3s var(--ease-expo), border-color 0.3s var(--ease-expo);
+  }
+  .pull-quote:active {
+    background: rgba(228, 2, 2, 0.04);
+  }
+  .lf-shield {
+    transition: transform 0.22s var(--ease-expo), background 0.22s var(--ease-expo);
+    /* Touch tap target: 44px min height per WCAG 2.5.5. Padding bumped to
+       compose a comfortable hit area without overpowering the pill visually. */
+    min-height: 44px;
+    padding: 10px 16px;
+  }
+  .lf-shield:active {
+    transform: scale(0.96);
+  }
+}
+
+/* ============================================================
    TOOLTIP — inline term with hover-revealed definition pill.
    Currently only used inside Day 0 (.chapter--accordion) prose.
    ============================================================ */
@@ -2264,24 +2500,29 @@ body.is-loaded .cover-mockup img {
 /* Make focus ring readable on tap focus too */
 .tip:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 2px; }
 @media (max-width: 540px) {
-  /* Pin the pill to the prose run so it never clips off the viewport edge.
-     The translate-X centering doesn't survive narrow widths when the tip
-     word sits near the gutter. */
+  /* On phones the pill becomes a bottom-anchored toast (viewport-fixed)
+     so it can NEVER clip off the side regardless of where the tip sits
+     in the line. Anchored bottom-centre with a wide max so long copy
+     (like the Editorial Luxury blurb) reads in 2-3 lines. */
   .tip::after {
-    left: 0;
-    right: auto;
-    width: min(86vw, 320px);
+    position: fixed;
+    bottom: 20px;
+    left: 16px;
+    right: 16px;
+    width: auto;
     max-width: none;
-    font-size: 11px;
-    padding: 8px 12px;
-    transform: translateX(0) translateY(4px);
+    font-size: 12px;
+    padding: 12px 16px;
+    line-height: 1.5;
+    transform: translateY(8px);
+    z-index: 100;
   }
   .tip:hover::after,
   .tip:focus::after,
   .tip.is-active::after {
-    transform: translateX(0) translateY(0);
+    transform: translateY(0);
   }
-  /* Hide the centred caret on mobile — pill is no longer centred on the word. */
+  /* Hide the caret on mobile — pill is no longer centred on the trigger. */
   .tip::before { display: none; }
 }
 

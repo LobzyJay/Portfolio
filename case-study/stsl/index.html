@@ -54,7 +54,7 @@
       <li><button type="button" class="day-rail-node" data-target="ch-03-day-1-system-before-pages" aria-label="Day 1, system before pages"><span class="dr-num">01</span><span class="dr-label">System</span></button></li>
       <li><button type="button" class="day-rail-node" data-target="ch-04-day-2-the-slow-day" aria-label="Day 2, the slow day"><span class="dr-num">02</span><span class="dr-label">Slow day</span></button></li>
       <li><button type="button" class="day-rail-node" data-target="ch-05-day-3-the-full-rebuild" aria-label="Day 3, the full rebuild"><span class="dr-num">03</span><span class="dr-label">Rebuild</span></button></li>
-      <li><button type="button" class="day-rail-node" data-target="ch-06-day-4-the-polish-that-ships" aria-label="Day 4, polish that ships"><span class="dr-num">04</span><span class="dr-label">Polish</span></button></li>
+      <li><button type="button" class="day-rail-node" data-target="ch-06-day-4-the-slow-polish" aria-label="Day 4, the slow polish"><span class="dr-num">04</span><span class="dr-label">Polish</span></button></li>
     </ol>
   </nav>
 
@@ -238,7 +238,7 @@
             </aside>
             <p>The bet on Day 1 was that the design system goes first, even though nobody sees it yet. No marketing pages, no homepage, no hero. Just tokens, primitives, and the first round of layout components. By the end of the day, the only thing on screen was a docs page that listed swatches, type scales, and a few buttons. Most people would call that a wasted Saturday. I think it was the most important decision I made all four days.</p>
             <p>The architecture was three layers. Primitive tokens at the bottom (raw color values, spacing scale, type ramp), semantic tokens in the middle (bg-canvas, text-primary, accent-default, names that describe meaning, not appearance), and component tokens on top (button-bg, card-radius, nav-blur, names that describe usage). Every color the marketing site would later use referenced a semantic token. Every semantic token referenced a primitive. That's three lookups for any given pixel, which sounds like overhead, but it's actually how a system stays sane when you start adding pages.</p>
-            <p>I put the system in a separate package inside the monorepo. Foundations sat in <code>packages/foundations</code>. STSL's brand bindings sat in <code>packages/brand-stsl</code>. The marketing app and UI kit both consumed those packages. That structure made one thing true: if I wanted to change a token (say, the cream canvas hue), I'd touch one file and every page would update. If I wanted to swap brands later, I'd add a second brand package and the system would adopt it.</p>
+            <p>I split the system into its own workspace, separate from the marketing app. The foundations layer (raw values) lived in one folder, the STSL brand bindings (cream, charcoal, accent red, the typeface stack) in another. Marketing pages and the UI kit both pulled from those two. That structure made one thing true: if I wanted to change a token, say the cream canvas hue, I'd touch one file and every page would update. If I wanted to swap brands later, I'd add a second brand binding and the system would adopt it.</p>
             <p>Type was where I spent the most time. The brief had said "no Inter, no Roboto, no defaults". I went looking for typefaces with personality that weren't trying to look expensive. The display ended up being Plus Jakarta Sans at medium weight, which has a quiet authority and pairs well with serif italic. The body went to Geist, which is technical without being cold. Pull-quotes used Source Serif 4 italic, which has the slightly slanted warmth of editorial writing. Captions and code went to JetBrains Mono. Four typefaces, each pulling its weight.</p>
             <figure class="pull-quote">
               <p><span class="quote-script">T</span>he design system isn't a deliverable at the end, it's the load-bearing infrastructure on day one.</p>
@@ -295,7 +295,7 @@
         <div class="chapter-body">
           <p>Day 3 was 22 commits and most of them were fixing things. The single big one was tagged "STSL marketing site v1, full rebuild" and it was the only commit that actually built new pages. Everything else was the system reacting to itself.</p>
           <p>Two of those reactions are worth telling, because they're the kind of moment that doesn't show up in a portfolio shot but tells you what the day actually was.</p>
-          <p>The first was the GitHub Pages basePath. The site was deploying from <code>/docs</code> on the main branch, which means the public URL becomes <code>github.io/Systemspec-website-redesign/</code>. That subpath has to be threaded through every internal link, every asset reference, every fetch. Next.js's <code>basePath</code> handles most of it automatically, but static export plus client-side routing plus an aggressive transition layer meant the bridge wasn't watertight. Internal links that worked locally went 404 on the deploy. I wrote a tiny <code>route()</code> helper that fixed every internal href in one place and re-ran the export. That fix is exactly two characters longer than it needs to be. It works.</p>
+          <p>The first was a deploy-path issue. The site lived under a subpath on the host, which meant every internal link, every asset reference, every fetch had to be aware of that prefix. The framework handles most of it, but the combination of static export, client-side routing, and an aggressive transition layer meant the bridge wasn't watertight. Links that worked locally returned 404 on the deploy. I wrote a tiny helper that rewrote every internal href in one place and re-ran the export. That fix is exactly two characters longer than it needs to be. It works.</p>
           <p>The second was the bigger one, and the more honest one. I'd built a clever route-transition wrapper that intercepted clicks on internal links to add a soft cross-fade between pages. Nice idea. It also broke every internal link because the click interception fired before the browser could navigate, and the transition's promise resolution was racing the route push. The pages just stopped going anywhere.</p>
           <figure class="pull-quote">
             <p><span class="quote-script">A</span> clever abstraction broke real links, and I had to crawl back into the static HTML and rewrite hrefs by hand.</p>
@@ -326,9 +326,9 @@
         </div>
       </details>
 
-      <details class="chapter chapter--accordion" id="ch-06-day-4-the-polish-that-ships" data-reveal>
+      <details class="chapter chapter--accordion" id="ch-06-day-4-the-slow-polish" data-reveal>
         <summary class="chapter-head">
-          <h2 class="chapter-title">Day 4, The polish that ships</h2>
+          <h2 class="chapter-title">Day 4, The slow polish</h2>
           <span class="chapter-toggle" aria-hidden="true"></span>
         </summary>
         <div class="chapter-body">
@@ -441,7 +441,7 @@
           <div><dt>Stack</dt><dd>Next.js 16 (static export), React 19, Tailwind 3, TypeScript 5</dd></div>
           <div><dt>Workspace</dt><dd>npm workspaces, foundations + brand-stsl + apps/web + apps/uikit</dd></div>
           <div><dt>Tools</dt><dd>Figma · Claude · Photoshop</dd></div>
-          <div><dt>Deploy</dt><dd><a href="https://systemspec-website-redesign-web.vercel.app/" target="_blank" rel="noopener">systemspec-website-redesign-web.vercel.app ↗</a></dd></div>
+          <div><dt>Deploy</dt><dd><a href="https://systemspec-website-redesign-web.vercel.app/" target="_blank" rel="noopener">systemspec-website-redesign-web.vercel.app</a></dd></div>
           <div><dt>Repo</dt><dd><a href="https://github.com/LobzyJay/Systemspec-website-redesign" target="_blank" rel="noopener">github.com/LobzyJay/Systemspec-website-redesign</a></dd></div>
         </dl>
       </aside>
