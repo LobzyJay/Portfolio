@@ -2299,13 +2299,20 @@ body.is-loaded .cover-mockup img {
    ============================================================ */
 .tip {
   position: relative;
-  border-bottom: 1px dotted var(--accent);
-  cursor: help;
+  /* Make tips obviously interactive for first-time readers / new
+     designers — accent-red colour by default plus a thicker dotted
+     underline reads as 'click/tap me' without needing a separate
+     icon or affordance. */
+  color: var(--accent);
   font-weight: 500;
-  color: inherit;
-  transition: color 0.22s var(--ease-expo);
+  border-bottom: 2px dotted var(--accent);
+  padding-bottom: 1px;
+  cursor: help;
+  transition: opacity 0.22s var(--ease-expo);
 }
-.tip:hover { color: var(--accent); }
+.tip:hover,
+.tip:focus,
+.tip.is-active { opacity: 0.78; }
 .tip::before,
 .tip::after {
   pointer-events: none;
@@ -2331,7 +2338,11 @@ body.is-loaded .cover-mockup img {
   left: 50%;
   transform: translateX(-50%) translateY(4px);
   width: max-content;
-  max-width: 320px;
+  /* Cap pill width so it stays bounded by the prose column on desktop
+     and never wider than 80vw on smaller windows. The article-body has
+     overflow-x: clip as a backstop so the pill never steps out of the
+     body frame, even if the tip sits very close to the column edge. */
+  max-width: min(280px, 80vw);
   background: var(--accent);
   color: #ffffff;
   padding: 10px 14px;
