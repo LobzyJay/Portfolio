@@ -41,11 +41,17 @@ const FRAG = `
     uv += normalize(toMouse + 0.0001) * rings * falloff * u_strength;
     uv.x += sin(uv.y * 7.0 + u_time * 0.32) * 0.003;
     uv.y += cos(uv.x * 5.5 + u_time * 0.25) * 0.0025;
-    vec2 texUv = uv * u_uvRepeat + u_uvOffset;
+    /* Scale the pattern OUT so each tile reads bigger on screen
+       (multiply uvRepeat by 0.65 = ~1.5x larger tiles). */
+    vec2 texUv = uv * u_uvRepeat * 0.65 + u_uvOffset;
     vec4 tex = texture2D(u_texture, texUv);
-    vec3 color = mix(tex.rgb, bg, 0.95);
+    /* Mix factor 0.85 instead of 0.95 — pattern triangles sit at
+       ~15% intensity over the bg instead of a barely-visible 5%. */
+    vec3 color = mix(tex.rgb, bg, 0.85);
     float grad = smoothstep(0.0, 0.75, vUv.y);
-    color *= mix(0.25, 1.0, grad);
+    /* Lift the top-darken floor (0.25 -> 0.4) so the pattern still
+       reads near the profile sidebar. */
+    color *= mix(0.4, 1.0, grad);
     gl_FragColor = vec4(color, 1.0);
   }
 `;
@@ -606,6 +612,241 @@ function initReveal() {
   targets.forEach(el => io.observe(el));
 }
 
+/* ── 10b. CHAPTER TITLE LINE/WORD REVEAL ──────────────────── */
+/* Splits chapter titles into per-word spans, then triggers a
+   staggered y-translate when the title enters the viewport.
+   Calmer than typical kinetic typography — small Y, soft expo. */
+function initChapterTitleReveal() {
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!('IntersectionObserver' in window)) return;
+
+  const titles = document.querySelectorAll('.chapter-title');
+  if (!titles.length) return;
+
+  titles.forEach((title) => {
+    // Skip titles already wrapped (defensive against re-init)
+    if (title.dataset.revealLines === 'ready') return;
+
+    // Preserve original text for screen readers; split visually only.
+    const text = title.textContent;
+    const words = text.split(/(\s+)/); // keep spaces as their own tokens
+
+    // Build the wrapped DOM
+    const frag = document.createDocumentFragment();
+    let wordIndex = 0;
+    words.forEach((tok) => {
+      if (/^\s+$/.test(tok)) {
+        frag.appendChild(document.createTextNode(tok));
+        return;
+      }
+      if (tok.length === 0) return;
+      const wrap = document.createElement('span');
+      wrap.className = 'reveal-word';
+      wrap.setAttribute('aria-hidden', 'false');
+      const inner = document.createElement('span');
+      inner.style.setProperty('--i', String(wordIndex));
+      inner.textContent = tok;
+      wrap.appendChild(inner);
+      frag.appendChild(wrap);
+      wordIndex++;
+    });
+
+    title.textContent = '';
+    title.appendChild(frag);
+    title.setAttribute('data-reveal-lines', 'ready');
+
+    if (reduced) {
+      title.classList.add('is-visible');
+    }
+  });
+
+  if (reduced) return;
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible');
+        io.unobserve(entry.target);
+      }
+    });
+  }, { rootMargin: '0px 0px -8% 0px', threshold: 0.2 });
+
+  titles.forEach((t) => io.observe(t));
+}
+
+/* ── 10c. PARAGRAPH CASCADE — soft stagger on prose ───────── */
+/* Tags every paragraph inside a chapter with [data-reveal-p] +
+   index. When the chapter scrolls into view, paragraphs fade up
+   in sequence. Editorial pacing, never flashy. */
+function initParagraphCascade() {
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!('IntersectionObserver' in window)) return;
+
+  const chapters = document.querySelectorAll('.chapter, .chapter--accordion');
+  if (!chapters.length) return;
+
+  chapters.forEach((chapter) => {
+    const items = chapter.querySelectorAll(':scope > .chapter-body > p, :scope > .chapter-body > ul, :scope > .chapter-body > ol, :scope > .chapter-body > .chapter-prose-rail > p');
+    if (!items.length) return;
+
+    items.forEach((el, i) => {
+      // Cap stagger so very long chapters don't tail off forever.
+      const idx = Math.min(i, 6);
+      el.setAttribute('data-reveal-p', '');
+      el.style.setProperty('--i', String(idx));
+      if (reduced) el.classList.add('is-visible');
+    });
+  });
+
+  if (reduced) return;
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible');
+        io.unobserve(entry.target);
+      }
+    });
+  }, { rootMargin: '0px 0px -6% 0px', threshold: 0.12 });
+
+  document.querySelectorAll('[data-reveal-p]').forEach((el) => io.observe(el));
+}
+
+/* ── 11. PARALLAX TILT — bleed-shot + chapter-side-frame ──── */
+/* Tracks pointer over the frame; rotates the inner img by ≤6deg
+   on X/Y. Hardware-accelerated transform only. rAF-coalesced. */
+function initBleedTilt() {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+  const frames = document.querySelectorAll('.bleed-shot, .chapter-side-frame');
+  if (!frames.length) return;
+
+  const MAX_DEG = 6;
+
+  frames.forEach((frame) => {
+    const img = frame.querySelector('img');
+    if (!img) return;
+
+    let raf = 0;
+    let pendingX = 0;
+    let pendingY = 0;
+    let pendingScale = 1;
+
+    function apply() {
+      raf = 0;
+      // Compose with any existing scroll-zoom scale already on the img.
+      // We read the current scale from a data attr if present; else 1.
+      img.style.transform = `perspective(1200px) rotateX(${pendingY.toFixed(2)}deg) rotateY(${pendingX.toFixed(2)}deg) scale(${pendingScale.toFixed(4)})`;
+    }
+
+    frame.addEventListener('mouseenter', () => {
+      frame.classList.add('is-tilting');
+    });
+
+    frame.addEventListener('mousemove', (e) => {
+      const r = frame.getBoundingClientRect();
+      const nx = (e.clientX - r.left) / r.width;   // 0..1
+      const ny = (e.clientY - r.top) / r.height;
+      pendingX = (nx - 0.5) * 2 * MAX_DEG;          // rotateY
+      pendingY = -(ny - 0.5) * 2 * MAX_DEG;         // rotateX
+      // Subtle lift via scale
+      pendingScale = 1.015;
+      if (!raf) raf = requestAnimationFrame(apply);
+    });
+
+    frame.addEventListener('mouseleave', () => {
+      frame.classList.remove('is-tilting');
+      pendingX = 0;
+      pendingY = 0;
+      pendingScale = 1;
+      if (!raf) raf = requestAnimationFrame(apply);
+      // Hand control back to initScrollZoom so the image's scale stays
+      // in sync with the user's scroll position. A synthetic scroll
+      // event is the cheapest way without coupling the two systems.
+      setTimeout(() => window.dispatchEvent(new Event('scroll')), 220);
+    });
+  });
+}
+
+/* ── 12. SHIELD MAGNET — soft pull on iframe interact pill ── */
+function initShieldMagnet() {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+  const shields = document.querySelectorAll('.lf-shield');
+  if (!shields.length) return;
+
+  shields.forEach((shield) => {
+    let raf = 0;
+    let mx = 0;
+    let my = 0;
+
+    function apply() {
+      raf = 0;
+      shield.style.setProperty('--mag-x', mx.toFixed(2) + 'px');
+      shield.style.setProperty('--mag-y', my.toFixed(2) + 'px');
+    }
+
+    shield.addEventListener('mouseenter', () => {
+      shield.classList.add('is-magnetic');
+    });
+
+    shield.addEventListener('mousemove', (e) => {
+      const r = shield.getBoundingClientRect();
+      const dx = (e.clientX - r.left - r.width / 2);
+      const dy = (e.clientY - r.top - r.height / 2);
+      mx = dx * 0.32;
+      my = dy * 0.42;
+      if (!raf) raf = requestAnimationFrame(apply);
+    });
+
+    shield.addEventListener('mouseleave', () => {
+      mx = 0;
+      my = 0;
+      if (!raf) raf = requestAnimationFrame(apply);
+      // Drop the linear-easing class so spring-back uses default expo.
+      setTimeout(() => shield.classList.remove('is-magnetic'), 200);
+    });
+  });
+}
+
+/* ── 13. PULL-QUOTE SPOTLIGHT — radial gradient tracks mouse ─ */
+function initQuoteSpotlight() {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+  const quotes = document.querySelectorAll('.pull-quote');
+  if (!quotes.length) return;
+
+  quotes.forEach((q) => {
+    let raf = 0;
+    let mx = 50;
+    let my = 50;
+
+    function apply() {
+      raf = 0;
+      q.style.setProperty('--mx', mx.toFixed(1) + '%');
+      q.style.setProperty('--my', my.toFixed(1) + '%');
+    }
+
+    q.addEventListener('mouseenter', () => {
+      q.classList.add('is-lit');
+    });
+
+    q.addEventListener('mousemove', (e) => {
+      const r = q.getBoundingClientRect();
+      mx = ((e.clientX - r.left) / r.width) * 100;
+      my = ((e.clientY - r.top) / r.height) * 100;
+      if (!raf) raf = requestAnimationFrame(apply);
+    });
+
+    q.addEventListener('mouseleave', () => {
+      q.classList.remove('is-lit');
+    });
+  });
+}
+
 /* ── TIP TAP — make .tip spans tap-to-toggle on mobile (hover doesn't
    fire there). Tap outside or on another tip closes the open one. */
 function initTipTap() {
@@ -647,6 +888,11 @@ function boot() {
   initDayRail();
   initScrollTop();
   initReveal();
+  initChapterTitleReveal();
+  initParagraphCascade();
+  initBleedTilt();
+  initShieldMagnet();
+  initQuoteSpotlight();
   initTipTap();
   // Loader gates the entry animation; rest is already running.
   initLoader(() => {
