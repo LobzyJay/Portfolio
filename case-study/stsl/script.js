@@ -50,13 +50,17 @@ const FRAG = `
   }
 `;
 
-function applyUvCrop(uniforms, imgW, imgH, vpW, vpH) {
-  const rx = (vpW / vpH) / (imgW / imgH);
-  uniforms.u_uvRepeat.value.set(rx, 1.0);
-  uniforms.u_uvOffset.value.set((1.0 - rx) * 0.5, 0.0);
+function applyUvCrop(uniforms, imgW, imgH, vpW, vpH, patternScale = 1.0) {
+  // patternScale < 1 zooms IN on the pattern (each tile reads larger),
+  // > 1 scales OUT (more tiles visible). Used to bump the footer canvas
+  // pattern 20% bigger than the cover hero's default.
+  const rx = (vpW / vpH) / (imgW / imgH) * patternScale;
+  uniforms.u_uvRepeat.value.set(rx, patternScale);
+  uniforms.u_uvOffset.value.set((1.0 - rx) * 0.5, (1.0 - patternScale) * 0.5);
 }
 
-function initBackground(canvasId) {
+function initBackground(canvasId, opts = {}) {
+  const patternScale = opts.patternScale || 1.0;
   if (typeof THREE === 'undefined') return;
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   const canvas = document.getElementById(canvasId || 'bg-canvas');
@@ -93,7 +97,7 @@ function initBackground(canvasId) {
     tex.needsUpdate = true;
     uniforms.u_texture.value = tex;
     const img = tex.image;
-    applyUvCrop(uniforms, img.naturalWidth || img.width, img.naturalHeight || img.height, w(), h());
+    applyUvCrop(uniforms, img.naturalWidth || img.width, img.naturalHeight || img.height, w(), h(), patternScale);
     uniforms.u_ready.value = true;
     canvas.style.opacity = '1';
     window.dispatchEvent(new Event('asset-loaded'));
@@ -114,7 +118,7 @@ function initBackground(canvasId) {
     t.wrapS = THREE.RepeatWrapping;
     t.wrapT = THREE.RepeatWrapping;
     uniforms.u_texture.value = t;
-    applyUvCrop(uniforms, 512, 512, w(), h());
+    applyUvCrop(uniforms, 512, 512, w(), h(), patternScale);
     uniforms.u_ready.value = true;
     canvas.style.opacity = '1';
     window.dispatchEvent(new Event('asset-loaded'));
@@ -135,7 +139,7 @@ function initBackground(canvasId) {
     if (tex && tex.image) {
       const iw = tex.image.naturalWidth || tex.image.width;
       const ih = tex.image.naturalHeight || tex.image.height;
-      if (iw && ih) applyUvCrop(uniforms, iw, ih, w(), h());
+      if (iw && ih) applyUvCrop(uniforms, iw, ih, w(), h(), patternScale);
     }
   });
 
@@ -636,7 +640,9 @@ function boot() {
   window.scrollTo(0, 0);
 
   initBackground('bg-canvas');
-  initBackground('end-canvas');
+  // Footer pattern reads 20% larger than the cover hero so it's a bit
+  // more visible inside the smaller squircle frame.
+  initBackground('end-canvas', { patternScale: 0.83 });
   initPillButtons();
   initLfTabs();
   initIframeShield();
