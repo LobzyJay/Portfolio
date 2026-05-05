@@ -2,9 +2,9 @@
    RESET
    ============================================================ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: auto; background: #171717; }
+html { scroll-behavior: auto; background: #14141A; }
 body {
-  background: #171717;
+  background: #14141A;
   color: #fff;
   font-family: var(--font-sans);
   font-weight: var(--fw-light);
@@ -18,13 +18,20 @@ a { text-decoration: none; color: inherit; }
    TOKENS
    ============================================================ */
 :root {
-  --bg:           #171717;
+  /* ── Brand palette (single source of truth) ── */
+  --color-white:    #FFFFFF;
+  --color-yellow:   #FFC919;
+  --color-midnight: #14141A;
+  --color-red:      #E40202;
+  --color-purple:   #9B91F6;
+
+  --bg:           var(--color-midnight);
   --bg-card:      #1e1e1e;
   --bg-btn:       #464646;
   --bg-btn-light: #f1f1f4;
-  --accent:       #e40202;
-  --text:         #ffffff;
-  --text-dark:    #141414;
+  --accent:       var(--color-red);
+  --text:         var(--color-white);
+  --text-dark:    var(--color-midnight);
   --text-muted:   rgba(255,255,255,0.5);
 
   --font-sans:    'DM Sans', sans-serif;
@@ -400,7 +407,8 @@ a { text-decoration: none; color: inherit; }
   border-radius: 50%;
   background: var(--accent);
   flex-shrink: 0;
-  box-shadow: 0 0 6px rgba(228, 2, 2, 0.55);
+  /* Tinted to bg, not the dot colour — softens the red read */
+  box-shadow: 0 0 6px rgba(20, 20, 26, 0.55);
 }
 .csc-label {
   font-family: var(--font-sans);
@@ -835,3 +843,4 @@ a { text-decoration: none; color: inherit; }
    UTILITY
    ============================================================ */
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+

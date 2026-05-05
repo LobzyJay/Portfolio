@@ -32,7 +32,7 @@ const FRAG = `
   varying vec2  vUv;
 
   void main() {
-    vec3 bg = vec3(0.09, 0.09, 0.09);
+    vec3 bg = vec3(0.0784, 0.0784, 0.1020); /* #14141A Midnight */
 
     if (!u_ready) {
       gl_FragColor = vec4(bg, 1.0);
