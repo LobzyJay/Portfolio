@@ -443,6 +443,19 @@ body.is-loaded .cover-mockup img {
   .cover-script { font-size: clamp(3.1rem, 10.4vw, 6.4rem); }
 }
 
+/* ── iPad Pro 11" portrait window (821–900): bumps the base @900
+   tablet scale so the larger Pro screen gets a proportionally
+   larger laptop, while Mini/Air (≤820) keep the smaller base. ── */
+@media (min-width: 821px) and (max-width: 900px) {
+  .cover-mockup img {
+    height: 80%;
+    transform: scale(1.7);
+  }
+  body.is-loaded .cover-mockup img {
+    transform: scale(1.55);
+  }
+}
+
 /* ── iPad Pro 12.9 portrait window (901–1024): the desktop scale (1.10)
    reads small at this width; bump it so the laptop has presence. ── */
 @media (min-width: 901px) and (max-width: 1024px) {
@@ -458,25 +471,21 @@ body.is-loaded .cover-mockup img {
 /* ── Tablet-mid (≤900px): scale up + shift left so the laptop sits
    centred on screen; right-weight of the source frame overflows off ── */
 @media (max-width: 900px) {
-  /* The source image carries more visual weight on the right (perforated
-     surface, shadow). Shift the crop window LEFT (object-position: 32%)
-     so the laptop screen ends up roughly centred on the viewport, then
-     scale up so the laptop reads at the right size for tablet portrait.
-     Image base is hooked to the cover's base via inset: auto 0 0 0. */
+  /* Base tablet rule. Tuned for Mini/Air (~768-820): conservative
+     scale so the laptop doesn't dominate the cover. iPad Pro 11"
+     (821-900) gets a bigger scale via the more-specific block below. */
   .cover-mockup img {
     inset: auto 0 0 0;
     width: 100%;
-    height: 80%;
+    height: 70%;
     left: 0;
     object-fit: cover;
     object-position: 65% 32%;
-    /* Same scale as iPad Pro range (901-1024) so Mini/Air read at the
-       same laptop size as Pro — proportional across the tablet tier. */
-    transform: scale(1.7);
+    transform: scale(1.3);
     transform-origin: center bottom;
   }
   body.is-loaded .cover-mockup img {
-    transform: scale(1.55);
+    transform: scale(1.2);
   }
   .cover-mockup::after {
     background:
@@ -1970,9 +1979,14 @@ body.is-loaded .cover-mockup img {
      desktop top:108px lands inside the iframe rather than over content.
      Pin it just below the chrome bar with a generous offset. */
   .live-frame--tabbed .lf-shield { top: auto; bottom: 14px; right: 14px; }
-  /* Keep font size tight on phones, but DON'T override padding here — the
-     coarse-pointer rule below sets a 44px tap target. */
-  .live-frame .lf-shield { font-size: 11px; }
+  /* Phone-sized shield: tight font for visual restraint, but a 44px tap
+     target per WCAG 2.5.5 — applied at every phone-class viewport so it
+     never depends on pointer:coarse media-query detection. */
+  .live-frame .lf-shield {
+    font-size: 11px;
+    min-height: 44px;
+    padding: 10px 16px;
+  }
 }
 .live-frame figcaption {
   font-family: var(--font-sans);
