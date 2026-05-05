@@ -41,17 +41,11 @@ const FRAG = `
     uv += normalize(toMouse + 0.0001) * rings * falloff * u_strength;
     uv.x += sin(uv.y * 7.0 + u_time * 0.32) * 0.003;
     uv.y += cos(uv.x * 5.5 + u_time * 0.25) * 0.0025;
-    /* Scale the pattern OUT so each tile reads bigger on screen
-       (multiply uvRepeat by 0.65 = ~1.5x larger tiles). */
-    vec2 texUv = uv * u_uvRepeat * 0.65 + u_uvOffset;
+    vec2 texUv = uv * u_uvRepeat + u_uvOffset;
     vec4 tex = texture2D(u_texture, texUv);
-    /* Mix factor 0.85 instead of 0.95 — pattern triangles sit at
-       ~15% intensity over the bg instead of a barely-visible 5%. */
-    vec3 color = mix(tex.rgb, bg, 0.85);
+    vec3 color = mix(tex.rgb, bg, 0.95);
     float grad = smoothstep(0.0, 0.75, vUv.y);
-    /* Lift the top-darken floor (0.25 -> 0.4) so the pattern still
-       reads near the profile sidebar. */
-    color *= mix(0.4, 1.0, grad);
+    color *= mix(0.25, 1.0, grad);
     gl_FragColor = vec4(color, 1.0);
   }
 `;
