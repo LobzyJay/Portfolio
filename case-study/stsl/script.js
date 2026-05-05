@@ -606,6 +606,32 @@ function initReveal() {
   targets.forEach(el => io.observe(el));
 }
 
+/* ── TIP TAP — make .tip spans tap-to-toggle on mobile (hover doesn't
+   fire there). Tap outside or on another tip closes the open one. */
+function initTipTap() {
+  const tips = Array.from(document.querySelectorAll('.tip'));
+  if (!tips.length) return;
+  let open = null;
+  function close() {
+    if (open) { open.classList.remove('is-active'); open = null; }
+  }
+  tips.forEach((tip) => {
+    tip.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (open && open !== tip) open.classList.remove('is-active');
+      const wasOpen = tip.classList.contains('is-active');
+      tip.classList.toggle('is-active');
+      open = wasOpen ? null : tip;
+    });
+    tip.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') { close(); tip.blur(); }
+    });
+  });
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.tip')) close();
+  });
+}
+
 /* ── BOOT ─────────────────────────────────────────────────── */
 function boot() {
   // Force scroll to top on every refresh — disable browser auto-restore.
@@ -621,6 +647,7 @@ function boot() {
   initDayRail();
   initScrollTop();
   initReveal();
+  initTipTap();
   // Loader gates the entry animation; rest is already running.
   initLoader(() => {
     document.body.classList.add('is-loaded');
