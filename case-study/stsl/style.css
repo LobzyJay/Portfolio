@@ -1548,11 +1548,15 @@ body.is-loaded .cover-mockup img {
   margin-right: calc(var(--page-x) + clamp(28px, 3vw, 56px));
   max-width: none;
   padding: clamp(40px, 6vh, 72px) clamp(28px, 3vw, 56px);
-  background: #0c0c0c;
+  /* Darker than the page bg (#171717) so the card reads as a distinct
+     surface even with the WebGL ripple canvas behind it. */
+  background: #050505;
   color: var(--text);
   border-radius: clamp(20px, 2vw, 32px);
   overflow: hidden;
   isolation: isolate;
+  /* 1px hairline border helps the edge define against the page bg too */
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.04);
 }
 .article-end #end-canvas {
   position: absolute;
@@ -2251,10 +2255,14 @@ body.is-loaded .cover-mockup img {
 .tip:hover::before,
 .tip:hover::after,
 .tip:focus::before,
-.tip:focus::after {
+.tip:focus::after,
+.tip.is-active::before,
+.tip.is-active::after {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
 }
+/* Make focus ring readable on tap focus too */
+.tip:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 2px; }
 @media (max-width: 540px) {
   /* Pin the pill to the prose run so it never clips off the viewport edge.
      The translate-X centering doesn't survive narrow widths when the tip
@@ -2269,7 +2277,8 @@ body.is-loaded .cover-mockup img {
     transform: translateX(0) translateY(4px);
   }
   .tip:hover::after,
-  .tip:focus::after {
+  .tip:focus::after,
+  .tip.is-active::after {
     transform: translateX(0) translateY(0);
   }
   /* Hide the centred caret on mobile — pill is no longer centred on the word. */
