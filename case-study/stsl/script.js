@@ -332,51 +332,6 @@ function initMagneticBtn() {
   });
 }
 
-/* ── 6. SCROLL ZOOM — image scales up as user scrolls past it.
-   "Optics manipulation" feel: the image grows from 1.0 to 1.18
-   over its journey through the viewport, cropped by its frame. */
-function initScrollZoom() {
-  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (reduced) return;
-  const frames = Array.from(document.querySelectorAll('.bleed-shot, .chapter-side-frame, .bleed-shot--scroll'));
-  if (!frames.length) return;
-
-  // Prep: each frame's image needs transform-origin centered + will-change
-  const items = frames.map((frame) => {
-    const img = frame.querySelector('img');
-    if (!img) return null;
-    img.style.transformOrigin = 'center center';
-    img.style.willChange = 'transform';
-    img.style.transition = 'transform 0.12s linear';
-    return { frame, img };
-  }).filter(Boolean);
-
-  const SCALE_MIN = 1.0;
-  const SCALE_MAX = 1.18;
-
-  let raf = 0;
-  function update() {
-    const vh = window.innerHeight;
-    items.forEach(({ frame, img }) => {
-      const r = frame.getBoundingClientRect();
-      // progress = 0 when frame's top edge enters viewport bottom,
-      //            1 when frame's bottom edge leaves viewport top.
-      const p = Math.max(0, Math.min(1, (vh - r.top) / (vh + r.height)));
-      const scale = SCALE_MIN + (SCALE_MAX - SCALE_MIN) * p;
-      img.style.transform = `scale(${scale.toFixed(4)})`;
-    });
-  }
-
-  function onScroll() {
-    cancelAnimationFrame(raf);
-    raf = requestAnimationFrame(update);
-  }
-
-  update();
-  window.addEventListener('scroll', onScroll, { passive: true });
-  window.addEventListener('resize', onScroll, { passive: true });
-}
-
 /* ── LOADER — ported from main portfolio. Tracks the THREE.js
    bg texture ('asset-loaded' event) with a 6s hard fallback. */
 function initLoader(onComplete) {
@@ -649,7 +604,6 @@ function boot() {
   initPillButtons();
   initLfTabs();
   initIframeShield();
-  initScrollZoom();
   initDayRail();
   initScrollTop();
   initReveal();
