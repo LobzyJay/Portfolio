@@ -437,10 +437,16 @@ body.is-loaded .cover-mockup img {
 /* ── Tablet (≤1024px): tighten cover ──────────────────────── */
 @media (max-width: 1024px) {
   .cover-mockup img { object-position: 55% center; }
-  /* Override the span ramp directly — parent .cover-title font-size is inert
-     because inner spans set their own size. */
-  .cover-line > span:not(.cover-script) { font-size: clamp(2.6rem, 8.6vw, 5.4rem); }
-  .cover-script { font-size: clamp(3.1rem, 10.4vw, 6.4rem); }
+}
+
+/* ── Mobile hero text — matches the homepage's mobile breakpoint
+   (≤767) so cover-line / cover-script render at the same size as
+   the homepage hero on phones and tablet portrait. */
+@media (max-width: 767px) {
+  .cover-line > span:not(.cover-script),
+  .cover-script {
+    font-size: clamp(2.2rem, 11vw, 3.8rem);
+  }
 }
 
 /* ── iPad Pro 11" portrait window (821–900): bumps the base @900
@@ -505,8 +511,6 @@ body.is-loaded .cover-mockup img {
     bottom: clamp(56px, 9vh, 96px);
     line-height: 0.98;
   }
-  .cover-line > span:not(.cover-script) { font-size: clamp(2.2rem, 9.6vw, 4.8rem); }
-  .cover-script { font-size: clamp(2.6rem, 11.4vw, 5.6rem); }
   .cover-status { bottom: 22px; font-size: 12px; }
 }
 
@@ -583,15 +587,10 @@ body.is-loaded .cover-mockup img {
   }
   .tool-wrap { width: 26px; height: 26px; border-radius: 7px; }
   .cover-title {
-    font-size: clamp(1.9rem, 12.4vw, 3.4rem);
     left: 16px;
     right: 16px;
     bottom: clamp(56px, 8vh, 88px);
   }
-  .cover-line > span:not(.cover-script) {
-    font-size: clamp(1.9rem, 12.4vw, 3.4rem);
-  }
-  .cover-script { font-size: clamp(2.4rem, 15vw, 4.2rem); }
   .cover-status { bottom: 18px; right: 16px; font-size: 11px; }
 }
 
@@ -599,8 +598,6 @@ body.is-loaded .cover-mockup img {
 @media (max-width: 414px) {
   .cover-profile { width: calc(100% - 28px); left: 14px; }
   .experience-badge { display: none; }
-  .cover-line > span:not(.cover-script) { font-size: clamp(1.75rem, 11.5vw, 2.6rem); }
-  .cover-script { font-size: clamp(2.2rem, 14vw, 3.2rem); }
   .cover-title { bottom: clamp(52px, 7.5vh, 80px); }
 }
 
@@ -611,8 +608,6 @@ body.is-loaded .cover-mockup img {
   .tools-bar { gap: 5px; padding: 4px 8px; }
   .tool-wrap { width: 24px; height: 24px; border-radius: 6px; }
   .btn-pill { font-size: 0.8rem; height: 36px; padding: 0 12px; }
-  .cover-line > span:not(.cover-script) { font-size: 1.7rem; }
-  .cover-script { font-size: 2.1rem; }
   .cover-title { left: 12px; right: 12px; bottom: 64px; }
   .cover-status { right: 12px; bottom: 16px; }
 }
