@@ -25,7 +25,13 @@
   <link rel="apple-touch-icon" href="../../assets/avatar.jpg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,200;0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=Carattere&display=swap" rel="stylesheet" />
+  <!-- Preload the Google Fonts CSS so it starts fetching in parallel
+       with HTML parsing. The loader screen masks any remaining swap
+       window. Weights trimmed to those actually used. -->
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,200;9..40,300;9..40,400;9..40,500&display=swap" />
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Carattere&display=optional" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,200;9..40,300;9..40,400;9..40,500&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Carattere&display=optional" />
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
