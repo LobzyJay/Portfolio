@@ -775,6 +775,7 @@ body.is-loaded .cover-mockup img {
 }
 .quote-script {
   font-family: var(--font-script);
+  font-style: italic;
   color: var(--accent);
   font-weight: 400;
   font-size: 1.5em;
@@ -1701,6 +1702,7 @@ body.is-loaded .cover-mockup img {
 }
 .end-script {
   font-family: var(--font-script);
+  font-style: italic;
   font-weight: 400;
   color: var(--accent);
   font-size: 1.22em;
