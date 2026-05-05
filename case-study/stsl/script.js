@@ -640,9 +640,9 @@ function boot() {
   window.scrollTo(0, 0);
 
   initBackground('bg-canvas');
-  // Footer pattern reads 20% larger than the cover hero so it's a bit
-  // more visible inside the smaller squircle frame.
-  initBackground('end-canvas', { patternScale: 0.83 });
+  // Footer pattern reads ~1.56x larger than the cover hero (20% zoom +
+  // another 30% on top). patternScale 0.64 = 1/1.56.
+  initBackground('end-canvas', { patternScale: 0.64 });
   initPillButtons();
   initLfTabs();
   initIframeShield();
