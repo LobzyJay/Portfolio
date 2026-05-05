@@ -26,14 +26,21 @@ ul { list-style: none; }
    TOKENS (mirrored from Portfolio/style.css + article extensions)
    ============================================================ */
 :root {
+  /* ── Brand palette (single source of truth) ── */
+  --color-white:    #FFFFFF;
+  --color-yellow:   #FFC919;
+  --color-midnight: #14141A;
+  --color-red:      #E40202;
+  --color-purple:   #9B91F6;
+
   /* portfolio core */
-  --bg:           #171717;
+  --bg:           var(--color-midnight);
   --bg-card:      #1e1e1e;
   --bg-btn:       #464646;
   --bg-btn-light: #f1f1f4;
-  --accent:       #e40202;
-  --text:         #ffffff;
-  --text-dark:    #141414;
+  --accent:       var(--color-red);
+  --text:         var(--color-white);
+  --text-dark:    var(--color-midnight);
   --text-muted:   rgba(255,255,255,0.5);
 
   /* article extensions — DARK theme (article sits on page bg) */
@@ -98,7 +105,7 @@ ul { list-style: none; }
   min-height: 100dvh;
   height: 100vh;
   height: 100dvh;
-  background: #171717;
+  background: var(--bg);
   overflow: hidden;
   isolation: isolate;
 }
@@ -783,54 +790,109 @@ body.is-loaded .cover-mockup img {
 }
 
 /* ── Prompt callout — "this is what I sent Claude" ────────── */
+/* ── Prompt callout, restyled as a chat-app message addressed to
+   Opus 4.7. Reads like a real conversation, not a generic blockquote. */
 .prompt-callout {
   grid-column: 1 / span 9;
   margin: clamp(28px, 4vh, 44px) 0;
-  padding: clamp(22px, 3vh, 32px) clamp(24px, 3vw, 36px);
+  padding: clamp(18px, 2.4vh, 26px) clamp(20px, 2.6vw, 28px) clamp(20px, 2.6vh, 28px);
   background: var(--bg-light-2);
-  border-left: 2px solid var(--accent);
-  border-radius: 0 18px 18px 0;
-  max-width: 64ch;
+  border: 1px solid var(--rule-light);
+  border-radius: clamp(14px, 1.4vw, 20px);
+  max-width: 56ch;
   position: relative;
 }
-.pc-header {
+.pc-thread {
   display: flex;
   align-items: center;
-  gap: 10px;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: clamp(14px, 2vh, 18px);
+  padding-bottom: clamp(12px, 1.6vh, 16px);
+  border-bottom: 1px solid var(--rule-light);
   font-family: var(--font-sans);
+  font-size: 13px;
   font-weight: 500;
+  color: var(--text-light);
+  letter-spacing: -0.005em;
+}
+.pc-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-family: var(--font-sans);
+  font-weight: 600;
   font-size: 11px;
-  letter-spacing: 0.18em;
+  letter-spacing: -0.01em;
+  color: #ffffff;
+}
+.pc-avatar--me {
+  background: var(--accent);
+}
+.pc-avatar--ai {
+  background: var(--color-purple);
+  color: var(--color-midnight);
+}
+.pc-avatar--ai svg {
+  width: 14px;
+  height: 14px;
+}
+.pc-name { display: inline-block; }
+.pc-name--ai { color: var(--color-purple); }
+.pc-arrow {
+  color: var(--text-light-muted);
+  font-size: 12px;
+  margin: 0 2px;
+}
+.pc-when {
+  margin-left: auto;
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: 11px;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--text-light-muted);
-  margin-bottom: clamp(10px, 1.5vh, 14px);
 }
-.pc-label::before {
-  content: "→ ";
-  color: var(--accent);
+.pc-agent {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: rgba(155, 145, 246, 0.14);
+  color: var(--color-purple);
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  text-transform: lowercase;
+  border: 1px solid rgba(155, 145, 246, 0.3);
 }
-.pc-target {
-  color: var(--accent);
-  letter-spacing: 0.06em;
+.pc-bubble {
+  /* The actual user message — sits as a soft bubble inside the card. */
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 12px;
+  padding: clamp(14px, 1.8vh, 18px) clamp(16px, 1.8vw, 20px);
 }
 .pc-body {
   font-family: var(--font-sans);
-  font-weight: 300;
-  font-size: clamp(16px, 1.18vw, 19px);
-  line-height: 1.5;
+  font-weight: 400;
+  font-size: clamp(15px, 1.1vw, 17px);
+  line-height: 1.55;
   color: var(--text-light);
-  font-style: italic;
   margin: 0;
   letter-spacing: -0.005em;
-}
-.pc-body::before { content: "\""; }
-.pc-body::after { content: "\""; }
-.pc-meta {
-  display: block;
-  margin-top: 10px;
   font-style: normal;
+}
+.pc-caption {
+  display: block;
+  margin: clamp(10px, 1.4vh, 14px) 0 0;
+  font-family: var(--font-sans);
+  font-weight: 400;
   font-size: 11px;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--text-light-muted);
 }
@@ -1682,8 +1744,10 @@ body.is-loaded .cover-mockup img {
   margin-bottom: clamp(14px, 2vh, 22px);
 }
 .end-dot {
+  /* End-of-article completion mark — yellow reads as 'finished' /
+     positive, not 'stop' / alarm. */
   width: 6px; height: 6px;
-  background: var(--accent);
+  background: var(--color-yellow);
   border-radius: 999px;
   display: inline-block;
 }
@@ -1756,7 +1820,9 @@ body.is-loaded .cover-mockup img {
 .magnetic-btn:hover {
   --mb-bg: var(--accent);
   --mb-fg: #ffffff;
-  box-shadow: 0 18px 48px -16px rgba(228,2,2,0.55);
+  /* Shadow tinted to bg, not the button colour — keeps the red CTA
+     the focal point without amplifying the danger read. */
+  box-shadow: 0 18px 48px -16px rgba(20, 20, 26, 0.55);
 }
 .magnetic-btn:focus-visible {
   outline: 2px solid var(--accent);
@@ -2299,20 +2365,28 @@ body.is-loaded .cover-mockup img {
    ============================================================ */
 .tip {
   position: relative;
-  /* Make tips obviously interactive for first-time readers / new
-     designers — accent-red colour by default plus a thicker dotted
-     underline reads as 'click/tap me' without needing a separate
-     icon or affordance. */
-  color: var(--accent);
+  /* Tooltips use the brand PURPLE — educational, not alarm. Red was
+     reading as danger when it sat across multiple inline tips in the
+     prose. Purple is flat (no glow) per the lila-ban rule. */
+  color: var(--color-purple);
   font-weight: 500;
-  border-bottom: 2px dotted var(--accent);
-  padding-bottom: 1px;
+  border-bottom: 2px dotted var(--color-purple);
+  padding: 1px 4px 1px;
+  margin: 0 -2px;
+  border-radius: 4px;
+  background-color: rgba(155, 145, 246, 0.08);
   cursor: help;
-  transition: opacity 0.22s var(--ease-expo);
+  transition:
+    background-color 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+    border-bottom-color 0.32s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .tip:hover,
 .tip:focus,
-.tip.is-active { opacity: 0.78; }
+.tip.is-active {
+  background-color: rgba(155, 145, 246, 0.18);
+  border-bottom-color: rgba(155, 145, 246, 0.9);
+  outline: none;
+}
 .tip::before,
 .tip::after {
   pointer-events: none;
@@ -2329,7 +2403,7 @@ body.is-loaded .cover-mockup img {
   height: 0;
   border-left: 6px solid transparent;
   border-right: 6px solid transparent;
-  border-top: 6px solid var(--accent);
+  border-top: 6px solid var(--color-purple);
   transform: translateX(-50%) translateY(4px);
 }
 .tip::after {
@@ -2343,19 +2417,20 @@ body.is-loaded .cover-mockup img {
      overflow-x: clip as a backstop so the pill never steps out of the
      body frame, even if the tip sits very close to the column edge. */
   max-width: min(280px, 80vw);
-  background: var(--accent);
-  color: #ffffff;
+  background: var(--color-purple);
+  color: var(--color-midnight);
   padding: 10px 14px;
   border-radius: 10px;
   font-family: var(--font-sans);
-  font-weight: 400;
+  font-weight: 500;
   font-size: 12px;
   letter-spacing: -0.005em;
   line-height: 1.45;
   text-transform: none;
   text-align: left;
   white-space: normal;
-  box-shadow: 0 12px 32px -10px rgba(228, 2, 2, 0.55);
+  /* Tinted shadow matching midnight bg, not the pill colour — per skill */
+  box-shadow: 0 12px 32px -10px rgba(20, 20, 26, 0.6);
 }
 .tip:hover::before,
 .tip:hover::after,
@@ -2367,7 +2442,7 @@ body.is-loaded .cover-mockup img {
   transform: translateX(-50%) translateY(0);
 }
 /* Make focus ring readable on tap focus too */
-.tip:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 2px; }
+.tip:focus-visible { outline: 2px solid var(--color-purple); outline-offset: 4px; border-radius: 2px; }
 @media (max-width: 540px) {
   /* On phones the pill becomes a bottom-anchored toast (viewport-fixed)
      so it can NEVER clip off the side regardless of where the tip sits
@@ -2413,3 +2488,4 @@ body.is-loaded .cover-mockup img {
     max-width: 72ch;
   }
 }
+

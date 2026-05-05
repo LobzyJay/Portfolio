@@ -31,7 +31,7 @@ const FRAG = `
   varying vec2  vUv;
 
   void main() {
-    vec3 bg = vec3(0.09, 0.09, 0.09);
+    vec3 bg = vec3(0.0784, 0.0784, 0.1020); /* #14141A Midnight */
     if (!u_ready) { gl_FragColor = vec4(bg, 1.0); return; }
     vec2 uv = vUv;
     vec2 toMouse = uv - u_mouse;
@@ -372,6 +372,39 @@ function initParallaxImages() {
   window.addEventListener('resize', onScroll, { passive: true });
 }
 
+/* ── HERO PARALLAX — laptop "lifts" as the reader scrolls. Done as
+   SCALE-ONLY with origin center bottom so the image grows upward
+   (= visually moving up) while the bottom edge stays anchored to
+   the cover bottom. No translate, so there's no chance of a charcoal
+   gap appearing below the laptop when the parallax kicks in. */
+function initHeroParallax() {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const cover  = document.querySelector('.cover');
+  const mockup = document.querySelector('.cover-mockup');
+  if (!cover || !mockup) return;
+
+  const MAX_GROW = 0.16; // additional scale on top of CSS transforms
+
+  mockup.style.willChange = 'transform';
+  mockup.style.transition = 'transform 0.18s linear';
+  mockup.style.transformOrigin = 'center bottom';
+
+  let raf = 0;
+  function update() {
+    const r = cover.getBoundingClientRect();
+    const p = Math.max(0, Math.min(1, -r.top / Math.max(1, r.height)));
+    const grow = 1 + MAX_GROW * p;
+    mockup.style.transform = `scale(${grow.toFixed(4)})`;
+  }
+  function onScroll() {
+    if (raf) return;
+    raf = requestAnimationFrame(() => { raf = 0; update(); });
+  }
+  update();
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll, { passive: true });
+}
+
 /* ── LOADER — ported from main portfolio. Tracks the THREE.js
    bg texture ('asset-loaded' event) with a 6s hard fallback. */
 function initLoader(onComplete) {
@@ -426,46 +459,6 @@ function initLoader(onComplete) {
   setTarget(60);
   window.addEventListener('asset-loaded', scheduleExit, { once: true });
   setTimeout(scheduleExit, 6000);
-}
-
-/* ── ACCORDION AUTO-CLOSE — accordions stay open on click; only close
-   when fully scrolled past viewport top. Scroll-position is compensated
-   so the visible content never jumps. */
-function initAccordionAutoClose() {
-  const accs = Array.from(document.querySelectorAll('.chapter--accordion'));
-  if (!accs.length) return;
-
-  let raf = 0;
-  let closing = false;
-
-  function check() {
-    if (closing) return;
-    for (const acc of accs) {
-      if (!acc.open) continue;
-      const r = acc.getBoundingClientRect();
-      // Only close once the accordion has fully cleared the viewport top.
-      if (r.bottom > 0) continue;
-      const heightBefore = acc.offsetHeight;
-      closing = true;
-      acc.open = false;
-      requestAnimationFrame(() => {
-        const heightAfter = acc.offsetHeight;
-        const delta = heightBefore - heightAfter;
-        if (delta > 0) {
-          window.scrollBy({ top: -delta, behavior: 'auto' });
-        }
-        closing = false;
-      });
-      return;
-    }
-  }
-
-  function onScroll() {
-    cancelAnimationFrame(raf);
-    raf = requestAnimationFrame(check);
-  }
-  check();
-  window.addEventListener('scroll', onScroll, { passive: true });
 }
 
 /* ── 8. DAY RAIL — glass scroll-tied chapter ticker ─────────── */
@@ -647,6 +640,7 @@ function boot() {
   initLfTabs();
   initIframeShield();
   initParallaxImages();
+  initHeroParallax();
   initDayRail();
   initScrollTop();
   initReveal();
