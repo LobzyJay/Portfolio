@@ -71,6 +71,18 @@ ul { list-style: none; }
   --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-back: cubic-bezier(0.34, 1.56, 0.64, 1);
 
+  /* Radius scale — 5 tokens replacing 23 ad-hoc values across the page.
+     --r-sharp: tight UI edges (gauge well, segment corners)
+     --r-card:  small interior cards (token-snippet, day-cost, ledger)
+     --r-bento: mid bento (ratio-block, paper bento, prompts)
+     --r-frame: large frames (bleed-shot, demo-card, side-frame, mockups)
+     --r-pill:  fully rounded (badges, day-rail, scrollbars, buttons) */
+  --r-sharp:  4px;
+  --r-card:   clamp(10px, 1vw, 14px);
+  --r-bento:  clamp(14px, 1.3vw, 18px);
+  --r-frame:  clamp(18px, 1.7vw, 24px);
+  --r-pill:   999px;
+
   --page-x:  clamp(20px, 4.2vw, 56px);
   --col:     min(720px, 100%);
 
@@ -265,7 +277,7 @@ ul { list-style: none; }
   justify-content: center;
   gap: clamp(5px, 0.5vw, 9px);
   height: clamp(36px, 3.2vh, 47px);
-  border-radius: 100px;
+  border-radius: var(--r-pill);
   font-family: var(--font-sans);
   font-weight: var(--fw-regular);
   font-size: var(--text-base);
@@ -993,7 +1005,7 @@ body.is-loaded .cover-mockup img {
   max-width: 100%;
   min-width: 0;
   border: 1px solid var(--tk-rule);
-  border-radius: clamp(10px, 0.9vw, 14px);
+  border-radius: var(--r-card);
   background: var(--tk-bg);
   overflow: hidden;
   box-shadow: 0 24px 60px -28px rgba(0, 0, 0, 0.55);
@@ -1103,7 +1115,7 @@ body.is-loaded .cover-mockup img {
   grid-template-columns: 1fr auto 1fr;
   align-items: stretch;
   border: 1px solid rgba(20, 20, 26, 0.10);
-  border-radius: clamp(12px, 1vw, 18px);
+  border-radius: var(--r-card);
   overflow: hidden;
   background: var(--cv-value-bg);
   box-shadow: 0 24px 60px -32px rgba(0, 0, 0, 0.28);
@@ -1352,7 +1364,7 @@ body.is-loaded .cover-mockup img {
   display: grid;
   gap: 0;
   border: 1px solid var(--lg-rule);
-  border-radius: clamp(10px, 0.9vw, 14px);
+  border-radius: var(--r-card);
   background: var(--lg-bg);
   overflow: hidden;
   box-shadow: 0 24px 60px -28px rgba(0, 0, 0, 0.55);
@@ -1584,7 +1596,7 @@ body.is-loaded .cover-mockup img {
 /* ── Section-breaker mockup shots ─ full-bleed inside the article */
 .bleed-shot {
   margin: clamp(48px, 6vh, 80px) 0;
-  border-radius: clamp(16px, 1.6vw, 24px);
+  border-radius: var(--r-frame);
   overflow: hidden;
   background: var(--bg-light-2);
   aspect-ratio: 19 / 10;
@@ -1618,7 +1630,7 @@ body.is-loaded .cover-mockup img {
 .bleed-shot--scroll {
   position: relative;
   background: #0c0c0c;
-  border-radius: clamp(16px, 1.6vw, 24px);
+  border-radius: var(--r-frame);
   overflow: hidden;
   padding: 0;
   isolation: isolate;
@@ -1671,7 +1683,7 @@ body.is-loaded .cover-mockup img {
   width: 100%;
   height: 100%;
   max-width: none;
-  border-radius: clamp(10px, 0.9vw, 14px);
+  border-radius: var(--r-card);
   box-shadow: 0 24px 60px -20px rgba(0,0,0,0.6);
   object-fit: cover;
   object-position: center center;
@@ -1702,7 +1714,7 @@ body.is-loaded .cover-mockup img {
 /* Agent list — side-rail in Ch 8 */
 .side-agents {
   background: var(--bg-light-2);
-  border-radius: clamp(16px, 1.4vw, 20px);
+  border-radius: var(--r-bento);
   padding: clamp(20px, 2.6vh, 28px) clamp(20px, 2.4vw, 28px);
   border: 1px solid var(--rule-light);
 }
@@ -1773,7 +1785,7 @@ body.is-loaded .cover-mockup img {
   padding: clamp(20px, 2.6vh, 28px) clamp(20px, 2.4vw, 28px) clamp(24px, 3vh, 32px);
   background: var(--color-midnight);
   border: 1px solid var(--rule-light);
-  border-radius: clamp(16px, 1.4vw, 20px);
+  border-radius: var(--r-bento);
   color: var(--color-white);
   box-shadow: inset 0 0 0 1px rgba(255,255,255,0.02);
 }
@@ -1803,7 +1815,7 @@ body.is-loaded .cover-mockup img {
   padding: 4px;
   gap: 4px;
   background: rgba(255,255,255,0.06);
-  border-radius: 100px;
+  border-radius: var(--r-pill);
   border: 1px solid var(--rule-light);
 }
 .as-toggle-thumb {
@@ -1813,7 +1825,7 @@ body.is-loaded .cover-mockup img {
   left: 4px;
   width: calc(50% - 4px);
   background: var(--color-yellow);
-  border-radius: 100px;
+  border-radius: var(--r-pill);
   transition: transform 320ms var(--ease-expo);
   z-index: 0;
 }
@@ -1829,7 +1841,7 @@ body.is-loaded .cover-mockup img {
   border: 0;
   background: transparent;
   color: var(--color-white);
-  border-radius: 100px;
+  border-radius: var(--r-pill);
   cursor: pointer;
   transition: color 240ms var(--ease-expo);
 }
@@ -2313,7 +2325,7 @@ body.is-loaded .cover-mockup img {
 }
 .chapter-side-frame {
   position: relative;
-  border-radius: clamp(16px, 1.6vw, 22px);
+  border-radius: var(--r-frame);
   overflow: hidden;
 }
 .chapter-side-frame img {
@@ -2548,7 +2560,7 @@ body.is-loaded .cover-mockup img {
   padding: clamp(32px, 4.5vh, 56px) clamp(28px, 3.5vw, 56px);
   background: var(--bg-light-2);
   color: var(--text-light);
-  border-radius: clamp(16px, 1.6vw, 24px);
+  border-radius: var(--r-frame);
   border: 1px solid var(--rule-light);
 }
 .how-built-title {
@@ -2608,7 +2620,7 @@ body.is-loaded .cover-mockup img {
      surface even with the WebGL ripple canvas behind it. */
   background: #050505;
   color: var(--text);
-  border-radius: clamp(20px, 2vw, 32px);
+  border-radius: var(--r-frame);
   overflow: hidden;
   isolation: isolate;
   /* 1px hairline border helps the edge define against the page bg too */
@@ -2782,7 +2794,7 @@ body.is-loaded .cover-mockup img {
   background: var(--bg-cream-2);
   border: 1px solid var(--rule-cream);
   border-bottom: 0;
-  border-radius: 12px 12px 0 0;
+  border-radius: var(--r-card) var(--r-card) 0 0;
   font-family: var(--font-mono);
   font-size: 11px;
   color: var(--text-cream-muted);
@@ -2826,7 +2838,7 @@ body.is-loaded .cover-mockup img {
   aspect-ratio: 16 / 10;
   min-height: 560px;
   border: 1px solid var(--rule-light);
-  border-radius: 0 0 12px 12px;
+  border-radius: 0 0 var(--r-card) var(--r-card);
   background: var(--bg-light-2);
   pointer-events: none;            /* shield by default */
   transition: opacity 0.2s var(--ease-expo);
@@ -2895,7 +2907,7 @@ body.is-loaded .cover-mockup img {
   min-height: 0;
   border: 1px solid var(--rule-light);
   border-top: 0;
-  border-radius: 0 0 12px 12px;
+  border-radius: 0 0 var(--r-card) var(--r-card);
   background: var(--bg-light-2);
   pointer-events: none; /* shield by default — activated via .is-active */
   transition: opacity 0.2s var(--ease-expo);
@@ -2920,7 +2932,7 @@ body.is-loaded .cover-mockup img {
   background: var(--bg-light-2);
   border: 1px solid var(--rule-light);
   border-bottom: 0;
-  border-radius: 12px 12px 0 0;
+  border-radius: var(--r-card) var(--r-card) 0 0;
   flex-wrap: wrap;
 }
 .lf-tab {
@@ -2964,7 +2976,7 @@ body.is-loaded .cover-mockup img {
   border-top: 0;
 }
 .live-frame--tabbed .lf-iframe {
-  border-radius: 0 0 12px 12px;
+  border-radius: 0 0 var(--r-card) var(--r-card);
 }
 .live-frame--tabbed .lf-shield {
   top: 108px;
@@ -4224,11 +4236,14 @@ body.is-loaded .cover-mockup img {
   stroke-width: 6;
   stroke-linecap: round;
   fill: none;
-  stroke-dasharray: 251.33;
-  stroke-dashoffset: 251.33;
+  /* stroke-dasharray + stroke-dashoffset are set via setAttribute() in JS
+     using the measured path length (getTotalLength()). Defining them in CSS
+     would override the attribute on every reflow and break the scroll-driven
+     fill — leave them out. CSS only owns the transition. */
   filter: drop-shadow(0 0 var(--gauge-glow-blur) var(--gauge-glow-color));
-  transition: stroke-dashoffset 0.12s cubic-bezier(0.22, 1, 0.36, 1),
+  transition: stroke-dashoffset 0.9s cubic-bezier(0.16, 1, 0.3, 1),
               filter 0.6s cubic-bezier(0.45, 0, 0.15, 1);
+  will-change: stroke-dashoffset;
 }
 /* Tick hierarchy: short = every 10% (subtle), long = quarter ticks (brighter). */
 .day-cost .dc-gauge-ticks-short line {
@@ -4260,21 +4275,24 @@ body.is-loaded .cover-mockup img {
   transform-origin: 100px 100px;
   transform: rotate(-90deg);
   filter: drop-shadow(0 0 4px var(--needle-glow));
-  transition: transform 0.12s cubic-bezier(0.22, 1, 0.36, 1),
+  transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1),
               filter 0.6s cubic-bezier(0.45, 0, 0.15, 1);
+  will-change: transform;
 }
 /* Sweep highlight — duplicate ghost-needle that lags behind the live needle. */
 .day-cost .dc-gauge-needle-trail {
   stroke: var(--color-yellow);
-  stroke-width: 4;
+  stroke-width: 6;
   stroke-linecap: round;
-  opacity: 0.18;
+  opacity: 0.28;
   transform-origin: 100px 100px;
   transform: rotate(-90deg);
-  filter: blur(2px);
-  transition: transform 0.20s cubic-bezier(0.22, 1, 0.36, 1),
+  /* Heavy blur for a true motion-blur trail effect. */
+  filter: blur(5px);
+  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1),
               opacity 0.6s ease;
   pointer-events: none;
+  will-change: transform;
 }
 .day-cost .dc-gauge-pivot {
   fill: #FFFFFF;
@@ -4377,21 +4395,20 @@ body.is-loaded .cover-mockup img {
   border: 1px solid rgba(255,255,255,0.25);
   padding: 3px 7px;
   border-radius: 3px;
+  /* Static HUD decoration — always visible at calm intensity. */
+  --hud-static-opacity: 0.75;
   /* Absolute so the number stays centered when the pill is hidden. The pill
      hangs to the right of the readout once redline triggers. */
   position: absolute;
   left: calc(100% + 8px);
   top: 50%;
-  transform: translate(0, -50%) translateX(2px);
-  opacity: 0;
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  transform: translate(0, -50%);
+  opacity: 0.75;
   pointer-events: none;
   white-space: nowrap;
 }
 .day-cost .dc-redline-pill.is-active {
   opacity: 1;
-  transform: translate(0, -50%) translateX(0);
-  animation: dcRedlineThrob 1s cubic-bezier(0.45, 0, 0.15, 1) infinite;
 }
 @keyframes dcRedlineThrob {
   0%, 100% { opacity: 0.6; }
