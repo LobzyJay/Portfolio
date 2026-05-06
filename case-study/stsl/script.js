@@ -302,34 +302,6 @@ function initIframeShield() {
   });
 }
 
-/* ── 5. MAGNETIC BUTTON (back-to-portfolio) ──────────────── */
-function initMagneticBtn() {
-  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (reduced) return;
-  const btns = document.querySelectorAll('.magnetic-btn');
-  btns.forEach((btn) => {
-    let raf = 0;
-    btn.addEventListener('mousemove', (e) => {
-      const r = btn.getBoundingClientRect();
-      const x = (e.clientX - r.left - r.width / 2) * 0.28;
-      const y = (e.clientY - r.top - r.height / 2) * 0.42;
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => {
-        btn.style.transform = `translate(${x}px, ${y}px)`;
-      });
-    });
-    btn.addEventListener('mouseleave', () => {
-      cancelAnimationFrame(raf);
-      btn.style.transition = 'transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1)';
-      btn.style.transform = 'translate(0, 0)';
-      setTimeout(() => { btn.style.transition = ''; }, 600);
-    });
-    btn.addEventListener('mouseenter', () => {
-      btn.style.transition = '';
-    });
-  });
-}
-
 /* ── PARALLAX IMAGES — scroll-tied scale on figures explicitly
    marked [data-parallax]. Currently the laptop-hero shot under
    Overview and the Day 2 phone mockup. Image grows from 1.0 to
@@ -345,19 +317,23 @@ function initParallaxImages() {
     img.style.transformOrigin = 'center center';
     img.style.willChange = 'transform';
     img.style.transition = 'transform 0.12s linear';
-    return { frame, img };
+    const min = parseFloat(frame.dataset.parallaxMin);
+    const max = parseFloat(frame.dataset.parallaxMax);
+    return {
+      frame,
+      img,
+      min: Number.isFinite(min) ? min : 1.0,
+      max: Number.isFinite(max) ? max : 1.02,
+    };
   }).filter(Boolean);
-
-  const SCALE_MIN = 1.0;
-  const SCALE_MAX = 1.18;
 
   let raf = 0;
   function update() {
     const vh = window.innerHeight;
-    items.forEach(({ frame, img }) => {
+    items.forEach(({ frame, img, min, max }) => {
       const r = frame.getBoundingClientRect();
       const p = Math.max(0, Math.min(1, (vh - r.top) / (vh + r.height)));
-      const scale = SCALE_MIN + (SCALE_MAX - SCALE_MIN) * p;
+      const scale = min + (max - min) * p;
       img.style.transform = `scale(${scale.toFixed(4)})`;
     });
   }
@@ -626,6 +602,308 @@ function initTipTap() {
   });
 }
 
+/* ── DAY-COST SCRUBBER — one slider drives both cards.
+   Math:
+     studioCost(d) = (d / 84) * 10,000         // $0 → $10,000 over 84 days
+     claudeCost(d) = min(d / 3.5, 1) * 65       // $0 → $65 over 3.5 days, then flat
+   One motion source beyond manual drag:
+     - Scroll-tied: as the figure travels through the viewport, day 0 → 84.
+       progress = clamp((vh - rect.top) / vh)
+         — completes when the figure's top reaches the viewport's top
+         (data-point header at top), not when the figure has fully passed.
+   The Replay button snaps the slider back to 0; there's no automated playback. */
+function initDayCost() {
+  const fig = document.querySelector('.day-cost');
+  if (!fig) return;
+  const slider = fig.querySelector('.dc-slider');
+  const dayNum = fig.querySelector('.dc-day-num');
+  const dayLabel = fig.querySelector('.dc-day-label');
+  const studioAmount = fig.querySelector('[data-cost-studio]');
+  const claudeAmount = fig.querySelector('[data-cost-claude]');
+  const studioNaira = fig.querySelector('[data-cost-studio-ng]');
+  const claudeNaira = fig.querySelector('[data-cost-claude-ng]');
+  const studioBar = fig.querySelector('.dc-bar-fill--studio');
+  const claudeBar = fig.querySelector('.dc-bar-fill--claude');
+  const replay = fig.querySelector('.dc-replay');
+  const summary = fig.querySelector('.dc-card-summary');
+  const tokenNum = fig.querySelector('[data-token-num]');
+  const tokenLabel = fig.querySelector('[data-token-label]');
+  const tokenStatus = fig.querySelector('[data-token-status]');
+  const gauge = fig.querySelector('.dc-gauge');
+  const gaugeFg = fig.querySelector('.dc-gauge-fg');
+  const gaugeNeedle = fig.querySelector('.dc-gauge-needle');
+  const gaugeNeedleTrail = fig.querySelector('.dc-gauge-needle-trail');
+  const gaugeOuterRedline = fig.querySelector('.dc-gauge-outer-redline');
+  const redlinePill = fig.querySelector('[data-redline-pill]');
+  const pulseDot = fig.querySelector('[data-pulse-dot]');
+  const ticksShortHost = fig.querySelector('[data-ticks-short]');
+  const ticksLongHost = fig.querySelector('[data-ticks-long]');
+  const pulseLabel = fig.querySelector('[data-pulse-label]');
+
+  // Build tick hierarchy along the 180° arc. Long ticks at 0/25/50/75/100,
+  // short ticks at every other 10% step. Inner radius = 80, outer = 84 (short)
+  // / 88 (long), all from centre (100, 100).
+  const SVG_NS = 'http://www.w3.org/2000/svg';
+  function tickAt(pct, longTick) {
+    // 0% = left (180°), 100% = right (0°). Map 0..100 → π..0.
+    const angle = Math.PI * (1 - pct / 100);
+    const cx = 100, cy = 100;
+    const rIn = 80, rOut = longTick ? 90 : 85;
+    const x1 = cx + Math.cos(angle) * rIn;
+    const y1 = cy - Math.sin(angle) * rIn;
+    const x2 = cx + Math.cos(angle) * rOut;
+    const y2 = cy - Math.sin(angle) * rOut;
+    const line = document.createElementNS(SVG_NS, 'line');
+    line.setAttribute('x1', x1.toFixed(2));
+    line.setAttribute('y1', y1.toFixed(2));
+    line.setAttribute('x2', x2.toFixed(2));
+    line.setAttribute('y2', y2.toFixed(2));
+    line.dataset.pct = String(pct);
+    return line;
+  }
+  if (ticksShortHost && ticksLongHost) {
+    [10, 20, 30, 40, 60, 70, 80, 90].forEach(p => ticksShortHost.appendChild(tickAt(p, false)));
+    [0, 25, 50, 75, 100].forEach(p => {
+      const line = tickAt(p, true);
+      if (p >= 80) line.classList.add('is-redline');
+      ticksLongHost.appendChild(line);
+    });
+  }
+
+  if (!slider || !dayNum || !studioBar || !claudeBar) return;
+
+  // Per-day token totals from the real STSL build session logs.
+  const TOKEN_DATA = [
+    { day: 1, total: 17_019_602 },
+    { day: 2, total: 40_632_391 },
+    { day: 3, total: 63_603_609 },
+    { day: 4, total: 24_977_120 },
+  ];
+  const TOKEN_TOTAL = TOKEN_DATA.reduce((s, x) => s + x.total, 0);
+  const TOKEN_CUM = TOKEN_DATA.reduce((acc, x) => {
+    acc.push((acc[acc.length - 1] || 0) + x.total);
+    return acc;
+  }, []);
+  const fmtNum = new Intl.NumberFormat('en-US', { notation: 'compact', maximumFractionDigits: 0 });
+  const BURN_DAY = 4;
+
+  // Three session boundaries (Day 3 + Day 4 share a context window). Used only
+  // to fire the reset-pulse on forward crossings — the gauge fill itself is
+  // now a single continuous gradient driven by --gauge-fill.
+
+  const fmt = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
+  const fmtNG = new Intl.NumberFormat('en-NG', { maximumFractionDigits: 0 });
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const STUDIO_TOTAL = 10_000;
+  const CLAUDE_TOTAL = 65;
+  const NGN_RATE = 1540;
+  const SHIP_DAY = 3.5;
+  const MAX_DAY = 84;
+
+  // Track which session the scrubber is currently in. On boundary crossings
+  // (any direction) fire a reset pulse — that's the "context reset" signal.
+  let lastSessionIdx = sessionIndexFor(0);
+  function sessionIndexFor(d) {
+    if (d < 1) return 0;
+    if (d < 2) return 1;
+    return 2;
+  }
+
+  function firePulse() {
+    if (reduced) return;
+    // Re-trigger by toggling the class — drop, force reflow, re-add.
+    gauge.classList.remove('is-pulsing');
+    void gauge.offsetWidth;
+    gauge.classList.add('is-pulsing');
+    if (pulseLabel) {
+      pulseLabel.classList.add('is-visible');
+      clearTimeout(firePulse._t);
+      firePulse._t = setTimeout(() => pulseLabel.classList.remove('is-visible'), 800);
+    }
+    setTimeout(() => gauge.classList.remove('is-pulsing'), 620);
+  }
+
+  // Day-counter follows scroll directly — no JS lerp, snap on each scroll
+  // tick so the number, gauge, and running-cost bars all advance in lockstep.
+  function renderDayReadout(d) {
+    const shown = Math.round(d);
+    dayNum.textContent = String(shown);
+    dayLabel.textContent = `Day ${shown}`;
+  }
+
+  // Single update: scroll position → every visual element. No JS lerp, no
+  // tween loop, no separate gauge state. CSS transitions on .dc-bar-fill,
+  // .dc-gauge-fg, .dc-gauge-needle, .dc-gauge-num do all the smoothing in
+  // lockstep (~0.12s) so bars + gauge + needle + token scale move together.
+  function update(rawDay) {
+    const d = Math.round(Math.max(0, Math.min(MAX_DAY, rawDay)) * 2) / 2;
+    renderDayReadout(d);
+
+    // ── Running-cost bars + amounts ────────────────────────────
+    const studioCost = Math.round((d / MAX_DAY) * STUDIO_TOTAL);
+    studioAmount.textContent = fmt.format(studioCost);
+    studioAmount.classList.toggle('is-live', d > 0);
+    if (studioNaira) studioNaira.textContent = `₦${fmtNG.format(studioCost * NGN_RATE)}`;
+    studioBar.style.width = `${(d / MAX_DAY) * 100}%`;
+
+    const claudeCost = d >= SHIP_DAY
+      ? CLAUDE_TOTAL
+      : Math.round((d / SHIP_DAY) * CLAUDE_TOTAL);
+    claudeAmount.textContent = fmt.format(claudeCost);
+    claudeAmount.classList.toggle('is-live', d > 0);
+    if (claudeNaira) claudeNaira.textContent = `₦${fmtNG.format(claudeCost * NGN_RATE)}`;
+    claudeBar.style.width = `${(claudeCost / STUDIO_TOTAL) * 100}%`;
+
+    fig.style.setProperty('--dc-progress', `${(d / MAX_DAY) * 100}%`);
+
+    if (d <= 0) {
+      summary.textContent = 'Drag the scrubber to compare.';
+    } else {
+      const diff = studioCost - claudeCost;
+      summary.textContent = `${fmt.format(diff)} less than the agency at this point.`;
+    }
+
+    // ── Gauge (arc, needle, glow, redline, pulse, ticks) ───────
+    if (!(gaugeFg && gaugeNeedle && tokenNum)) return;
+    const fill = Math.max(0, Math.min(1, d / BURN_DAY)); // 0..1
+    // Arc fill — full path length is π × 80 ≈ 251.33; offset = (1 - fill) × that.
+    gaugeFg.style.strokeDashoffset = ((1 - fill) * 251.33).toFixed(2);
+    // Needle rotation: -90° (left) → +90° (right).
+    gaugeNeedle.style.transform = `rotate(${(-90 + fill * 180).toFixed(2)}deg)`;
+
+    // Glow: yellow (3→6px) below 50%, red (6→14px) above. Needle glow > 80%.
+    let blur, color, needleGlow = 'rgba(228, 2, 2, 0)';
+    if (fill < 0.5) {
+      const t = fill / 0.5;
+      blur = 3 + t * 3;
+      color = `rgba(255, 201, 25, ${(0.25 + t * 0.25).toFixed(3)})`;
+    } else {
+      const t = (fill - 0.5) / 0.5;
+      blur = 6 + t * 8;
+      color = `rgba(228, 2, 2, ${(0.45 + t * 0.5).toFixed(3)})`;
+      if (fill >= 0.8) {
+        const u = (fill - 0.8) / 0.2;
+        needleGlow = `rgba(228, 2, 2, ${(u * 0.9).toFixed(3)})`;
+      }
+    }
+    gaugeFg.style.setProperty('--gauge-glow-blur', `${blur.toFixed(2)}px`);
+    gaugeFg.style.setProperty('--gauge-glow-color', color);
+    gaugeNeedle.style.setProperty('--needle-glow', needleGlow);
+
+    if (gaugeNeedleTrail) {
+      gaugeNeedleTrail.style.transform = `rotate(${(-90 + fill * 180).toFixed(2)}deg)`;
+      gaugeNeedleTrail.style.opacity = (0.10 + fill * 0.18).toFixed(3);
+    }
+    if (gaugeOuterRedline) {
+      const redline = fill <= 0.8 ? 0 : (fill - 0.8) / 0.2;
+      gaugeOuterRedline.style.setProperty('--redline-fill', redline.toFixed(3));
+    }
+    if (redlinePill) redlinePill.classList.toggle('is-active', fill >= 0.8);
+    if (pulseDot) {
+      const rate = (1.4 - fill * 1.0).toFixed(2);
+      pulseDot.style.setProperty('--pulse-rate', `${rate}s`);
+      pulseDot.style.setProperty('--pulse-color',
+        fill >= 0.7 ? 'rgba(228,2,2,0.95)' : 'rgba(255,255,255,0.85)');
+    }
+
+    const fillPct = fill * 100;
+    if (ticksShortHost) {
+      ticksShortHost.querySelectorAll('line').forEach(l => {
+        l.classList.toggle('is-passed', Number(l.dataset.pct) <= fillPct);
+      });
+    }
+    if (ticksLongHost) {
+      ticksLongHost.querySelectorAll('line').forEach(l => {
+        l.classList.toggle('is-passed', Number(l.dataset.pct) <= fillPct);
+      });
+    }
+
+    // ── Token counter + scale ──────────────────────────────────
+    const scrollDay = fill * BURN_DAY;
+    let tokensSoFar;
+    if (scrollDay <= 0) tokensSoFar = 0;
+    else if (scrollDay >= BURN_DAY) tokensSoFar = TOKEN_TOTAL;
+    else {
+      const idx = Math.floor(scrollDay);
+      const frac = scrollDay - idx;
+      const base = idx > 0 ? TOKEN_CUM[idx - 1] : 0;
+      const next = TOKEN_DATA[idx]?.total || 0;
+      tokensSoFar = Math.round(base + frac * next);
+    }
+    tokenNum.textContent = fmtNum.format(tokensSoFar);
+    const tokenScale = fill <= 0 ? 0 : Math.pow(fill, 0.6);
+    tokenNum.style.setProperty('--token-scale', tokenScale.toFixed(4));
+
+    // ── Token label + status text ──────────────────────────────
+    const dayN = Math.min(Math.ceil(d), BURN_DAY);
+    tokenLabel.textContent = d <= 0
+      ? 'day 0'
+      : (d >= BURN_DAY ? 'day 4 — context full' : `day ${dayN}`);
+
+    tokenNum.classList.remove('is-burning', 'is-exhausted');
+    tokenStatus.classList.remove('is-burning', 'is-exhausted');
+    if (d <= 0) {
+      tokenStatus.textContent = 'Idle.';
+    } else if (d < 1) {
+      tokenStatus.textContent = 'Session 1, building.';
+    } else if (d < 2) {
+      tokenStatus.textContent = 'Session 2, building.';
+    } else if (d < BURN_DAY) {
+      tokenStatus.textContent = 'Session 3, burning fast.';
+      tokenNum.classList.add('is-burning');
+      tokenStatus.classList.add('is-burning');
+    } else {
+      tokenStatus.textContent = 'Context exhausted.';
+      tokenNum.classList.add('is-exhausted');
+      tokenStatus.classList.add('is-exhausted');
+    }
+
+    // Reset-pulse on session boundary crossings.
+    const idx = sessionIndexFor(d);
+    if (idx !== lastSessionIdx) {
+      firePulse();
+      lastSessionIdx = idx;
+    }
+  }
+
+  slider.addEventListener('input', (e) => {
+    update(parseFloat(e.target.value));
+  });
+
+  // Replay just scrolls back to the figure top — the scroll handler then
+  // resets every visual via the same code path. No animation here.
+  replay.addEventListener('click', () => {
+    fig.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  // ── Scroll-tied progress.
+  // Map figure travel through the viewport to day 0 → 84.
+  // progress = clamp((vh - rect.top) / vh)
+  //   - when rect.top = vh (figure top at viewport bottom) → progress = 0
+  //   - when rect.top = 0  (figure top at viewport top)    → progress = 1
+  // The animation finishes by the time the data-point header reaches the
+  // top of the viewport — chart reveal is fully complete while the figure
+  // is still entirely visible.
+  let scrollRaf = 0;
+  function onScroll() {
+    if (scrollRaf) return;
+    scrollRaf = requestAnimationFrame(() => {
+      scrollRaf = 0;
+      const rect = fig.getBoundingClientRect();
+      const vh = window.innerHeight || document.documentElement.clientHeight;
+      const raw = (vh - rect.top) / vh;
+      const progress = Math.max(0, Math.min(1, raw));
+      const d = progress * MAX_DAY;
+      slider.value = d;
+      update(d);
+    });
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
+  // Initial paint on load.
+  onScroll();
+}
+
 /* ── BOOT ─────────────────────────────────────────────────── */
 function boot() {
   // Force scroll to top on every refresh — disable browser auto-restore.
@@ -645,6 +923,7 @@ function boot() {
   initScrollTop();
   initReveal();
   initTipTap();
+  initDayCost();
   // Loader gates the entry animation; rest is already running.
   initLoader(() => {
     document.body.classList.add('is-loaded');
@@ -656,3 +935,89 @@ if (document.readyState === 'loading') {
 } else {
   boot();
 }
+
+/* Cost-vs-Value — tap-to-flip for touch / non-hover devices */
+document.querySelectorAll('.cv-metric').forEach((btn) => {
+  btn.addEventListener('click', () => btn.classList.toggle('is-flipped'));
+});
+
+/* ── RATIO BLOCK — randomised stagger + click-to-toggle on touch ──
+   Assigns each cell a random `--i` (0..1) used by CSS as a
+   transition-delay multiplier. The hot cell keeps its fixed late
+   delay so it lands last. Click on the hot cell toggles
+   `.is-active` on the figure for non-hover devices. */
+(function initRatioBlock() {
+  const block = document.querySelector('.ratio-block');
+  if (!block) return;
+
+  // 1. Random reveal delays for each muted cell
+  const cells = block.querySelectorAll('.rb-cell:not(.rb-cell--hot)');
+  cells.forEach((cell) => {
+    cell.style.setProperty('--i', Math.random().toFixed(3));
+  });
+
+  // 2. Click toggling for the hot cell (no-hover devices)
+  const hot = block.querySelector('.rb-cell--hot');
+  if (!hot) return;
+
+  hot.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isActive = block.classList.toggle('is-active');
+    hot.setAttribute('aria-expanded', isActive ? 'true' : 'false');
+  });
+
+  // 3. Tap outside the block closes the active card on touch
+  document.addEventListener('click', (e) => {
+    if (!block.classList.contains('is-active')) return;
+    if (!block.contains(e.target)) {
+      block.classList.remove('is-active');
+      hot.setAttribute('aria-expanded', 'false');
+    }
+  });
+
+  // 4. Esc closes
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && block.classList.contains('is-active')) {
+      block.classList.remove('is-active');
+      hot.setAttribute('aria-expanded', 'false');
+      hot.blur();
+    }
+  });
+})();
+
+/* ── Agents/Skills toggle — segmented pill, mirrors the portfolio
+   Contact/Resume hero pair in mechanic. Click or arrow-key swaps panels. */
+(function initAgentsSkills() {
+  document.querySelectorAll('.agents-skills').forEach((root) => {
+    const toggle = root.querySelector('.as-toggle');
+    const tabs = Array.from(root.querySelectorAll('.as-toggle-btn'));
+    const panels = {
+      agents: root.querySelector('.as-list--agents'),
+      skills: root.querySelector('.as-list--skills'),
+    };
+    if (!toggle || tabs.length !== 2 || !panels.agents || !panels.skills) return;
+
+    const activate = (key) => {
+      toggle.dataset.active = key;
+      tabs.forEach((t) => {
+        const on = t.dataset.tab === key;
+        t.classList.toggle('is-active', on);
+        t.setAttribute('aria-selected', on ? 'true' : 'false');
+        t.tabIndex = on ? 0 : -1;
+      });
+      Object.entries(panels).forEach(([k, el]) => { el.hidden = k !== key; });
+    };
+
+    tabs.forEach((tab, i) => {
+      tab.addEventListener('click', () => activate(tab.dataset.tab));
+      tab.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+          e.preventDefault();
+          const next = tabs[(i + 1) % tabs.length];
+          activate(next.dataset.tab);
+          next.focus();
+        }
+      });
+    });
+  });
+})();
