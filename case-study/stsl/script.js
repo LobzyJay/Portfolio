@@ -632,6 +632,13 @@ function initDayCost() {
   const gauge = fig.querySelector('.dc-gauge');
   const gaugeFg = fig.querySelector('.dc-gauge-fg');
   const gaugeNeedle = fig.querySelector('.dc-gauge-needle');
+  // Compute the actual path length once at init and pin both dasharray + initial
+  // offset directly on the element via attributes — bypasses CSS specificity.
+  const GAUGE_LEN = gaugeFg ? gaugeFg.getTotalLength() : 251.33;
+  if (gaugeFg) {
+    gaugeFg.setAttribute('stroke-dasharray', GAUGE_LEN);
+    gaugeFg.setAttribute('stroke-dashoffset', GAUGE_LEN);
+  }
   const gaugeNeedleTrail = fig.querySelector('.dc-gauge-needle-trail');
   const gaugeOuterRedline = fig.querySelector('.dc-gauge-outer-redline');
   const redlinePill = fig.querySelector('[data-redline-pill]');
@@ -765,58 +772,27 @@ function initDayCost() {
 
     // ── Gauge (arc, needle, glow, redline, pulse, ticks) ───────
     if (!(gaugeFg && gaugeNeedle && tokenNum)) return;
-    const fill = Math.max(0, Math.min(1, d / BURN_DAY)); // 0..1
-    // Arc fill — full path length is π × 80 ≈ 251.33; offset = (1 - fill) × that.
-    gaugeFg.style.strokeDashoffset = ((1 - fill) * 251.33).toFixed(2);
-    // Needle rotation: -90° (left) → +90° (right).
+    // Stepped marker progression. Each 20% of scroll snaps the needle to
+    // the next Day tick (0 / 1 / 2 / 3 / 4 → exhausted). Reverse on scroll
+    // up is symmetric — same math, just in reverse.
+    //   0–20%  → Day 0
+    //   20–40% → Day 1
+    //   40–60% → Day 2
+    //   60–80% → Day 3
+    //   80–100% → Day 4 (exhausted)
+    const scrollProgress = Math.max(0, Math.min(1, d / MAX_DAY));
+    const dayMarker = Math.min(Math.floor(scrollProgress * 5), 4);
+    const fill = dayMarker / 4; // 0, 0.25, 0.5, 0.75, 1
+    gaugeFg.setAttribute('stroke-dashoffset', ((1 - fill) * GAUGE_LEN).toFixed(2));
     gaugeNeedle.style.transform = `rotate(${(-90 + fill * 180).toFixed(2)}deg)`;
 
-    // Glow: yellow (3→6px) below 50%, red (6→14px) above. Needle glow > 80%.
-    let blur, color, needleGlow = 'rgba(228, 2, 2, 0)';
-    if (fill < 0.5) {
-      const t = fill / 0.5;
-      blur = 3 + t * 3;
-      color = `rgba(255, 201, 25, ${(0.25 + t * 0.25).toFixed(3)})`;
-    } else {
-      const t = (fill - 0.5) / 0.5;
-      blur = 6 + t * 8;
-      color = `rgba(228, 2, 2, ${(0.45 + t * 0.5).toFixed(3)})`;
-      if (fill >= 0.8) {
-        const u = (fill - 0.8) / 0.2;
-        needleGlow = `rgba(228, 2, 2, ${(u * 0.9).toFixed(3)})`;
-      }
-    }
-    gaugeFg.style.setProperty('--gauge-glow-blur', `${blur.toFixed(2)}px`);
-    gaugeFg.style.setProperty('--gauge-glow-color', color);
-    gaugeNeedle.style.setProperty('--needle-glow', needleGlow);
-
+    // Yellow trail follows the red needle as a glued halo (no opacity scaling).
     if (gaugeNeedleTrail) {
       gaugeNeedleTrail.style.transform = `rotate(${(-90 + fill * 180).toFixed(2)}deg)`;
-      gaugeNeedleTrail.style.opacity = (0.10 + fill * 0.18).toFixed(3);
     }
-    if (gaugeOuterRedline) {
-      const redline = fill <= 0.8 ? 0 : (fill - 0.8) / 0.2;
-      gaugeOuterRedline.style.setProperty('--redline-fill', redline.toFixed(3));
-    }
-    if (redlinePill) redlinePill.classList.toggle('is-active', fill >= 0.8);
-    if (pulseDot) {
-      const rate = (1.4 - fill * 1.0).toFixed(2);
-      pulseDot.style.setProperty('--pulse-rate', `${rate}s`);
-      pulseDot.style.setProperty('--pulse-color',
-        fill >= 0.7 ? 'rgba(228,2,2,0.95)' : 'rgba(255,255,255,0.85)');
-    }
-
-    const fillPct = fill * 100;
-    if (ticksShortHost) {
-      ticksShortHost.querySelectorAll('line').forEach(l => {
-        l.classList.toggle('is-passed', Number(l.dataset.pct) <= fillPct);
-      });
-    }
-    if (ticksLongHost) {
-      ticksLongHost.querySelectorAll('line').forEach(l => {
-        l.classList.toggle('is-passed', Number(l.dataset.pct) <= fillPct);
-      });
-    }
+    // HUD layers stay visible as static decoration — no fill-driven changes.
+    // (Removed: glow scaling, redline pill toggle, pulse dot rate, outer
+    // redline arc fill, tick brightening — only the gauge bar animates now.)
 
     // ── Token counter + scale ──────────────────────────────────
     const scrollDay = fill * BURN_DAY;
@@ -870,20 +846,16 @@ function initDayCost() {
     update(parseFloat(e.target.value));
   });
 
-  // Replay just scrolls back to the figure top — the scroll handler then
-  // resets every visual via the same code path. No animation here.
-  replay.addEventListener('click', () => {
-    fig.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  });
+  // Replay button removed — scroll itself drives the simulation, no explicit
+  // reset needed. Scroll up = visuals reverse to 0 via the scroll handler.
 
   // ── Scroll-tied progress.
-  // Map figure travel through the viewport to day 0 → 84.
-  // progress = clamp((vh - rect.top) / vh)
-  //   - when rect.top = vh (figure top at viewport bottom) → progress = 0
-  //   - when rect.top = 0  (figure top at viewport top)    → progress = 1
-  // The animation finishes by the time the data-point header reaches the
-  // top of the viewport — chart reveal is fully complete while the figure
-  // is still entirely visible.
+  // Animation begins once the data-point bento is halfway past the viewport
+  // (figure top has crossed the viewport's vertical midpoint). Completes
+  // when figure top reaches viewport top. Reverses symmetrically on scroll
+  // up.
+  //   - progress 0 when rect.top = vh/2 (figure top at viewport midpoint)
+  //   - progress 1 when rect.top = 0    (figure top at viewport top)
   let scrollRaf = 0;
   function onScroll() {
     if (scrollRaf) return;
@@ -891,8 +863,8 @@ function initDayCost() {
       scrollRaf = 0;
       const rect = fig.getBoundingClientRect();
       const vh = window.innerHeight || document.documentElement.clientHeight;
-      const raw = (vh - rect.top) / vh;
-      const progress = Math.max(0, Math.min(1, raw));
+      const halfPoint = vh / 2;
+      const progress = Math.max(0, Math.min(1, (halfPoint - rect.top) / halfPoint));
       const d = progress * MAX_DAY;
       slider.value = d;
       update(d);

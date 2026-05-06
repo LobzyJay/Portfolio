@@ -185,7 +185,7 @@
           <h2 class="chapter-title">Overview</h2>
         </header>
         <div class="chapter-body">
-          <p>SystemSpecs Technology Solutions is one of those companies most designers outside Lagos haven't heard of, but everyone in Nigeria has touched. Thirty-two years of fintech infrastructure, the rails behind the federal Treasury Single Account, every tier-1 Nigerian bank, more than 40 government ministries running payments through their stack.</p>
+          <p>SystemSpecs Technology Solutions is one of those companies most designers outside Lagos haven't heard of. Everyone in Nigeria has touched it though, mostly without knowing. They own Remita, the payment rail behind the federal Treasury Single Account, every tier-1 Nigerian bank, and more than 40 government ministries. School fees, taxes, anything paid to a government agency.</p>
           <p>I gave myself 3.5 days to rebuild it from scratch with Claude as a collaborator. Marketing site, design system, UI kit. One repo, one weekend, one designer.</p>
         </div>
         <aside class="overview-meta">
@@ -209,10 +209,10 @@
           <span class="chapter-toggle" aria-hidden="true"></span>
         </summary>
         <div class="chapter-body">
-          <p>I started before I started. The day before the build began, I sat down and wrote the <span class="tip" tabindex="0" role="button" aria-label="Tip: PRD, tap to expand" data-tip="Product Requirements Document. The doc a PM hands a team. Problem, audience, scope.">PRD</span> myself. I didn't want a freeform "redesign" brief that drifts into vibes. I wanted a document a real team could ship against, even though I was the team.</p>
+          <p>I started before I started. Day 0 is the day before the build, the day you write the brief that the rest of it will reference. I sat down and wrote the <span class="tip" tabindex="0" role="button" aria-label="Tip: PRD, tap to expand" data-tip="Product Requirements Document. The doc a PM hands a team. Problem, audience, scope.">PRD</span> myself. I didn't want a freeform "redesign" brief that drifts into vibes. I wanted a document a real team could ship against, even though I was the team.</p>
           <p>The prompt to Claude was short. Be the PM. Run a UX/UI audit of the current site first. Then write the redesign PRD. Anchor the audit around a specific question: why doesn't the current site work for SystemSpecs's actual position as a 32-year-old technology infrastructure company. That last bit was important. I didn't want a critique of font choices. I wanted a diagnosis of the <span class="tip" tabindex="0" role="button" aria-label="Tip: credibility gap, tap to expand" data-tip="The gap between who STSL actually is and how their site reads.">credibility gap</span>.</p>
 
-          <aside class="prompt-callout" role="figure" aria-label="Chat with Opus 4.7">
+          <aside class="prompt-callout" role="figure" aria-label="Chat with Opus 4.7" data-reveal>
             <header class="pc-thread">
               <span class="pc-avatar pc-avatar--me" aria-hidden="true"><img src="../../assets/avatar.jpg" alt="" loading="lazy" decoding="async" /></span>
               <span class="pc-name">Adewale</span>
@@ -262,15 +262,15 @@
               </div>
               <p class="chapter-side-caption"><span class="csc-num">01</span><span>Mobile · solutions snap-scroll. The system on the smallest viewport.</span></p>
             </aside>
-            <p>The bet on Day 1 was that the design system goes first, even though nobody sees it yet. No marketing pages, no homepage, no hero. Just <span class="tip" tabindex="0" role="button" aria-label="Tip: tokens, tap to expand" data-tip="Named values for colour, spacing, type. Reference one token, update one place.">tokens</span>, <span class="tip" tabindex="0" role="button" aria-label="Tip: primitives, tap to expand" data-tip="Smallest reusable components. Button, Link, Card. Composed into bigger patterns.">primitives</span>, and the first round of layout components. By the end of the day, the only thing on screen was a docs page that listed swatches, type scales, and a few buttons. Most people would call that a wasted Saturday. I think it was the most important decision I made all four days.</p>
+            <p>Day 1 was a system day. The bet was that the design system goes first, even though nobody sees it yet. No marketing pages, no homepage, no hero. Just <span class="tip" tabindex="0" role="button" aria-label="Tip: tokens, tap to expand" data-tip="Named values for colour, spacing, type. Reference one token, update one place.">tokens</span>, <span class="tip" tabindex="0" role="button" aria-label="Tip: primitives, tap to expand" data-tip="Smallest reusable components. Button, Link, Card. Composed into bigger patterns.">primitives</span>, and the first round of layout components. By the end of the day, the only thing on screen was a docs page that listed swatches, type scales, and a few buttons. Most people would call that a wasted Saturday. I think it was the most important decision I made all four days.</p>
             <p>The architecture was three layers. Primitive tokens at the bottom (raw color values, spacing scale, type ramp), semantic tokens in the middle (bg-canvas, text-primary, accent-default, names that describe meaning, not appearance), and component tokens on top (button-bg, card-radius, nav-blur, names that describe usage). Every color the marketing site would later use referenced a semantic token. Every semantic token referenced a primitive. That's three lookups for any given pixel, which sounds like overhead, but it's actually how a system stays sane when you start adding pages.</p>
             <p>I split the system into its own workspace, separate from the marketing app. The foundations layer (raw values) lived in one folder, the STSL brand bindings (cream, charcoal, accent red, the typeface stack) in another. Marketing pages and the UI kit both pulled from those two. That structure made one thing true: if I wanted to change a token, say the cream canvas hue, I'd touch one file and every page would update. If I wanted to swap brands later, I'd add a second brand binding and the system would adopt it.</p>
             <p>Type was where I spent the most time. The brief had said "no Inter, no Roboto, no defaults". I went looking for typefaces with personality that weren't trying to look expensive. The display ended up being Plus Jakarta Sans at medium weight, which has a quiet authority and pairs well with serif italic. The body went to Geist, which is technical without being cold. Pull-quotes used Source Serif 4 italic, which has the slightly slanted warmth of editorial writing. Captions and code went to JetBrains Mono. Four typefaces, each pulling its weight.</p>
-            <figure class="pull-quote">
+            <figure class="pull-quote" data-reveal>
               <p><span class="quote-script">T</span>he design system isn't a deliverable at the end, it's the load-bearing infrastructure on day one.</p>
             </figure>
             <p>Motion was the other token category that had to land on Day 1. I picked four easing curves and three durations and gave them names: ease-expressive for the soft cinematic curve, ease-snappy for click feedback, ease-natural for content reveal, and ease-precise for UI states. Then I locked them into a single CSS variable file. Every transition on the marketing site later referenced one of those four. Nothing freelanced.</p>
-            <figure class="token-snippet">
+            <figure class="token-snippet" data-reveal>
               <div class="tk-chrome" aria-hidden="true">
                 <span class="tk-dot tk-dot--r"></span>
                 <span class="tk-dot tk-dot--y"></span>
@@ -297,7 +297,7 @@
               <figcaption>The whole foundation, one file. Every page on the marketing site references these names. Change one value, every surface updates.</figcaption>
             </figure>
             <p>By the end of Day 1, the design system docs page existed at <code>/design</code>. Empty marketing pages. No hero. No content. But every primitive that the rest of the build would need (Button, Link, Card, Field, Tabs, Accordion, Dialog, Tooltip, Select, Checkbox, Radio, Skeleton) had been built and demoed against the tokens. Day 2 onward, I never had to invent a new component. I just composed the ones already built.</p>
-            <p>That's why Day 1 looked the way it did.</p>
+            <p>That's why Day 1 looked the way it did. The system is the page you don't see.</p>
           </div>
           <figure class="live-frame live-frame--tabbed" data-lf-base="https://systemspec-website-redesign-web.vercel.app/design/">
             <div class="lf-tabs" role="tablist" aria-label="Design system sections">
@@ -326,7 +326,7 @@
           <span class="chapter-toggle" aria-hidden="true"></span>
         </summary>
         <div class="chapter-body">
-          <p>Two commits. That's all Day 2 produced. A mobile-responsive sweep on the design system docs page and a flatten-icon-tile fix that nobody would notice. From the outside, it looks like I lost a day.</p>
+          <p>What does a slow day actually buy you? Two commits and the eight hours it saved on Day 3. A mobile-responsive sweep on the design system docs page and a flatten-icon-tile fix that nobody would notice. From the outside, it looks like I lost a day.</p>
           <p>From the inside, Day 2 was the day the build didn't blow up.</p>
           <p>Most of Day 2 wasn't in code. It was in Figma. I went back to the brief, scrolled through the audit notes, and started laying out static frames of every marketing page at the right max-width, with the type stack from Day 1 plugged in. No interaction, no motion, no component logic. Just composition. What does the homepage hero feel like with the actual headline. What does the solutions page rhythm look like with three real paragraphs. Where does the footer sit on a 16-inch laptop versus a 13-inch.</p>
           <p>Doing this in static Figma instead of in code meant I caught the things that would've been three commits each in code. The wordmark needed a tighter scale on the homepage hero. The audience tiles needed two breakpoints, not one. The footer atmosphere had to read on dark mode without the green tint going neon.</p>
@@ -348,8 +348,8 @@
           <p>Day 3 was 22 commits and most of them were fixing things. The single big one was tagged "STSL marketing site v1, full rebuild" and it was the only commit that actually built new pages. Everything else was the system reacting to itself.</p>
           <p>Two of those reactions are worth telling, because they're the kind of moment that doesn't show up in a portfolio shot but tells you what the day actually was.</p>
           <p>The first was a deploy-path issue. The site lived under a subpath on the host, which meant every internal link, every asset reference, every fetch had to be aware of that prefix. The framework handles most of it, but the combination of <span class="tip" tabindex="0" role="button" aria-label="Tip: static export, tap to expand" data-tip="Build mode that ships plain HTML/CSS/JS. No server, just files.">static export</span>, client-side routing, and an aggressive transition layer meant the bridge wasn't watertight. Links that worked locally returned 404 on the deploy. I wrote a tiny helper that rewrote every internal href in one place and re-ran the export. That fix is exactly two characters longer than it needs to be. It works.</p>
-          <p>The second was the bigger one, and the more honest one. I'd built a clever route-transition wrapper that intercepted clicks on internal links to add a soft cross-fade between pages. Nice idea. It also broke every internal link because the click interception fired before the browser could navigate, and the transition's promise resolution was racing the route push. The pages just stopped going anywhere.</p>
-          <figure class="pull-quote">
+          <p>The second one is the more honest of the two. Worth staying with for a beat. I'd built a clever route-transition wrapper that intercepted clicks on internal links to add a soft cross-fade between pages. Nice idea. It also broke every internal link because the click interception fired before the browser could navigate, and the transition's promise resolution was racing the route push. The pages just stopped going anywhere.</p>
+          <figure class="pull-quote" data-reveal>
             <p><span class="quote-script">A</span> clever abstraction broke real links, and I had to crawl back into the static HTML and rewrite hrefs by hand.</p>
           </figure>
           <p>I tried to debug the wrapper. Then I tried to fix it. Then I gave up, ripped it out, and replaced the transition with a simple opacity reveal that doesn't touch the click pipeline at all. The takeaway wasn't that abstractions are bad. The takeaway was that on a 4-day build, the cost of debugging a clever thing exceeds the value of having it. Cleverness has a depreciation curve, and on a deadline, the curve is steep.</p>
@@ -412,7 +412,7 @@
           <h2 class="chapter-title">Build hygiene</h2>
         </header>
         <div class="chapter-body">
-          <p>Most of the build held up across all 56 commits because of a few decisions made early. The site is a static export, so no server runtime ever has to be alive for the page to load. That removes a whole category of failure modes. There's no Node process to crash, no runtime error to debug at 2am, no scaling question to answer. The HTML is a file. The browser opens it.</p>
+          <p>A handful of decisions made early carried most of the build across 56 commits. They're worth naming. The site is a static export, so no server runtime ever has to be alive for the page to load. That removes a whole category of failure modes. There's no Node process to crash, no runtime error to debug at 2am, no scaling question to answer. The HTML is a file. The browser opens it.</p>
           <p>npm workspaces drew clear lines between the foundations package, the brand package, the marketing app, and the UI kit. Touching one didn't accidentally break another. When something did break, the diff was small enough to spot.</p>
           <p>Theme switching is token-driven, not component-driven. Every dark-mode color is a re-binding of the same primitive token, not a new color. That meant flipping themes was a matter of updating one file, and no component had to know which theme was active. The frozen-dark surfaces (the panels that stay dark in any theme) opted out via a single utility class.</p>
           <p>Images had a small pipeline. Every screenshot got run through <code>sips</code> on the way in: max long-edge 2400px for desktop shots, 1600px for mobile, JPEG quality 78. Originals stayed in a gitignored folder so the source was never lost. The article you're reading is under 3MB of media total.</p>
@@ -480,11 +480,11 @@
             <p class="chapter-side-caption"><span>Each agent ran one slice of the build. The discipline was not letting any agent reach into another's lane.</span></p>
           </aside>
           <p>The way I worked with Claude over those four days wasn't really collaboration in the human sense. It was something closer to having a very fast junior with infinite patience and a deep familiarity with React. I knew what I wanted. Claude knew how to type it out. The interesting question, four days in, is what each of us actually contributed.</p>
-          <p>Claude was good at the parts I'd usually find boring. Boilerplate. Cross-file consistency. Wiring up the build config. Translating a layout spec into JSX. Refactoring three similar components into one parameterized one. Writing the type definitions. Writing the test cases. Catching the typo I made in a token name and fixing it in 14 places. The work that takes a developer a week to do carefully and not enjoy. Claude did it in under an hour and didn't get tired of it.</p>
+          <p>Claude was good at the parts I'd usually find boring. The kind of work where you rename a token and have to update it in 14 places. Claude does that in a minute and doesn't get tired of it. Boilerplate. Cross-file consistency. Wiring up the build config. Translating a layout spec into JSX. Refactoring three similar components into one parameterized one. Writing the type definitions. Writing the test cases. The work that takes a developer a week to do carefully and not enjoy. Claude did it in under an hour.</p>
           <p>The taste calls stayed mine. Every aesthetic decision. Every "is this too clever" pull-back. Every cut. Whether the hero needed a globe or didn't. Whether the audience tiles read as five-up or four-up at 1440. Whether the splash should be cream or charcoal. Whether the underline-draw on links was 0.45s or 0.55s. None of those questions have a correct answer. They have an answer that fits the brief, and recognizing that fit is what design is.</p>
           <p>What I noticed by Day 3 is that Claude was best when I gave it a constraint and a sample. The vague prompts ("make this look better") produced the kind of generic output you can spot from across the room. The specific ones produced exactly what I wanted, every time.</p>
 
-          <aside class="prompt-callout" role="figure" aria-label="Chat with Opus 4.7">
+          <aside class="prompt-callout" role="figure" aria-label="Chat with Opus 4.7" data-reveal>
             <header class="pc-thread">
               <span class="pc-avatar pc-avatar--me" aria-hidden="true"><img src="../../assets/avatar.jpg" alt="" loading="lazy" decoding="async" /></span>
               <span class="pc-name">Adewale</span>
@@ -510,10 +510,10 @@
           <!-- Day-Cost scrubber — one input drives both cards (Days + Cost) over the 12-week timeline. -->
           <figure class="day-cost" data-reveal aria-label="Days versus cost over time">
             <header class="dc-head">
-              <p class="dc-eyebrow">a data point</p>
-              <h3 class="dc-headline">Interactive chart for engagement runs across model and operating cost.</h3>
+              <p class="dc-eyebrow">resource breakdown</p>
+              <h3 class="dc-headline">What I paid, and what the tokens did across the same four days.</h3>
             </header>
-            <p class="dc-rationale">Studio numbers based on a 5 to 8 person team over 12 weeks. Posted as a data point, not a critique.</p>
+            <p class="dc-rationale">Running cost on the left, context window on the right. Studio comparison based on a 5 to 8 person team over 12 weeks.</p>
             <div class="dc-scrubber">
               <div class="dc-day-readout"><span class="dc-day-num">0</span><span class="dc-day-label">Day 0</span></div>
               <input type="range" class="dc-slider" min="0" max="84" step="0.5" value="0" aria-label="Day scrubber, drag to scrub through the timeline">
@@ -525,7 +525,6 @@
                 <span data-mark="56">56</span>
                 <span data-mark="84">84</span>
               </div>
-              <button class="dc-replay" type="button" aria-label="Replay the auto-walk from day 0 to day 84">Replay</button>
             </div>
             <div class="dc-cards">
               <div class="dc-card dc-card--cost">
@@ -749,7 +748,7 @@ team          <span class="lr-v">5–8 people</span>
 
           <p>One thing I didn't fully plan for was token usage. By Day 4 morning the context window was gone, a full conversation wiped out by four days of accumulated code, reviews, and back-and-forths. The numbers, when I checked later, were about 5M tokens across three sessions, roughly $70 in API costs. I had to restart the session cold, with no memory of what had been built. The way I handled it was keeping a running reference folder alongside the repo: markdown docs with the decisions made, inline code comments explaining the non-obvious calls, and a short PRD I could paste at the start of any new session to re-anchor the model. That habit turned out to matter more than the agents. The agents are only as useful as the context you give them.</p>
           <p>That's the real lesson about working this way. Claude doesn't replace the designer. Claude removes the friction between the designer's idea and the running site. The friction was never the value-add of design. It was the tax on doing design.</p>
-          <figure class="pull-quote">
+          <figure class="pull-quote" data-reveal>
             <p><span class="qb"><span class="quote-script">V</span>ibecoding doesn't replace</span><span class="qb">design taste, it amplifies it.</span></p>
           </figure>
           <p>The amplification works in both directions. If I have strong taste, Claude makes it ship faster. If I have weak taste, Claude makes it ship faster too, and the weakness compounds. The output is only ever as considered as the inputs. The implication for the broader question of "AI-assisted design" is that the taste premium is going up, not down. The execution premium is going down. The designers who are going to do interesting work in the next two years are the ones who can articulate what they want with enough specificity that the model can produce it, then recognize when the output isn't quite right and say why.</p>
