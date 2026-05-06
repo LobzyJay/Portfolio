@@ -171,7 +171,7 @@
         <span class="cover-line"><span>Website Redesign</span></span>
       </h1>
 
-      <a class="cover-status" href="https://lobzyjay.github.io/Systemspec-website-redesign/" target="_blank" rel="noopener">
+      <a class="cover-status" href="https://systemspec-website-redesign-web.vercel.app/" target="_blank" rel="noopener">
         View site <span class="cover-status-dots" aria-hidden="true">...</span>
       </a>
 
@@ -195,8 +195,6 @@
             <div><dt>Role</dt><dd>Design + build (solo)</dd></div>
             <div><dt>Disciplines</dt><dd>Brand systems · UI · Frontend</dd></div>
             <div><dt>Timeline</dt><dd>Apr 27 – Apr 30, 2026</dd></div>
-            <div><dt>Live</dt><dd><a href="https://lobzyjay.github.io/Systemspec-website-redesign/" target="_blank" rel="noopener">View site →</a></dd></div>
-            <div><dt>Year</dt><dd>2026</dd></div>
           </dl>
         </aside>
       </section>
@@ -216,7 +214,7 @@
 
           <aside class="prompt-callout" role="figure" aria-label="Chat with Opus 4.7">
             <header class="pc-thread">
-              <span class="pc-avatar pc-avatar--me" aria-hidden="true">A</span>
+              <span class="pc-avatar pc-avatar--me" aria-hidden="true"><img src="../../assets/avatar.jpg" alt="" loading="lazy" decoding="async" /></span>
               <span class="pc-name">Adewale</span>
               <span class="pc-arrow" aria-hidden="true">→</span>
               <span class="pc-avatar pc-avatar--ai" aria-hidden="true">
@@ -237,6 +235,17 @@
           <p>That set up a few refusals before any pixel got pushed. No purple gradients. No generic dashboard chrome. No AI-generated imagery. No Inter, no Roboto, no defaults. The type stack landed on Plus Jakarta Sans for display, Geist for body, Source Serif 4 italic for pull-quotes, and JetBrains Mono for captions and code. Four typefaces, each chosen for what it does that the defaults don't.</p>
           <p>I also locked the max content width at 88rem, which is wider than most marketing sites. The reason was that the site needed to feel like it had room to breathe. A 32-year-old infrastructure company doesn't need to act small.</p>
           <p>The thing I noticed about writing the PRD as Day 0 is how much it changed Day 1. I wasn't designing into the void. Every choice on Day 1 referenced a line in the brief. The brief became the alignment partner I'd normally have a stakeholder for.</p>
+          <figure class="inputs-bento" data-reveal aria-label="What I fed in on Day 0">
+            <p class="ib-eyebrow">what I gave it</p>
+            <ul class="ib-list">
+              <li><span class="ib-num">01</span><span class="ib-name">systemspec-prd-summary.md</span><span class="ib-desc">The 22-kilobyte PRD that anchored every Day 1 choice.</span></li>
+              <li><span class="ib-num">02</span><span class="ib-name">case-study-stsl-plan.md</span><span class="ib-desc">Build plan, deliverable order, day-by-day priorities.</span></li>
+              <li><span class="ib-num">03</span><span class="ib-name">stsl.com.ng (live)</span><span class="ib-desc">The original site, audited line by line for what was working and what wasn't.</span></li>
+              <li><span class="ib-num">04</span><span class="ib-name">brand-references.md</span><span class="ib-desc">Editorial direction, type stack, the refusals before any pixel.</span></li>
+              <li><span class="ib-num">05</span><span class="ib-name">site-styling.md</span><span class="ib-desc">Patterns from the live site, captured for the model to mimic where appropriate.</span></li>
+              <li><span class="ib-num">06</span><span class="ib-name">agent-functions.png</span><span class="ib-desc">Map of which specialised agent owned which slice of the build.</span></li>
+            </ul>
+          </figure>
         </div>
       </details>
 
@@ -261,17 +270,43 @@
               <p><span class="quote-script">T</span>he design system isn't a deliverable at the end, it's the load-bearing infrastructure on day one.</p>
             </figure>
             <p>Motion was the other token category that had to land on Day 1. I picked four easing curves and three durations and gave them names: ease-expressive for the soft cinematic curve, ease-snappy for click feedback, ease-natural for content reveal, and ease-precise for UI states. Then I locked them into a single CSS variable file. Every transition on the marketing site later referenced one of those four. Nothing freelanced.</p>
+            <figure class="token-snippet">
+              <div class="tk-chrome" aria-hidden="true">
+                <span class="tk-dot tk-dot--r"></span>
+                <span class="tk-dot tk-dot--y"></span>
+                <span class="tk-dot tk-dot--g"></span>
+                <span class="tk-path">foundations / tokens.css</span>
+                <span class="tk-lang">CSS</span>
+              </div>
+              <pre><code><span class="tk-c">/* brand */</span>
+--brand-canvas:    #f4f0e6;
+--brand-ink:       #14141a;
+--brand-accent:    #e40202;
+
+<span class="tk-c">/* type */</span>
+--font-display:    'Plus Jakarta Sans', sans-serif;
+--font-body:       'Geist', sans-serif;
+--font-quote:      'Source Serif 4', serif;
+--font-mono:       'JetBrains Mono', monospace;
+
+<span class="tk-c">/* motion */</span>
+--ease-expressive: cubic-bezier(0.16, 1, 0.3, 1);
+--ease-snappy:     cubic-bezier(0.34, 1.56, 0.64, 1);
+--dur-quick:       180ms;
+--dur-default:     320ms;</code></pre>
+              <figcaption>The whole foundation, one file. Every page on the marketing site references these names. Change one value, every surface updates.</figcaption>
+            </figure>
             <p>By the end of Day 1, the design system docs page existed at <code>/design</code>. Empty marketing pages. No hero. No content. But every primitive that the rest of the build would need (Button, Link, Card, Field, Tabs, Accordion, Dialog, Tooltip, Select, Checkbox, Radio, Skeleton) had been built and demoed against the tokens. Day 2 onward, I never had to invent a new component. I just composed the ones already built.</p>
             <p>That's why Day 1 looked the way it did.</p>
           </div>
-          <figure class="live-frame live-frame--tabbed" data-lf-base="https://lobzyjay.github.io/Systemspec-website-redesign/design/">
+          <figure class="live-frame live-frame--tabbed" data-lf-base="https://systemspec-website-redesign-web.vercel.app/design/">
             <div class="lf-tabs" role="tablist" aria-label="Design system sections">
               <button class="lf-tab is-active" type="button" role="tab" data-hash="#brand">Brand</button>
               <button class="lf-tab" type="button" role="tab" data-hash="#foundations">Foundations</button>
               <button class="lf-tab" type="button" role="tab" data-hash="#primitives">Primitives</button>
               <button class="lf-tab" type="button" role="tab" data-hash="#patterns">Patterns</button>
               <button class="lf-tab" type="button" role="tab" data-hash="#compositions">Compositions</button>
-              <a class="lf-open" data-lf-open href="https://lobzyjay.github.io/Systemspec-website-redesign/design/#brand" target="_blank" rel="noopener">Open ↗</a>
+              <a class="lf-open" data-lf-open href="https://systemspec-website-redesign-web.vercel.app/design/#brand" target="_blank" rel="noopener">Open ↗</a>
             </div>
             <div class="lf-chrome lf-chrome--tabbed">
               <span class="lf-dot lf-dot--r" aria-hidden="true"></span>
@@ -279,7 +314,7 @@
               <span class="lf-dot lf-dot--g" aria-hidden="true"></span>
               <span class="lf-url" data-lf-url>/design/#brand</span>
             </div>
-            <iframe class="lf-iframe" src="https://lobzyjay.github.io/Systemspec-website-redesign/design/#brand" title="Live artifact, design system" loading="eager"></iframe>
+            <iframe class="lf-iframe" src="https://systemspec-website-redesign-web.vercel.app/design/#brand" title="Live artifact, design system" loading="eager"></iframe>
             <figcaption><strong>Artifact</strong>, Design system. Five sections, one frame. Click a tab to navigate.</figcaption>
           </figure>
         </div>
@@ -323,7 +358,7 @@
           <p>The cream nav tint was the other small one. I wanted the nav to feel like it floated over the content rather than pasted on top. CSS <code>color-mix(in srgb, var(--bg-canvas) 82%, transparent)</code> with a <code>backdrop-filter: blur(14px) saturate(140%)</code> got me there. The blur softens what's behind it and the saturation bumps colors back up so the page underneath doesn't look washed out. Two CSS properties, more interesting than three weeks of meetings about a nav.</p>
           <p>By 11pm, the marketing site v1 was live on GitHub Pages. Everything worked, most of it elegantly. A few things were duct-taped, including the contact form's grid plumbing, which I knew I'd revisit. That was Day 4's problem.</p>
 
-          <a class="demo-card" href="https://lobzyjay.github.io/Systemspec-website-redesign/" target="_blank" rel="noopener">
+          <a class="demo-card" href="https://systemspec-website-redesign-web.vercel.app/" target="_blank" rel="noopener">
             <span class="demo-card-label">Live gesture · hover</span>
             <h3 class="demo-card-title">Cards lift toward the viewer</h3>
             <p class="demo-card-meta">Scale 1.025, snappier 200ms ease-out (down from 400ms expressive). Hover this card.</p>
@@ -335,9 +370,9 @@
               <span class="lf-dot lf-dot--y" aria-hidden="true"></span>
               <span class="lf-dot lf-dot--g" aria-hidden="true"></span>
               <span class="lf-url">/contact</span>
-              <a class="lf-open" href="https://lobzyjay.github.io/Systemspec-website-redesign/contact/" target="_blank" rel="noopener">Open ↗</a>
+              <a class="lf-open" href="https://systemspec-website-redesign-web.vercel.app/contact/" target="_blank" rel="noopener">Open ↗</a>
             </div>
-            <iframe src="https://lobzyjay.github.io/Systemspec-website-redesign/contact/" title="Live artifact, contact form" loading="lazy"></iframe>
+            <iframe src="https://systemspec-website-redesign-web.vercel.app/contact/" title="Live artifact, contact form" loading="lazy"></iframe>
             <figcaption><strong>Artifact</strong>, Contact form. Day 3 ditched the Grid plumbing and rebuilt this in a dedicated layout.</figcaption>
           </figure>
         </div>
@@ -357,16 +392,17 @@
           <p>The contact form got a Day 4 rebuild. On Day 3 I'd built it with a Grid plumbing system that was overkill for a 5-field form. On Day 4 I tore it out and built a dedicated mobile layout that was about 40 lines shorter. Same look. Less to maintain.</p>
           <p>The iMessage preview drift was a bug nobody asked about. When you shared the URL in iMessage, the link preview rendered but the page underneath would scroll horizontally by a few pixels for no reason. It turned out the body's max-width wasn't pinned to <code>100vw</code> with a hard lock. Adding a <code>width: 100vw</code> alongside <code>overflow-x: hidden</code> on <code>html</code> and <code>body</code> killed the drift. Five characters of CSS, an hour of debugging.</p>
           <p>By Friday at 11:21am, the site was tagged v1 and shipped. The commits from that day all had names like "v1 finalize: faster splash + visible-inside-hero reveal + SEO + a11y". The final version felt like a real site, not a demo. The difference between the two is mostly the work nobody sees.</p>
-          <figure class="live-frame">
+
+
+          <figure class="live-frame live-frame--footer">
             <div class="lf-chrome">
               <span class="lf-dot lf-dot--r" aria-hidden="true"></span>
               <span class="lf-dot lf-dot--y" aria-hidden="true"></span>
               <span class="lf-dot lf-dot--g" aria-hidden="true"></span>
-              <span class="lf-url">/products/pouchii</span>
-              <a class="lf-open" href="https://lobzyjay.github.io/Systemspec-website-redesign/products/pouchii/" target="_blank" rel="noopener">Open ↗</a>
+              <span class="lf-url">/footer-atmosphere</span>
             </div>
-            <iframe src="https://lobzyjay.github.io/Systemspec-website-redesign/products/pouchii/" title="Live artifact, Pouchii product page" loading="lazy"></iframe>
-            <figcaption><strong>Artifact</strong>, Product page. The full polish stack, splash to footer.</figcaption>
+            <iframe src="https://systemspec-website-redesign-web.vercel.app/footer-atmosphere/" title="Live artifact, the footer atmosphere" loading="lazy"></iframe>
+            <figcaption><strong>Artifact</strong>, footer atmosphere. Move the cursor across the espresso canvas, the green sweep tracks you.</figcaption>
           </figure>
         </div>
       </details>
@@ -400,9 +436,9 @@
               <span class="lf-dot lf-dot--y" aria-hidden="true"></span>
               <span class="lf-dot lf-dot--g" aria-hidden="true"></span>
               <span class="lf-url">/developers</span>
-              <a class="lf-open" href="https://lobzyjay.github.io/Systemspec-website-redesign/developers/" target="_blank" rel="noopener">Open ↗</a>
+              <a class="lf-open" href="https://systemspec-website-redesign-web.vercel.app/developers/" target="_blank" rel="noopener">Open ↗</a>
             </div>
-            <iframe src="https://lobzyjay.github.io/Systemspec-website-redesign/developers/" title="Live artifact, developers page" loading="lazy"></iframe>
+            <iframe src="https://systemspec-website-redesign-web.vercel.app/developers/" title="Live artifact, developers page" loading="lazy"></iframe>
             <figcaption><strong>Artifact</strong>, Developer page. Code samples, API tour. The frozen-dark surfaces in action.</figcaption>
           </figure>
         </div>
@@ -414,19 +450,34 @@
         </header>
         <div class="chapter-body">
           <aside class="chapter-side chapter-side--agents">
-            <div class="side-agents">
-              <p class="side-agents-title">The seven agents</p>
-              <ul class="side-agents-list">
-                <li><span class="ag-name">visual-craft</span><span class="ag-owns">Hero, templates, motion, audits</span></li>
-                <li><span class="ag-name">design-system-patterns</span><span class="ag-owns">Tokens, primitives</span></li>
-                <li><span class="ag-name">design-taste-frontend</span><span class="ag-owns">Component architecture, CSS rules, hierarchy</span></li>
-                <li><span class="ag-name">landing-page-copywriter</span><span class="ag-owns">Hero headlines, capability strip, audience CTA, page voice</span></li>
-                <li><span class="ag-name">general-purpose</span><span class="ag-owns">Schemas, redirect maps, content wiring</span></li>
-                <li><span class="ag-name">Plan</span><span class="ag-owns">Sitemap, IA</span></li>
-                <li><span class="ag-name">Explore</span><span class="ag-owns">Codebase audits</span></li>
-              </ul>
-            </div>
-            <p class="chapter-side-caption"><span class="csc-num">08</span><span>Each agent ran one slice of the build. The discipline was not letting any agent reach into another's lane.</span></p>
+            <figure class="agents-skills agents-skills--rail" data-reveal aria-label="Agents and skills used during the build">
+              <header class="as-head">
+                <p class="as-eyebrow">how it shipped</p>
+                <div class="as-toggle" role="tablist" aria-label="Agents or skills">
+                  <span class="as-toggle-thumb" aria-hidden="true"></span>
+                  <button type="button" role="tab" id="as-tab-agents" aria-controls="as-panel-agents" aria-selected="true" class="as-toggle-btn is-active" data-tab="agents">Agents</button>
+                  <button type="button" role="tab" id="as-tab-skills" aria-controls="as-panel-skills" aria-selected="false" tabindex="-1" class="as-toggle-btn" data-tab="skills">Skills</button>
+                </div>
+              </header>
+              <ol id="as-panel-agents" class="as-list as-list--agents" role="tabpanel" aria-labelledby="as-tab-agents">
+                <li><span class="as-num">01</span><span class="as-name">Senior Designer</span><span class="as-desc">Hero, templates, motion, audits.</span></li>
+                <li><span class="as-num">02</span><span class="as-name">Design System Lead</span><span class="as-desc">Tokens, primitives, theming infrastructure.</span></li>
+                <li><span class="as-num">03</span><span class="as-name">QA</span><span class="as-desc">Component architecture, CSS rules, hierarchy.</span></li>
+                <li><span class="as-num">04</span><span class="as-name">Copywriter</span><span class="as-desc">Hero headlines, capability strip, page voice.</span></li>
+                <li><span class="as-num">05</span><span class="as-name">Orchestrator</span><span class="as-desc">Schemas, redirect maps, content wiring.</span></li>
+                <li><span class="as-num">06</span><span class="as-name">Strategist</span><span class="as-desc">Sitemap, information architecture.</span></li>
+                <li><span class="as-num">07</span><span class="as-name">UX Auditor</span><span class="as-desc">Codebase audits, cross-file consistency.</span></li>
+              </ol>
+              <ol id="as-panel-skills" class="as-list as-list--skills" role="tabpanel" aria-labelledby="as-tab-skills" hidden>
+                <li><span class="as-num">01</span><span class="as-name">case-study-writer</span><span class="as-desc">Long-form designer case studies in calm, first-person voice.</span></li>
+                <li><span class="as-num">02</span><span class="as-name">visual-craft</span><span class="as-desc">Unified rendering for UI, canvas, generative art, and 3D sessions.</span></li>
+                <li><span class="as-num">03</span><span class="as-name">design-taste-frontend</span><span class="as-desc">Senior UI/UX engineer, metric-based rules, hardware-accelerated CSS.</span></li>
+                <li><span class="as-num">04</span><span class="as-name">design-system-patterns</span><span class="as-desc">Design tokens, theming, component architecture for scalable systems.</span></li>
+                <li><span class="as-num">05</span><span class="as-name">landing-page-copywriter</span><span class="as-desc">High-converting copy using PAS, AIDA, StoryBrand frameworks.</span></li>
+                <li><span class="as-num">06</span><span class="as-name">webapp-testing</span><span class="as-desc">Playwright toolkit for local web app verification and debugging.</span></li>
+              </ol>
+            </figure>
+            <p class="chapter-side-caption"><span>Each agent ran one slice of the build. The discipline was not letting any agent reach into another's lane.</span></p>
           </aside>
           <p>The way I worked with Claude over those four days wasn't really collaboration in the human sense. It was something closer to having a very fast junior with infinite patience and a deep familiarity with React. I knew what I wanted. Claude knew how to type it out. The interesting question, four days in, is what each of us actually contributed.</p>
           <p>Claude was good at the parts I'd usually find boring. Boilerplate. Cross-file consistency. Wiring up the build config. Translating a layout spec into JSX. Refactoring three similar components into one parameterized one. Writing the type definitions. Writing the test cases. Catching the typo I made in a token name and fixing it in 14 places. The work that takes a developer a week to do carefully and not enjoy. Claude did it in under an hour and didn't get tired of it.</p>
@@ -435,7 +486,7 @@
 
           <aside class="prompt-callout" role="figure" aria-label="Chat with Opus 4.7">
             <header class="pc-thread">
-              <span class="pc-avatar pc-avatar--me" aria-hidden="true">A</span>
+              <span class="pc-avatar pc-avatar--me" aria-hidden="true"><img src="../../assets/avatar.jpg" alt="" loading="lazy" decoding="async" /></span>
               <span class="pc-name">Adewale</span>
               <span class="pc-arrow" aria-hidden="true">→</span>
               <span class="pc-avatar pc-avatar--ai" aria-hidden="true">
@@ -452,12 +503,257 @@
             </div>
             <p class="pc-caption">the kind of prompt that worked</p>
           </aside>
-          <p>The way I scaled that pattern was by splitting the work across seven specialised agents, each with one ownership. <span class="prose-mark">visual-craft</span> handled hero, templates, motion, and audits. <span class="prose-mark">design-system-patterns</span> built tokens and primitives. <span class="prose-mark">design-taste-frontend</span> owned component architecture, CSS rules, and hierarchy. <span class="prose-mark">landing-page-copywriter</span> drafted hero headlines, audience CTAs, and page voice. <span class="prose-mark">general-purpose</span> wired up schemas, redirect maps, and content. <span class="prose-mark">Plan</span> kept the sitemap and IA. <span class="prose-mark">Explore</span> ran codebase audits. The discipline that made this actually work wasn't the agents themselves. It was not letting any agent reach into another agent's lane. When the copywriter started touching CSS, output went sideways. When visual-craft tried to write tokens, the system drifted. The agents are useful because they're narrow.</p>
+          <p>The way I scaled that pattern was by splitting the work across seven specialised agents, each with one ownership, and pulling in a small library of reusable skills for the writing, research, and visual-craft work. The agents handled lanes. The skills carried voice, structure, and method between sessions.</p>
+
+          <p>The discipline that made this actually work wasn't the agents themselves. It was not letting any agent reach into another agent's lane. When the copywriter started touching CSS, output went sideways. When visual-craft tried to write tokens, the system drifted. The agents are useful because they're narrow.</p>
+
+          <!-- Day-Cost scrubber — one input drives both cards (Days + Cost) over the 12-week timeline. -->
+          <figure class="day-cost" data-reveal aria-label="Days versus cost over time">
+            <header class="dc-head">
+              <p class="dc-eyebrow">a data point</p>
+              <h3 class="dc-headline">Interactive chart for engagement runs across model and operating cost.</h3>
+            </header>
+            <p class="dc-rationale">Studio numbers based on a 5 to 8 person team over 12 weeks. Posted as a data point, not a critique.</p>
+            <div class="dc-scrubber">
+              <div class="dc-day-readout"><span class="dc-day-num">0</span><span class="dc-day-label">Day 0</span></div>
+              <input type="range" class="dc-slider" min="0" max="84" step="0.5" value="0" aria-label="Day scrubber, drag to scrub through the timeline">
+              <div class="dc-day-marks" aria-hidden="true">
+                <span data-mark="0">0</span>
+                <span data-mark="4">4</span>
+                <span data-mark="14">14</span>
+                <span data-mark="28">28</span>
+                <span data-mark="56">56</span>
+                <span data-mark="84">84</span>
+              </div>
+              <button class="dc-replay" type="button" aria-label="Replay the auto-walk from day 0 to day 84">Replay</button>
+            </div>
+            <div class="dc-cards">
+              <div class="dc-card dc-card--cost">
+                <p class="dc-card-eyebrow">running cost</p>
+                <div class="dc-cost-row">
+                  <span class="dc-cost-label">Studio</span>
+                  <span class="dc-cost-amount-wrap">
+                    <span class="dc-cost-amount" data-cost-studio>$0</span>
+                    <span class="dc-cost-naira" data-cost-studio-ng>₦0</span>
+                  </span>
+                  <div class="dc-bar"><div class="dc-bar-fill dc-bar-fill--studio"></div></div>
+                </div>
+                <div class="dc-cost-row">
+                  <span class="dc-cost-label">Claude</span>
+                  <span class="dc-cost-amount-wrap">
+                    <span class="dc-cost-amount" data-cost-claude>$0</span>
+                    <span class="dc-cost-naira" data-cost-claude-ng>₦0</span>
+                  </span>
+                  <div class="dc-bar"><div class="dc-bar-fill dc-bar-fill--claude"></div></div>
+                </div>
+                <p class="dc-card-summary">Drag the scrubber to compare.</p>
+              </div>
+              <div class="dc-card dc-card--burn" data-burn-card>
+                <div class="dc-card-eyebrow-row">
+                  <p class="dc-card-eyebrow">context window</p>
+                  <span class="dc-pulse-dot" data-pulse-dot aria-hidden="true"></span>
+                </div>
+                <div class="dc-gauge" role="img" aria-label="Token burn gauge, three sessions across the 4 build days then maxes out as the context window exhausts">
+                  <svg class="dc-gauge-svg" viewBox="0 0 200 130" aria-hidden="true">
+                    <defs>
+                      <linearGradient id="dc-gauge-grad" x1="0" y1="0" x2="1" y2="0" gradientUnits="userSpaceOnUse">
+                        <stop offset="0%"   stop-color="#FFC919"/>
+                        <stop offset="100%" stop-color="#E40202"/>
+                      </linearGradient>
+                    </defs>
+                    <!-- Outer ring base (low-alpha white, full sweep) -->
+                    <path class="dc-gauge-outer-bg" d="M 16 100 A 84 84 0 0 1 184 100" fill="none" pathLength="100"/>
+                    <!-- Outer ring redline overlay (red, only the 80%→100% segment) -->
+                    <path class="dc-gauge-outer-redline" d="M 16 100 A 84 84 0 0 1 184 100" fill="none" pathLength="100"/>
+                    <!-- Background semicircle (full path) -->
+                    <path class="dc-gauge-bg" d="M 20 100 A 80 80 0 0 1 180 100" fill="none" pathLength="100"/>
+                    <!-- Foreground arc — single gradient stroke driven by --gauge-fill (0..1). -->
+                    <path class="dc-gauge-fg"
+                          d="M 20 100 A 80 80 0 0 1 180 100" fill="none"
+                          stroke="url(#dc-gauge-grad)"/>
+                    <!-- Tick hierarchy: long ticks at 0/25/50/75/100 with day labels, short ticks every 10% -->
+                    <g class="dc-gauge-ticks-short" data-ticks-short>
+                      <!-- short ticks at 10,20,30,40,60,70,80,90 percent -->
+                    </g>
+                    <g class="dc-gauge-ticks-long" data-ticks-long>
+                      <!-- long ticks at 0,25,50,75,100 -->
+                    </g>
+                    <g class="dc-gauge-tick-labels" font-family="DM Sans, sans-serif" font-size="7" font-weight="500" fill="rgba(255,255,255,0.5)" text-anchor="middle">
+                      <text x="6"   y="103">0</text>
+                      <text x="29"  y="22">1</text>
+                      <text x="100" y="9">2</text>
+                      <text x="171" y="22">3</text>
+                      <text x="194" y="103">4</text>
+                    </g>
+                    <line class="dc-gauge-needle" x1="100" y1="100" x2="100" y2="32"/>
+                    <line class="dc-gauge-needle-trail" x1="100" y1="100" x2="100" y2="40"/>
+                    <circle class="dc-gauge-pivot" cx="100" cy="100" r="4"/>
+                    <circle class="dc-gauge-pulse" cx="100" cy="100" r="4" fill="none"/>
+                  </svg>
+                  <div class="dc-gauge-readout">
+                    <span class="dc-gauge-readout-label">tokens used</span>
+                    <div class="dc-gauge-readout-main">
+                      <span class="dc-gauge-num" data-token-num>0</span>
+                      <span class="dc-redline-pill" data-redline-pill aria-hidden="true">REDLINE</span>
+                    </div>
+                    <span class="dc-gauge-label" data-token-label>day 0</span>
+                  </div>
+                  <p class="dc-gauge-pulse-label" data-pulse-label aria-hidden="true">new session</p>
+                </div>
+                <p class="dc-gauge-status" data-token-status>Idle.</p>
+              </div>
+            </div>
+          </figure>
+
+          <!-- 1:80 ratio block — parked. Uncomment to swap with receipt-tape below.
+          <figure class="ratio-block" data-reveal aria-label="Cost ratio, $65 spent versus $5,200 agency quote, visualised as 80 cells">
+            <header class="rb-head">
+              <span class="rb-eyebrow">Cost ratio · 1 of 80</span>
+              <h3 class="rb-title">
+                <span class="rb-amount">$65</span><span class="rb-versus">where</span><span class="rb-amount rb-amount--strike">$5,200</span><span class="rb-versus">was the quote.</span>
+              </h3>
+            </header>
+
+            <div class="rb-stage">
+              <div class="rb-grid" role="img" aria-label="Eighty cells, seventy-nine muted, one red — the actual cost out of the avoided agency quote.">
+                <span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span>
+                <span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span>
+                <span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span>
+                <span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><span class="rb-cell"></span><button class="rb-cell rb-cell--hot" type="button" aria-expanded="false" aria-controls="rb-card" aria-label="$65 — the actual cost. Activate to expand."></button>
+              </div>
+
+              <svg class="rb-connector" viewBox="0 0 200 120" preserveAspectRatio="none" aria-hidden="true">
+                <path class="rb-connector-path" d="M 196 116 Q 130 116 110 70 T 4 4" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/>
+              </svg>
+
+              <aside id="rb-card" class="rb-card" role="region" aria-label="What $65 actually bought">
+                <span class="rb-card-tag">1 cell</span>
+                <p class="rb-card-amount">$65</p>
+                <p class="rb-card-line">Claude Pro · 3.5 days · 1 designer</p>
+                <p class="rb-card-foot">The cost of <em>this</em> cell — the red one, bottom-right.</p>
+              </aside>
+            </div>
+
+            <p class="rb-legend">
+              <span class="rb-legend-swatch" aria-hidden="true"></span>
+              <span class="rb-legend-text">1 cell = $65. The agency quote was 80 cells.</span>
+            </p>
+
+            <div class="rb-deliverables">
+              <p class="rb-deliv-eyebrow">What 1 cell built</p>
+              <ul class="rb-deliv-list">
+                <li><span class="rb-deliv-num">17</span><span class="rb-deliv-label">routes, marketing site</span></li>
+                <li><span class="rb-deliv-num">12</span><span class="rb-deliv-label">components, design system</span></li>
+                <li><span class="rb-deliv-num">1</span><span class="rb-deliv-label">static UI kit</span></li>
+                <li><span class="rb-deliv-num">3</span><span class="rb-deliv-label">deliverables, one repo</span></li>
+                <li><span class="rb-deliv-num">7</span><span class="rb-deliv-label">specialised agents</span></li>
+                <li><span class="rb-deliv-num">3.5</span><span class="rb-deliv-label">days, zero to shipped</span></li>
+                <li><span class="rb-deliv-num">56</span><span class="rb-deliv-label">commits, four days</span></li>
+                <li><span class="rb-deliv-num">2</span><span class="rb-deliv-label">themes, light + dark</span></li>
+              </ul>
+            </div>
+          </figure>
+          -->
+
+          <!-- Cost-vs-value tiles — parked.
+          <figure class="cost-value" data-reveal aria-label="Cost versus value breakdown">
+            <div class="cv-panel cv-panel--cost">
+              <p class="cv-panel-label">What it cost</p>
+              <div class="cv-metrics">
+                <button class="cv-metric" type="button" aria-label="Subscription cost, hover for agency comparison">
+                  <span class="cv-metric-front"><span class="cv-metric-num">$65</span><span class="cv-metric-desc">Claude Pro subscription</span></span>
+                  <span class="cv-metric-back" aria-hidden="true"><span class="cv-metric-num">$5,200+</span><span class="cv-metric-desc">agency equivalent</span></span>
+                </button>
+                <button class="cv-metric" type="button" aria-label="Timeline, hover for agency comparison">
+                  <span class="cv-metric-front"><span class="cv-metric-num">3.5</span><span class="cv-metric-desc">days, zero to shipped</span></span>
+                  <span class="cv-metric-back" aria-hidden="true"><span class="cv-metric-num">10–14 wk</span><span class="cv-metric-desc">typical agency timeline</span></span>
+                </button>
+                <button class="cv-metric" type="button" aria-label="Team size, hover for agency comparison">
+                  <span class="cv-metric-front"><span class="cv-metric-num">1</span><span class="cv-metric-desc">designer</span></span>
+                  <span class="cv-metric-back" aria-hidden="true"><span class="cv-metric-num">5–8</span><span class="cv-metric-desc">person team</span></span>
+                </button>
+              </div>
+            </div>
+            <div class="cv-divider" aria-hidden="true"><span class="cv-arrow">→</span></div>
+            <div class="cv-panel cv-panel--value">
+              <p class="cv-panel-label">What shipped</p>
+              <div class="cv-metrics">
+                <button class="cv-metric" type="button" aria-label="Routes shipped">
+                  <span class="cv-metric-front"><span class="cv-metric-num">17</span><span class="cv-metric-desc">routes, marketing site</span></span>
+                  <span class="cv-metric-back" aria-hidden="true"><span class="cv-metric-num">Home → Contact</span><span class="cv-metric-desc">Solutions · Products · Company · Devs</span></span>
+                </button>
+                <button class="cv-metric" type="button" aria-label="Design system">
+                  <span class="cv-metric-front"><span class="cv-metric-num">1</span><span class="cv-metric-desc">design system, 12 components</span></span>
+                  <span class="cv-metric-back" aria-hidden="true"><span class="cv-metric-num">Tokens → Kit</span><span class="cv-metric-desc">primitives, patterns, docs, static export</span></span>
+                </button>
+                <button class="cv-metric" type="button" aria-label="Total deliverables">
+                  <span class="cv-metric-front"><span class="cv-metric-num">3</span><span class="cv-metric-desc">deliverables, one repo</span></span>
+                  <span class="cv-metric-back" aria-hidden="true"><span class="cv-metric-num">Site · System · UI kit</span><span class="cv-metric-desc">one static export, free to host</span></span>
+                </button>
+              </div>
+            </div>
+            <figcaption>Hover any tile to see the agency equivalent.</figcaption>
+          </figure>
+
+          <!-- Ledger experiment (token bar + terminal receipt) parked for now.
+          <figure class="ledger" data-reveal aria-label="Token usage and cost ledger">
+            <div class="ledger-bar">
+              <div class="lb-head">
+                <span class="lb-label">Context window</span>
+                <span class="lb-meter"><span class="lb-meter-num">100<span class="lb-meter-unit">%</span></span><span class="lb-meter-cap">200k tokens · exhausted Day 4</span></span>
+              </div>
+              <div class="lb-track" role="img" aria-label="Token usage progressing across four days, exhausted by Day 4 morning">
+                <div class="lb-fill"></div>
+                <ul class="lb-stops" aria-hidden="true">
+                  <li class="lb-stop" style="--at: 25%;"><span class="lb-stop-day">Day 1</span><span class="lb-stop-label">System</span></li>
+                  <li class="lb-stop" style="--at: 50%;"><span class="lb-stop-day">Day 2</span><span class="lb-stop-label">Frames</span></li>
+                  <li class="lb-stop" style="--at: 75%;"><span class="lb-stop-day">Day 3</span><span class="lb-stop-label">Site</span></li>
+                  <li class="lb-stop lb-stop--end" style="--at: 100%;"><span class="lb-stop-day">Day 4</span><span class="lb-stop-label">Reset</span></li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="ledger-receipt">
+              <div class="lr-chrome">
+                <span class="lr-dot lr-dot--r" aria-hidden="true"></span>
+                <span class="lr-dot lr-dot--y" aria-hidden="true"></span>
+                <span class="lr-dot lr-dot--g" aria-hidden="true"></span>
+                <span class="lr-path">claude-billing.log</span>
+                <span class="lr-tag">TXT</span>
+              </div>
+<pre class="lr-body"><code><span class="lr-c">// inputs</span>
+project       <span class="lr-v">stsl-rebuild</span>
+duration      <span class="lr-v">3.5 days</span>
+subscription  <span class="lr-v">Claude Pro</span>  <span class="lr-num">$65</span>
+agents        <span class="lr-v">7 specialised</span>
+tokens        <span class="lr-v">context exhausted, Day 4 morning</span>
+
+<span class="lr-c">// shipped</span>
+<span class="lr-arrow">▸</span> marketing site, 17 routes
+<span class="lr-arrow">▸</span> design system, 12 components
+<span class="lr-arrow">▸</span> static UI kit
+
+<span class="lr-rule">────────────────────────────────────────────</span>
+<span class="lr-c">// agency equivalent</span>
+budget        <span class="lr-num">$5,200+</span>
+timeline      <span class="lr-v">10–14 weeks</span>
+team          <span class="lr-v">5–8 people</span>
+<span class="lr-rule">────────────────────────────────────────────</span>
+
+<span class="lr-c">// bottom line</span>
+<span class="lr-bottom">$65 → 3 deliverables in 3.5 days.</span></code></pre>
+            </div>
+            <figcaption>The sub cost vs the output.</figcaption>
+          </figure>
+          -->
+
+          <p>One thing I didn't fully plan for was token usage. By Day 4 morning the context window was gone, a full conversation wiped out by four days of accumulated code, reviews, and back-and-forths. The numbers, when I checked later, were about 5M tokens across three sessions, roughly $70 in API costs. I had to restart the session cold, with no memory of what had been built. The way I handled it was keeping a running reference folder alongside the repo: markdown docs with the decisions made, inline code comments explaining the non-obvious calls, and a short PRD I could paste at the start of any new session to re-anchor the model. That habit turned out to matter more than the agents. The agents are only as useful as the context you give them.</p>
           <p>That's the real lesson about working this way. Claude doesn't replace the designer. Claude removes the friction between the designer's idea and the running site. The friction was never the value-add of design. It was the tax on doing design.</p>
           <figure class="pull-quote">
-            <p><span class="quote-script">V</span>ibecoding doesn't replace design taste, it amplifies it.</p>
+            <p><span class="qb"><span class="quote-script">V</span>ibecoding doesn't replace</span><span class="qb">design taste, it amplifies it.</span></p>
           </figure>
           <p>The amplification works in both directions. If I have strong taste, Claude makes it ship faster. If I have weak taste, Claude makes it ship faster too, and the weakness compounds. The output is only ever as considered as the inputs. The implication for the broader question of "AI-assisted design" is that the taste premium is going up, not down. The execution premium is going down. The designers who are going to do interesting work in the next two years are the ones who can articulate what they want with enough specificity that the model can produce it, then recognize when the output isn't quite right and say why.</p>
+          <p>I'm not sure what to call this way of working. It's not waterfall, the brief and the system both kept moving while I built. It's not really agile either, no sprints, no standups, just one designer running the whole thing for four days. Whatever it is, it felt faster than anything I'd done, and the output didn't feel rushed. The methodology question is probably the next thing to figure out.</p>
           <p>I came into this build with a question about how much of design org work is necessary process and how much is organizational drag. Four days in, I have a partial answer. A lot of process that exists for the team-of-one disappears. Most reviews disappear. Most spec handoffs disappear. The slow march from Figma to staging compresses into the same afternoon. What stays is the part that isn't process at all. The judgement. The taste. The willingness to look at a thing and say "no, that's not it" and try again.</p>
           <p>That's the kind of work I enjoy.</p>
         </div>
