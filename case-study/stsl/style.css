@@ -818,7 +818,7 @@ body.is-loaded .cover-mockup img {
   padding: clamp(18px, 2.4vh, 26px) clamp(20px, 2.6vw, 28px) clamp(20px, 2.6vh, 28px);
   background: var(--bg-light-2);
   border: 1px solid var(--rule-light);
-  border-radius: clamp(14px, 1.4vw, 20px);
+  border-radius: var(--r-bento);
   max-width: 56ch;
   position: relative;
 }
@@ -2078,6 +2078,43 @@ body.is-loaded .cover-mockup img {
   grid-column: 1 / span 9;
   margin-top: clamp(28px, 4vh, 40px);
 }
+.chapter--accordion > .chapter-body > .prompt-row {
+  grid-column: 1 / -1;
+  margin-top: clamp(28px, 4vh, 40px);
+}
+
+/* Side-by-side prompts. Two callouts share the row width — flexbox here
+   beats grid because .prompt-callout has its own internal sizing rules
+   that don't always honour grid track widths. Mobile collapses to stack. */
+.prompt-row {
+  display: flex;
+  flex-direction: row;
+  gap: clamp(14px, 1.6vw, 22px);
+  align-items: stretch;
+  width: 100%;
+}
+.prompt-row > .prompt-callout {
+  flex: 1 1 0;
+  min-width: 0;
+  width: auto;
+  max-width: none;
+  margin: 0;
+}
+@media (max-width: 720px) {
+  .prompt-row { flex-direction: column; }
+}
+
+/* Small uppercase tag above each prompt body. */
+.prompt-callout .pc-tag {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 12px 0 8px;
+  padding: 0;
+}
 .chapter--accordion > .chapter-body > .pull-quote {
   grid-column: 5 / span 8;
   margin-top: clamp(40px, 6vh, 64px);
@@ -2439,7 +2476,7 @@ body.is-loaded .cover-mockup img {
   .prompt-callout {
     grid-column: 1 / -1;
     max-width: none;
-    border-radius: 0 14px 14px 0;
+    border-radius: var(--r-bento);
     margin-left: 0;
     margin-right: 0;
   }
@@ -2835,8 +2872,8 @@ body.is-loaded .cover-mockup img {
 .live-frame .lf-iframe {
   display: block;
   width: 100%;
-  aspect-ratio: 16 / 10;
-  min-height: 560px;
+  aspect-ratio: 16 / 9;
+  min-height: 480px;
   border: 1px solid var(--rule-light);
   border-radius: 0 0 var(--r-card) var(--r-card);
   background: var(--bg-light-2);
@@ -2902,7 +2939,7 @@ body.is-loaded .cover-mockup img {
 .live-frame--footer .lf-iframe {
   display: block;
   width: 100%;
-  height: clamp(420px, 56vh, 580px);
+  height: clamp(360px, 48vh, 500px);
   aspect-ratio: auto;
   min-height: 0;
   border: 1px solid var(--rule-light);

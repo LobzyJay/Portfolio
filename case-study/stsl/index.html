@@ -258,7 +258,7 @@
         </aside>
       </section>
 
-      <figure class="bleed-shot" data-reveal data-parallax>
+      <figure class="bleed-shot" data-reveal data-parallax data-parallax-min="1.12" data-parallax-max="1.22">
         <img src="media/laptop-hero.jpg" alt="STSL homepage shown on a laptop, perspective view" loading="lazy" />
       </figure>
 
@@ -390,7 +390,7 @@
           <p>Most of Day 2 wasn't in code. It was in Figma. I went back to the brief, scrolled through the audit notes, and started laying out static frames of every marketing page at the right max-width, with the type stack from Day 1 plugged in. No interaction, no motion, no component logic. Just composition. What does the homepage hero feel like with the actual headline. What does the solutions page rhythm look like with three real paragraphs. Where does the footer sit on a 16-inch laptop versus a 13-inch.</p>
           <p>Doing this in static Figma instead of in code meant I caught the things that would've been three commits each in code. The wordmark needed a tighter scale on the homepage hero. The audience tiles needed two breakpoints, not one. The footer atmosphere had to read on dark mode without the green tint going neon.</p>
           <p>Day 2 saved me at least eight hours on Day 3. The rebuild went fast not because I worked fast on Day 3, but because I had already decided on Day 2 what the rebuild was going to be. The slow day is a discipline. It's the day where you don't ship, on purpose.</p>
-          <figure class="bleed-shot bleed-shot--scroll" data-reveal data-parallax>
+          <figure class="bleed-shot bleed-shot--scroll" data-reveal data-parallax data-parallax-min="1.10" data-parallax-max="1.18">
             <div class="bleed-scroll-track">
               <img src="media/mobile-2.jpg" alt="Mobile pathway tiles, snap-scroll" loading="lazy" />
             </div>
@@ -452,6 +452,48 @@
           <p>The iMessage preview drift was a bug nobody asked about. When you shared the URL in iMessage, the link preview rendered but the page underneath would scroll horizontally by a few pixels for no reason. It turned out the body's max-width wasn't pinned to <code>100vw</code> with a hard lock. Adding a <code>width: 100vw</code> alongside <code>overflow-x: hidden</code> on <code>html</code> and <code>body</code> killed the drift. Five characters of CSS, an hour of debugging.</p>
           <p>By Friday at 11:21am, the site was tagged v1 and shipped. The commits from that day all had names like "v1 finalize: faster splash + visible-inside-hero reveal + SEO + a11y". The final version felt like a real site, not a demo. The difference between the two is mostly the work nobody sees.</p>
 
+          <div class="prompt-row" data-reveal>
+            <aside class="prompt-callout" role="figure" aria-label="Hero atmosphere prompt">
+              <header class="pc-thread">
+                <span class="pc-avatar pc-avatar--me" aria-hidden="true"><img src="../../assets/avatar.jpg" alt="" loading="lazy" decoding="async" /></span>
+                <span class="pc-name">Adewale</span>
+                <span class="pc-arrow" aria-hidden="true">→</span>
+                <span class="pc-avatar pc-avatar--ai" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L13.6 8.4L20 10L13.6 11.6L12 18L10.4 11.6L4 10L10.4 8.4L12 2Z" fill="currentColor"/>
+                  </svg>
+                </span>
+                <span class="pc-name pc-name--ai">Opus 4.7</span>
+                <span class="pc-when">Apr 29</span>
+                <span class="pc-agent">visual-craft</span>
+              </header>
+              <p class="pc-tag">hero reactive component</p>
+              <div class="pc-bubble">
+                <p class="pc-body">the hero should have braille on the bg running on a loop, then wherever the mouse points, a forcefield around it forces all the brailles around the mouse to move to the forcefield edges, then when the mouse moves away it returns back to its normal braille loop</p>
+              </div>
+              <p class="pc-caption">the prompt that built the hero atmosphere</p>
+            </aside>
+            <aside class="prompt-callout" role="figure" aria-label="Footer atmosphere prompt">
+              <header class="pc-thread">
+                <span class="pc-avatar pc-avatar--me" aria-hidden="true"><img src="../../assets/avatar.jpg" alt="" loading="lazy" decoding="async" /></span>
+                <span class="pc-name">Adewale</span>
+                <span class="pc-arrow" aria-hidden="true">→</span>
+                <span class="pc-avatar pc-avatar--ai" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L13.6 8.4L20 10L13.6 11.6L12 18L10.4 11.6L4 10L10.4 8.4L12 2Z" fill="currentColor"/>
+                  </svg>
+                </span>
+                <span class="pc-name pc-name--ai">Opus 4.7</span>
+                <span class="pc-when">Apr 29</span>
+                <span class="pc-agent">visual-craft</span>
+              </header>
+              <p class="pc-tag">footer port, diagonal sweep</p>
+              <div class="pc-bubble">
+                <p class="pc-body">make the footer reactive the same way, but let the wave sweep run at 45 degrees so it lasts longer</p>
+              </div>
+              <p class="pc-caption">the port to the footer, eighteen minutes later</p>
+            </aside>
+          </div>
 
           <figure class="live-frame live-frame--footer">
             <div class="lf-chrome">
