@@ -856,12 +856,18 @@ function initDayCost() {
   // up.
   //   - progress 0 when rect.top = vh/2 (figure top at viewport midpoint)
   //   - progress 1 when rect.top = 0    (figure top at viewport top)
+  // On mobile (cards stack), the figure's top is mostly headline + scrubber
+  // before the running cost card shows up, so we trigger from the cost card
+  // instead. On desktop the figure as a whole is the trigger zone.
+  const costCard = fig.querySelector('.dc-card--cost');
   let scrollRaf = 0;
   function onScroll() {
     if (scrollRaf) return;
     scrollRaf = requestAnimationFrame(() => {
       scrollRaf = 0;
-      const rect = fig.getBoundingClientRect();
+      const isMobile = window.innerWidth <= 720;
+      const target = (isMobile && costCard) ? costCard : fig;
+      const rect = target.getBoundingClientRect();
       const vh = window.innerHeight || document.documentElement.clientHeight;
       const halfPoint = vh / 2;
       const progress = Math.max(0, Math.min(1, (halfPoint - rect.top) / halfPoint));
