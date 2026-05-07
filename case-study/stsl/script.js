@@ -919,19 +919,26 @@ function initPromptHints() {
     const content = d.querySelector('.ph-content');
     if (!content) return;
 
-    /* Animate height + opacity on every toggle. */
+    /* Animate height + opacity on every toggle. Use ease-out (fast in)
+       on open and ease-in-out (smooth both ends) on close so the
+       collapse-back has a softer landing rather than just running
+       backward through the open curve. */
     d.addEventListener('toggle', () => {
       if (reduce) return;
       const opening = d.open;
       const target = content.scrollHeight;
       const from = opening ? 0 : target;
       const to   = opening ? target : 0;
+      const duration = opening ? 380 : 460;
+      const easing = opening
+        ? 'cubic-bezier(0.16, 1, 0.3, 1)'   // ease-out: snap into open
+        : 'cubic-bezier(0.55, 0, 0.2, 1)';  // softer ease for the outro
       content.animate(
         [
           { height: `${from}px`, opacity: opening ? 0 : 1, transform: opening ? 'translateY(-6px)' : 'translateY(0)' },
           { height: `${to}px`,   opacity: opening ? 1 : 0, transform: opening ? 'translateY(0)'    : 'translateY(-6px)' }
         ],
-        { duration: 380, easing: 'cubic-bezier(0.16, 1, 0.3, 1)', fill: 'forwards' }
+        { duration, easing, fill: 'forwards' }
       );
     });
 

@@ -871,10 +871,13 @@ body.is-loaded .cover-mockup img {
   letter-spacing: -0.005em;
   color: var(--color-purple);
   user-select: none;
+  /* Outro path (mouse out): softer 380ms ease so the pill bg doesn't
+     just snap back. Intro path overrides below with the snappier
+     ease-expo curve for the open/hover state. */
   transition:
-    background 280ms var(--ease-expo),
-    border-color 280ms var(--ease-expo),
-    box-shadow 320ms var(--ease-expo);
+    background 380ms cubic-bezier(0.55, 0, 0.2, 1),
+    border-color 380ms cubic-bezier(0.55, 0, 0.2, 1),
+    box-shadow 420ms cubic-bezier(0.55, 0, 0.2, 1);
 }
 .ph-trigger::-webkit-details-marker { display: none; }
 .ph-trigger::marker { display: none; content: ""; }
@@ -887,6 +890,13 @@ body.is-loaded .cover-mockup img {
 .prompt-hint[open] .ph-trigger {
   background: rgba(155, 145, 246, 0.12);
   border-color: rgba(155, 145, 246, 0.55);
+  /* Intro path: snappier ease-out so the pill responds quickly to the
+     mouse arriving. The outro on the base rule above handles the
+     gentle collapse back. */
+  transition:
+    background 280ms var(--ease-expo),
+    border-color 280ms var(--ease-expo),
+    box-shadow 320ms var(--ease-expo);
 }
 .prompt-hint[open] .ph-trigger {
   box-shadow: 0 8px 22px -14px rgba(155, 145, 246, 0.55);
@@ -930,9 +940,11 @@ body.is-loaded .cover-mockup img {
   font-weight: 400;
   font-size: 12.5px;
   color: var(--text-light-muted);
+  /* Outro path — softer easing + slightly longer so the sub label
+     glides back into the pill instead of clipping shut. */
   transition:
-    max-width 420ms var(--ease-expo),
-    opacity 280ms var(--ease-expo);
+    max-width 460ms cubic-bezier(0.55, 0, 0.2, 1),
+    opacity 320ms cubic-bezier(0.55, 0, 0.2, 1);
 }
 /* Dot separator only appears once the sub is animating in. */
 .ph-trigger-sub::before {
@@ -946,7 +958,11 @@ body.is-loaded .cover-mockup img {
 .prompt-hint[open] .ph-trigger-sub {
   max-width: 360px;
   opacity: 1;
-  transition-delay: 60ms;
+  /* Intro path — snappier and a touch faster, with a small delay so
+     the pill bg shift starts first. */
+  transition:
+    max-width 420ms var(--ease-expo) 60ms,
+    opacity 280ms var(--ease-expo) 60ms;
 }
 .ph-content {
   margin-top: clamp(12px, 1.6vh, 16px);
