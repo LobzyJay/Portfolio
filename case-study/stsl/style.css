@@ -931,8 +931,10 @@ body.is-loaded .cover-mockup img {
   display: block;
 }
 /* Open: icon disc keeps its solid red but picks up a soft outer halo,
-   mirroring the day-rail.is-active node's red glow. */
-.prompt-hint[open] .ph-trigger-icon {
+   mirroring the day-rail.is-active node's red glow. The :not(data-
+   closing) guard makes sure the halo fades in lockstep with the rest
+   of the pill outro, instead of holding through the close animation. */
+.prompt-hint[open]:not([data-closing]) .ph-trigger-icon {
   box-shadow: 0 0 12px rgba(228, 2, 2, 0.6);
 }
 .ph-trigger-label {

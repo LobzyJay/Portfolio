@@ -906,6 +906,7 @@ function initPromptHints() {
 
     function cancelAnim() {
       if (activeAnim) { try { activeAnim.cancel(); } catch (_) {} activeAnim = null; }
+      d._activeAnim = null;
       isAnimating = false;
     }
 
@@ -924,7 +925,8 @@ function initPromptHints() {
         ],
         { duration: OPEN_MS, easing: OPEN_EASE, fill: 'forwards' }
       );
-      activeAnim.onfinish = () => { isAnimating = false; activeAnim = null; };
+      d._activeAnim = activeAnim;
+      activeAnim.onfinish = () => { isAnimating = false; activeAnim = null; d._activeAnim = null; };
     }
 
     function animateClose() {
@@ -949,11 +951,17 @@ function initPromptHints() {
         ],
         { duration: CLOSE_MS, easing: CLOSE_EASE, fill: 'forwards' }
       );
+      d._activeAnim = activeAnim;
       activeAnim.onfinish = () => {
-        d.removeAttribute('data-closing');
+        // Order matters: flip [open]=false FIRST so the CSS expansion
+        // rules (which key off [open]:not([data-closing])) can't re-
+        // fire for one frame between the data-closing removal and the
+        // open flip. Removing data-closing after is a no-op visually.
         d.open = false;
+        d.removeAttribute('data-closing');
         isAnimating = false;
         activeAnim = null;
+        d._activeAnim = null;
       };
     }
 
@@ -961,6 +969,13 @@ function initPromptHints() {
        drive the animation ourselves. */
     trigger.addEventListener('click', (e) => {
       e.preventDefault();
+      // If a close is in flight, treat the click as "abort + reopen"
+      // rather than silently dropping it.
+      if (isAnimating && d.hasAttribute('data-closing')) {
+        cancelAnim();
+        d.removeAttribute('data-closing');
+        return; // pill is open + content already visible (cancel froze it)
+      }
       if (isAnimating) return;
       if (d.open) animateClose(); else animateOpen();
     });
@@ -972,8 +987,16 @@ function initPromptHints() {
         if (d.open && !isAnimating) animateClose();
       }, 40);
     });
+    /* Mouseenter cancels both the pending close AND any in-flight
+       close animation, so the body stops collapsing the moment the
+       cursor returns. The pill restores via CSS once data-closing
+       comes off (the :not([data-closing]) guards re-engage). */
     d.addEventListener('mouseenter', () => {
       if (d._closeTimer) { clearTimeout(d._closeTimer); d._closeTimer = null; }
+      if (isAnimating && d.hasAttribute('data-closing')) {
+        cancelAnim();
+        d.removeAttribute('data-closing');
+      }
     });
 
     /* Suppress the native toggle handler from running anything. The
@@ -981,13 +1004,20 @@ function initPromptHints() {
     d.addEventListener('toggle', () => { /* no-op */ });
   });
 
-  /* Auto-close when the hint scrolls out of the viewport. The body is
-     off-screen anyway, no need for the eased close — flip directly. */
+  /* Auto-close when the hint scrolls out of the viewport. Body is
+     off-screen so we skip the eased close — but still cancel any
+     in-flight WAAPI so we don't leave the body in an intermediate
+     state when [open] flips. */
   if ('IntersectionObserver' in window) {
     const io = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
-        if (!entry.isIntersecting && entry.target.open) {
-          entry.target.open = false;
+        const d = entry.target;
+        if (!entry.isIntersecting && d.open) {
+          // Cancel any close animation in flight; the body is going
+          // off-screen anyway, no point keeping the keyframes ticking.
+          if (d._activeAnim) { try { d._activeAnim.cancel(); } catch (_) {} }
+          d.removeAttribute('data-closing');
+          d.open = false;
         }
       });
     }, { threshold: 0, rootMargin: '0px 0px 0px 0px' });
