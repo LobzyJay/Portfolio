@@ -3117,48 +3117,65 @@ body.is-loaded .cover-mockup img {
   pointer-events: auto;            /* activated on click */
 }
 
-/* Click-to-interact pill — top-right, sits just below the chrome bar */
-.lf-shield {
-  position: absolute;
-  right: 14px;
-  top: 56px;
-  z-index: 4;
+/* Click-to-interact action — lives inline inside the chrome bar,
+   beside the Open link. Compact text-button to match .lf-open's tone:
+   accent-red text + tiny red dot at rest, white on hover, white +
+   persistent when the iframe is interactively engaged (.is-active).
+   Two label spans (.lf-action-full / .lf-action-short) so narrow
+   viewports can swap to a shorter "Interact / Release" without JS. */
+.lf-action {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--accent);
+  white-space: nowrap;
+  background: none;
+  border: 0;
+  padding: 0;
+  margin-right: 12px;
+  cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 14px;
-  background: rgba(20,20,20,0.88);
-  color: #ffffff;
-  font-family: var(--font-sans);
-  font-weight: 500;
-  font-size: 12px;
-  letter-spacing: 0.04em;
-  border-radius: 999px;
-  cursor: pointer;
-  border: 1px solid rgba(255,255,255,0.12);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  transition: background 0.22s var(--ease-expo), transform 0.22s var(--ease-expo), opacity 0.22s var(--ease-expo);
+  gap: 6px;
+  transition: color 0.22s var(--ease-expo);
   background-image: none !important;
 }
-.lf-shield::before {
+.lf-action::before {
   content: "";
   width: 6px;
   height: 6px;
   border-radius: 999px;
   background: var(--accent);
   flex-shrink: 0;
+  transition: background 0.22s var(--ease-expo), box-shadow 0.22s var(--ease-expo);
 }
-.lf-shield:hover {
-  background: rgba(20,20,20,0.96);
-  transform: translateY(-1px);
-}
-.live-frame.is-active .lf-shield {
-  background: rgba(228,2,2,0.92);
-  border-color: rgba(255,255,255,0.18);
-}
-.live-frame.is-active .lf-shield::before {
+.lf-action:hover { color: #ffffff; }
+.lf-action:hover::before {
   background: #ffffff;
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.55);
+}
+.lf-action:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+.live-frame.is-active .lf-action { color: #ffffff; }
+.live-frame.is-active .lf-action::before {
+  background: #ffffff;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+}
+/* Show full label by default, short label only at narrow widths. */
+.lf-action-short { display: none; }
+@media (max-width: 720px) {
+  .lf-action { margin-right: 10px; }
+  .lf-action-full { display: none; }
+  .lf-action-short { display: inline; }
+}
+@media (max-width: 540px) {
+  /* When chrome is genuinely tight, the URL eats the most space and
+     reads as decoration anyway. Hide it so the action + Open + dots
+     can share the row without overflow. */
+  .lf-chrome > .lf-url { display: none; }
 }
 
 /* Footer-atmosphere live-frame variant — the iframe loads the isolated
@@ -3259,25 +3276,19 @@ body.is-loaded .cover-mockup img {
 .live-frame--tabbed .lf-iframe {
   border-radius: 0 0 var(--r-card) var(--r-card);
 }
-.live-frame--tabbed .lf-shield {
-  top: 108px;
-}
 
 @media (max-width: 540px) {
   .live-frame--tabbed .lf-tabs { gap: 2px; padding: 4px; }
   .lf-tab { padding: 8px 12px; font-size: 12px; flex: 1 1 30%; }
-  .live-frame--tabbed .lf-open { flex-basis: 100%; text-align: center; padding: 6px 0; }
-  /* Tabs + Open wrap into multiple rows on phones, so the shield's
-     desktop top:108px lands inside the iframe rather than over content.
-     Pin it just below the chrome bar with a generous offset. */
-  .live-frame--tabbed .lf-shield { top: auto; bottom: 14px; right: 14px; }
-  /* Phone-sized shield: tight font for visual restraint, but a 44px tap
-     target per WCAG 2.5.5 — applied at every phone-class viewport so it
-     never depends on pointer:coarse media-query detection. */
-  .live-frame .lf-shield {
+  .live-frame--tabbed .lf-open { flex-basis: auto; text-align: center; padding: 6px 0; }
+  /* Phone-sized chrome action: tight font + 44px tap target so the
+     control still meets WCAG 2.5.5 once it's living inside the chrome
+     bar. */
+  .lf-action {
     font-size: 11px;
     min-height: 44px;
-    padding: 10px 16px;
+    display: inline-flex;
+    align-items: center;
   }
 }
 .live-frame figcaption {

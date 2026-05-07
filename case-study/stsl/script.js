@@ -260,40 +260,72 @@ function initEntryAnimation() {
 }
 
 /* ── 5. IFRAME SHIELD — click to activate, release on exit ─ */
+/* ── IFRAME SHIELD — was a floating absolute-positioned pill in the
+   top-right of each .live-frame; now lives inline inside the chrome
+   bar, beside the Open link. Tabbed variants put their Open link in
+   .lf-tabs (above the URL row), simple variants put it inside the
+   .lf-chrome row, and the footer variant has no Open at all — the
+   action picks the right host and inserts before Open if present,
+   else appends to the chrome. */
 function initIframeShield() {
   const frames = document.querySelectorAll('.live-frame');
   if (!frames.length) return;
 
+  const setLabel = (action, active) => {
+    /* Two label spans so the chrome can swap to a shorter text on
+       narrow viewports via CSS, without JS having to know breakpoints. */
+    action.innerHTML = '';
+    const full = document.createElement('span');
+    full.className = 'lf-action-full';
+    full.textContent = active ? 'Active · click to release' : 'Click to interact';
+    const short = document.createElement('span');
+    short.className = 'lf-action-short';
+    short.textContent = active ? 'Release' : 'Interact';
+    action.append(full, short);
+  };
+
   frames.forEach((frame) => {
-    // Inject shield pill if not already present
-    if (!frame.querySelector('.lf-shield')) {
-      const shield = document.createElement('button');
-      shield.type = 'button';
-      shield.className = 'lf-shield';
-      shield.setAttribute('aria-pressed', 'false');
-      shield.textContent = 'Click to interact';
-      frame.appendChild(shield);
+    if (frame.querySelector('.lf-action')) return; // idempotent
 
-      shield.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        const active = frame.classList.toggle('is-active');
-        shield.setAttribute('aria-pressed', active ? 'true' : 'false');
-        shield.textContent = active ? 'Active · click to release' : 'Click to interact';
-      });
+    /* Pick the host: tabbed variant has Open inside .lf-tabs; simple
+       variants have Open (or nothing) inside .lf-chrome. */
+    const tabs = frame.querySelector('.lf-tabs');
+    const chrome = frame.querySelector('.lf-chrome');
+    let host = null;
+    let beforeNode = null;
+    if (tabs && tabs.querySelector('.lf-open')) {
+      host = tabs;
+      beforeNode = tabs.querySelector('.lf-open');
+    } else if (chrome) {
+      host = chrome;
+      beforeNode = chrome.querySelector('.lf-open');
     }
+    if (!host) return;
 
-    // Auto-release when iframe scrolls out of view
+    const action = document.createElement('button');
+    action.type = 'button';
+    action.className = 'lf-action';
+    action.setAttribute('aria-pressed', 'false');
+    setLabel(action, false);
+    if (beforeNode) host.insertBefore(action, beforeNode);
+    else host.appendChild(action);
+
+    action.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const active = frame.classList.toggle('is-active');
+      action.setAttribute('aria-pressed', active ? 'true' : 'false');
+      setLabel(action, active);
+    });
+
+    /* Auto-release when iframe scrolls out of view. */
     if ('IntersectionObserver' in window) {
       const io = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
           if (!entry.isIntersecting && frame.classList.contains('is-active')) {
             frame.classList.remove('is-active');
-            const shield = frame.querySelector('.lf-shield');
-            if (shield) {
-              shield.setAttribute('aria-pressed', 'false');
-              shield.textContent = 'Click to interact';
-            }
+            action.setAttribute('aria-pressed', 'false');
+            setLabel(action, false);
           }
         });
       }, { threshold: 0.15 });
