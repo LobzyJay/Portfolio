@@ -1099,6 +1099,56 @@ function initPromptHints() {
   }
 }
 
+/* ── ACCORDION REVEAL — when a chapter accordion opens, fade-rise its
+   body children with a stagger. The CSS animation on .chapter-body
+   was a single block fade that read as instant; this gives each
+   element (picture, paragraphs, pull-quote, iframe) its own
+   choreographed entry. Day 1's chapter-prose-rail wraps the picture +
+   prose inside one block — we recurse one level into it so each
+   inner element animates individually. */
+function initAccordionReveal() {
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduce) return;
+
+  document.querySelectorAll('.chapter--accordion').forEach((chapter) => {
+    chapter.addEventListener('toggle', () => {
+      if (!chapter.open) return;
+      const body = chapter.querySelector(':scope > .chapter-body');
+      if (!body) return;
+
+      /* Build the stagger list. For Day 1, chapter-prose-rail is a
+         single direct child of chapter-body that wraps the photo +
+         all prose; recurse into it so inner items animate one by one. */
+      const targets = [];
+      Array.from(body.children).forEach((child) => {
+        if (child.classList.contains('chapter-prose-rail')) {
+          targets.push(...Array.from(child.children));
+        } else {
+          targets.push(child);
+        }
+      });
+      if (!targets.length) return;
+
+      targets.forEach((el, i) => {
+        try {
+          el.animate(
+            [
+              { opacity: 0, transform: 'translateY(14px)' },
+              { opacity: 1, transform: 'translateY(0)' }
+            ],
+            {
+              duration: 480,
+              delay: 80 + i * 70,
+              easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
+              fill: 'both'
+            }
+          );
+        } catch (_) {}
+      });
+    });
+  });
+}
+
 function boot() {
   // Force scroll to top on every refresh — disable browser auto-restore.
   if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
@@ -1119,6 +1169,7 @@ function boot() {
   initTipTap();
   initDayCost();
   initPromptHints();
+  initAccordionReveal();
   // Loader gates the entry animation; rest is already running.
   initLoader(() => {
     document.body.classList.add('is-loaded');
