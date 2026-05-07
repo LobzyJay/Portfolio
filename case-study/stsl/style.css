@@ -34,7 +34,10 @@ ul { list-style: none; }
   --color-purple:   #9B91F6;
 
   /* portfolio core */
-  --bg:           var(--color-midnight);
+  /* Page bg is pure black (was #14141A, a navy-tinted near-black). The
+     midnight token still drives accent surfaces (toggle text on yellow,
+     chapter type colour) but the canvas itself reads as black. */
+  --bg:           #000000;
   --bg-card:      #1e1e1e;
   --bg-btn:       #464646;
   --bg-btn-light: #f1f1f4;
@@ -120,6 +123,24 @@ ul { list-style: none; }
   background: var(--bg);
   overflow: hidden;
   isolation: isolate;
+}
+/* Smooth handoff into the article body: the bottom of the hero fades
+   from the live ripple canvas into the page bg so there's no hard edge
+   where the cover ends and the overview begins. Sits above the mockup
+   (z=1) but below cover-title (z=2) and cover-profile (z=3) so the
+   foreground content stays untouched. */
+.cover::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 32%;
+  background: linear-gradient(to bottom,
+    rgba(0, 0, 0, 0)    0%,
+    rgba(0, 0, 0, 0.55) 55%,
+    #000                100%
+  );
+  pointer-events: none;
+  z-index: 1;
 }
 /* Three.js liquid-ripple canvas — sits BEHIND the hero image so its
    mouse-driven ripple FX reads through the semi-transparent mockup. */
@@ -817,44 +838,110 @@ body.is-loaded .cover-mockup img {
   margin-right: 0.04em;
 }
 
-/* ── Prompt hint — short labelled aside that shows the prompt I'd
-   reach for if a step is harder to follow. Lighter than .prompt-callout
-   (no avatars, no thread chrome) so it can sit inline with prose without
-   stealing the scene. */
+/* ── Prompt hint — collapsed pill-button by default, click to reveal
+   the natural-language prompt. Lighter than .prompt-callout (no avatars,
+   no thread chrome) so it can sit inline with prose without stealing
+   the scene. Native <details> disclosure handles the open/close. */
 .prompt-hint {
   margin: clamp(20px, 3vh, 28px) 0;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+}
+.ph-trigger {
+  list-style: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 16px 9px 14px;
+  background: rgba(255, 201, 25, 0.06);
+  border: 1px solid rgba(255, 201, 25, 0.32);
+  border-radius: var(--r-pill);
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 13px;
+  letter-spacing: -0.005em;
+  color: var(--color-yellow);
+  transition: background 220ms var(--ease-expo), border-color 220ms var(--ease-expo);
+  user-select: none;
+}
+.ph-trigger::-webkit-details-marker { display: none; }
+.ph-trigger::marker { display: none; content: ""; }
+.ph-trigger:hover {
+  background: rgba(255, 201, 25, 0.12);
+  border-color: var(--color-yellow);
+}
+.ph-trigger:focus-visible {
+  outline: 2px solid var(--color-yellow);
+  outline-offset: 3px;
+}
+.ph-trigger-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: rgba(255, 201, 25, 0.18);
+  font-size: 13px;
+  line-height: 1;
+  font-weight: 500;
+  transition: transform 320ms var(--ease-expo), background 220ms var(--ease-expo);
+}
+.prompt-hint[open] .ph-trigger-icon {
+  transform: rotate(45deg);
+  background: var(--color-yellow);
+  color: var(--color-midnight);
+}
+.ph-trigger-label {
+  font-weight: 500;
+}
+.ph-trigger-sub {
+  color: var(--text-light-muted);
+  font-weight: 400;
+  font-size: 12.5px;
+}
+.ph-content {
+  margin-top: 14px;
   padding: clamp(16px, 2vh, 20px) clamp(18px, 2vw, 22px);
   background: rgba(255, 201, 25, 0.04);
   border-left: 2px solid var(--color-yellow);
   border-radius: 0 var(--r-card) var(--r-card) 0;
-}
-.ph-label {
-  font-family: var(--font-sans);
-  font-weight: 500;
-  font-size: 10px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--color-yellow);
-  margin: 0 0 8px;
+  animation: accordion-fade 0.4s var(--ease-expo);
+  max-width: 72ch;
 }
 .ph-body {
   font-family: var(--font-sans);
   font-weight: 400;
   font-size: 14px;
   color: var(--text-light-muted);
-  margin: 0 0 10px;
+  margin: 0 0 12px;
   line-height: 1.55;
 }
 .ph-prompt {
-  font-family: var(--font-mono);
-  font-size: 12.5px;
+  font-family: var(--font-sans);
+  font-style: italic;
+  font-weight: 300;
+  font-size: 14.5px;
   line-height: 1.6;
   color: var(--text-light);
   margin: 0;
-  background: rgba(0, 0, 0, 0.32);
-  padding: 12px 14px;
-  border-radius: var(--r-card);
-  border: 1px solid var(--rule-light);
+  background: transparent;
+  padding: 0;
+  border: 0;
+}
+.ph-prompt::before {
+  content: "“";
+  margin-right: 2px;
+  color: var(--color-yellow);
+  font-style: normal;
+}
+.ph-prompt::after {
+  content: "”";
+  margin-left: 2px;
+  color: var(--color-yellow);
+  font-style: normal;
 }
 
 /* ── Prompt callout — "this is what I sent Claude" ────────── */

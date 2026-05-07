@@ -244,7 +244,7 @@
           <h2 class="chapter-title">Overview</h2>
         </header>
         <div class="chapter-body">
-          <p>SystemSpecs Technology Solutions is one of those companies most designers outside Lagos haven't heard of. Everyone in Nigeria has touched it though, mostly without knowing. They own Remita, the payment rail behind the federal Treasury Single Account, every tier-1 Nigerian bank, and more than 40 government ministries. School fees, taxes, anything paid to a government agency.</p>
+          <p>SystemSpecs Technology Solutions is one of those companies most people outside Lagos haven't heard of. Everyone in Nigeria has touched it though, mostly without knowing. They own Remita, the payment rail behind the federal Treasury Single Account, every tier-1 Nigerian bank, and more than 40 government ministries. School fees, taxes, anything paid to a government agency.</p>
           <p>I gave myself 3.5 days to rebuild it from scratch with Claude as a collaborator. Marketing site, design system, UI kit. One repo, one weekend, one designer.</p>
         </div>
         <aside class="overview-meta">
@@ -329,11 +329,17 @@
               <p><span class="quote-script">T</span>he design system isn't a deliverable at the end, it's the load-bearing infrastructure on day one.</p>
             </figure>
             <p>Motion was the other token category that had to land on Day 1. I picked four easing curves and three durations and gave them names: ease-expressive for the soft cinematic curve, ease-snappy for click feedback, ease-natural for content reveal, and ease-precise for UI states. Then I locked them into a single CSS variable file. Every transition on the marketing site later referenced one of those four. Nothing freelanced.</p>
-            <aside class="prompt-hint" data-reveal aria-label="Prompt hint, building the tokens layer">
-              <p class="ph-label">prompt hint, if you want to follow along</p>
-              <p class="ph-body">If you're trying to set this up yourself, this is roughly the prompt I'd give Claude:</p>
-              <p class="ph-prompt">Build the foundations layer first. Three token tiers, primitive (raw values), semantic (bg-canvas, text-primary, accent-default), component (button-bg, card-radius, nav-blur). Each tier references the one below. Output as one tokens.css file with CSS variables grouped by tier. Add motion tokens for four easing curves and three durations under the same file.</p>
-            </aside>
+            <details class="prompt-hint" data-reveal>
+              <summary class="ph-trigger">
+                <span class="ph-trigger-icon" aria-hidden="true">+</span>
+                <span class="ph-trigger-label">Hint</span>
+                <span class="ph-trigger-sub">how I'd ask Claude to set up the tokens</span>
+              </summary>
+              <div class="ph-content">
+                <p class="ph-body">If you want to follow along, you don't have to write it like a developer would. This is roughly how I'd describe it:</p>
+                <p class="ph-prompt">set up a tokens system in three layers. raw values at the bottom, the actual hex codes, the spacing scale, the type ramp. then a layer of named tokens that point at those raw values, things like bg-canvas, text-primary, accent-default, so I can change meaning without touching the values. then a third layer for component-specific tokens like button background, card radius, nav blur. put it all in one CSS file. also add motion tokens for the four easing curves and the three durations I'm using.</p>
+              </div>
+            </details>
             <figure class="token-snippet" data-reveal>
               <div class="tk-chrome" aria-hidden="true">
                 <span class="tk-dot tk-dot--r"></span>
@@ -412,11 +418,17 @@
           <p>Day 3 was 22 commits and most of them were fixing things. The single big one was tagged "STSL marketing site v1, full rebuild" and it was the only commit that actually built new pages. Everything else was the system reacting to itself.</p>
           <p>Two of those reactions are worth telling, because they're the kind of moment that doesn't show up in a portfolio shot but tells you what the day actually was.</p>
           <p>The first was a deploy-path issue. The site lived under a subpath on the host, which meant every internal link, every asset reference, every fetch had to be aware of that prefix. The framework handles most of it, but the combination of <span class="tip" tabindex="0" role="button" aria-label="Tip: static export, tap to expand" data-tip="Build mode that ships plain HTML/CSS/JS. No server, just files.">static export</span>, client-side routing, and an aggressive transition layer meant the bridge wasn't watertight. Links that worked locally returned 404 on the deploy. I wrote a tiny helper that rewrote every internal href in one place and re-ran the export. That fix is exactly two characters longer than it needs to be. It works.</p>
-          <aside class="prompt-hint" data-reveal aria-label="Prompt hint, deploy-path fix">
-            <p class="ph-label">prompt hint, deploy-path fix</p>
-            <p class="ph-body">If you hit the same 404-on-deploy problem, this is the kind of prompt that gets a clean fix:</p>
-            <p class="ph-prompt">Internal links 404 on the deployed site under a subpath but work locally. Static export, client-side routing, deploy path is /project-name. Write one helper that rewrites every internal href to include the basePath, then tell me where to call it. Don't add config until we hit a real problem.</p>
-          </aside>
+          <details class="prompt-hint" data-reveal>
+            <summary class="ph-trigger">
+              <span class="ph-trigger-icon" aria-hidden="true">+</span>
+              <span class="ph-trigger-label">Hint</span>
+              <span class="ph-trigger-sub">how I'd describe the deploy-path fix</span>
+            </summary>
+            <div class="ph-content">
+              <p class="ph-body">If you hit the same 404-on-deploy problem, you don't have to know the technical fix to ask for it. Tell Claude what you're seeing:</p>
+              <p class="ph-prompt">all my internal links work fine locally but they 404 on the deployed site. the site lives at a subpath like /project-name on the host. it's a static export with client-side routing. write me one helper function that adds the right prefix to every internal link, then tell me where to plug it in. keep it simple, no extra config until we actually need it.</p>
+            </div>
+          </details>
           <p>The second one is the more honest of the two. Worth staying with for a beat. I'd built a clever route-transition wrapper that intercepted clicks on internal links to add a soft cross-fade between pages. Nice idea. It also broke every internal link because the click interception fired before the browser could navigate, and the transition's promise resolution was racing the route push. The pages just stopped going anywhere.</p>
           <figure class="pull-quote" data-reveal>
             <p><span class="quote-script">A</span> clever abstraction broke real links, and I had to crawl back into the static HTML and rewrite hrefs by hand.</p>
@@ -455,11 +467,17 @@
         <div class="chapter-body">
           <p>Day 4 was 29 commits, almost all of them small. None of them changed what the site did. All of them changed how the site felt. This is the day I'd skip if I were trying to ship faster, and the day that would've made the rest of the work feel cheap if I had.</p>
           <p>The splash was the first one. The site loaded with a brief moment where the page background was the wrong color before the styles hydrated. A faint cream flash on dark mode that lasted maybe 80ms. Most people don't see it. I saw it. I added a pre-paint script that runs synchronously in <code>&lt;head&gt;</code> and sets a <code>data-splash="active"</code> attribute on <code>&lt;html&gt;</code> before the body paints. The CSS keyed off that attribute and held the canvas at the right color until the splash dismissed. The flash went away. That's an 80ms problem nobody asked me to fix and the kind of polish a site either has or doesn't.</p>
-          <aside class="prompt-hint" data-reveal aria-label="Prompt hint, splash gate">
-            <p class="ph-label">prompt hint, splash gate</p>
-            <p class="ph-body">The splash gate is the kind of thing that's faster to ask for than to write from scratch:</p>
-            <p class="ph-prompt">There's an 80ms canvas-color flash before styles hydrate on dark mode. Add a pre-paint script in &lt;head&gt; that sets data-splash="active" on &lt;html&gt; before the body paints, then have CSS hold the right canvas colour until the splash dismisses. Make the route detection work under any deploy basePath, not hardcoded to /design.</p>
-          </aside>
+          <details class="prompt-hint" data-reveal>
+            <summary class="ph-trigger">
+              <span class="ph-trigger-icon" aria-hidden="true">+</span>
+              <span class="ph-trigger-label">Hint</span>
+              <span class="ph-trigger-sub">how I'd ask Claude to fix the splash flash</span>
+            </summary>
+            <div class="ph-content">
+              <p class="ph-body">The splash gate is the kind of thing that's faster to describe than to code from scratch. Just tell Claude what you're seeing:</p>
+              <p class="ph-prompt">there's a tiny flash of the wrong background colour for about 80ms when the page first loads in dark mode, before the styles kick in. add a small script that runs in the head before the page paints, set a data-splash flag on the html element, and have CSS hold the canvas at the right colour until the splash clears. make sure the route detection works under any deploy path, not hardcoded.</p>
+            </div>
+          </details>
           <p>The hover gesture on the audience tiles was Day 4's most visible iteration. The first version had a 400ms slow expressive ease-out. It looked great in isolation. In context, scrolling past three of them in a row felt slow. I cut it to 200ms with a snappier ease-out and added a 5% scale-up so the cards lifted toward the viewer. The exact commit message reads "snappier 200ms ease-out (was duration-slow 400ms expressive)". That's the kind of decision you can only make by looking at the live site and noticing what feels off, then changing one variable and looking again.</p>
           <p>Mobile snap-scroll was the third thing. The audience tiles and the pathway tiles wanted to be a horizontal carousel on phones, not a stacked column. CSS scroll-snap got me 80% of the way there. The remaining 20% was tuning the snap-padding so the next card peeked into view at the right amount, signaling "there's more here". That detail tells the user the carousel is interactive without an arrow icon.</p>
           <p>The OG image was the smallest commit and the most embarrassing. I'd exported the social card as a 1.4MB PNG. WhatsApp didn't show a preview. Slack didn't show a preview. iMessage didn't show a preview. The reason was the file size limit on those platforms' link preview fetchers, which is roughly 300KB. Re-exporting as JPG dropped it to 281KB and every preview started rendering. The commit message was "OG image: PNG (1.4MB) → JPG (281KB) for WhatsApp preview". That's a 1-line fix that unlocked every share-on-mobile flow.</p>
@@ -535,11 +553,17 @@
           <p>The build broke twice. Once was the GitHub Pages basePath problem covered in Day 3. The other was the splash gate, which set a <code>data-splash="active"</code> attribute synchronously in <code>&lt;head&gt;</code> using a regex to detect the design route. The first version checked <code>pathname.startsWith('/design')</code> which silently failed on GitHub Pages because the deploy path is <code>/Systemspec-website-redesign/design</code>. Switching to <code>/\\/design(\\/|$)/.test(pathname)</code> made it work under any basePath.</p>
           <p>The fix took 30 seconds. Finding it took longer than that.</p>
           <p>Deploying didn't need a separate workflow. The static export drops a folder of HTML and assets, and Vercel and GitHub Pages both pick it up directly. I let Claude handle the wiring. It read the Vercel CLI docs, walked me through <code>vercel login</code> once, attached the project to my account, and set up a redeploy on every push. Same flow works on Netlify or Cloudflare Pages. The only step you can't outsource is the OAuth login, which has to happen in your browser.</p>
-          <aside class="prompt-hint" data-reveal aria-label="Prompt hint, deploy with AI">
-            <p class="ph-label">prompt hint, deploy with AI</p>
-            <p class="ph-body">If you want to skip reading the deploy docs, this is the kind of prompt that gets you live:</p>
-            <p class="ph-prompt">I have a static-exported Next.js site in this repo. Walk me through deploying it to Vercel using the CLI. Tell me when I need to log in so my account gets attached, link the project, and set up a redeploy on every push. Don't write extra config until we hit a real problem.</p>
-          </aside>
+          <details class="prompt-hint" data-reveal>
+            <summary class="ph-trigger">
+              <span class="ph-trigger-icon" aria-hidden="true">+</span>
+              <span class="ph-trigger-label">Hint</span>
+              <span class="ph-trigger-sub">how I'd ask Claude to deploy the site</span>
+            </summary>
+            <div class="ph-content">
+              <p class="ph-body">If you'd rather skip the deploy docs entirely, this is the kind of thing you can just say out loud:</p>
+              <p class="ph-prompt">I've got a static-exported site in this folder. walk me through deploying it to Vercel using the CLI. tell me when I need to log in so my account gets attached, link the project, and set it up to redeploy whenever I push. no extra config until we actually hit a problem.</p>
+            </div>
+          </details>
         </div>
       </section>
 
