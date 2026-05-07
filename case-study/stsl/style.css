@@ -838,54 +838,58 @@ body.is-loaded .cover-mockup img {
   margin-right: 0.04em;
 }
 
-/* ── Prompt hint — collapsed pill-button by default, click to reveal
-   the natural-language prompt with an animated height + opacity slide.
-   Purple primary surface, yellow accent on the icon and quotes — its own
-   visual lane vs. the rest of the article's red/yellow rhythm. JS in
-   script.js drives the height animation via WAAPI on the toggle event. */
+/* ── Prompt hint — styled as a small bento card. Closed state shows
+   the trigger row only; open state reveals the body content below a
+   hairline rule, all inside the same card surface. Purple primary
+   surface with yellow accents on the icon + quotes. WAAPI animates
+   the height + opacity on toggle (script.js). Auto-closes on
+   mouseleave (260ms grace) and IntersectionObserver out-of-viewport. */
 .prompt-hint {
-  margin: clamp(20px, 3vh, 28px) 0;
-  padding: 0;
-  background: transparent;
-  border: 0;
-  border-radius: 0;
+  margin: clamp(24px, 3.4vh, 32px) 0;
+  padding: clamp(14px, 1.8vh, 18px) clamp(16px, 1.8vw, 22px);
+  background: rgba(155, 145, 246, 0.04);
+  border: 1px solid rgba(155, 145, 246, 0.22);
+  border-radius: var(--r-bento);
+  max-width: 72ch;
+  transition:
+    background 280ms var(--ease-expo),
+    border-color 280ms var(--ease-expo),
+    box-shadow 320ms var(--ease-expo);
+  box-shadow: 0 0 0 0 rgba(155, 145, 246, 0);
+}
+.prompt-hint:hover {
+  background: rgba(155, 145, 246, 0.07);
+  border-color: rgba(155, 145, 246, 0.42);
+}
+.prompt-hint[open] {
+  background: rgba(155, 145, 246, 0.07);
+  border-color: rgba(155, 145, 246, 0.55);
+  box-shadow: 0 12px 36px -18px rgba(155, 145, 246, 0.5);
 }
 .ph-trigger {
   list-style: none;
   cursor: pointer;
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 9px 18px 9px 12px;
-  background: rgba(155, 145, 246, 0.07);
-  border: 1px solid rgba(155, 145, 246, 0.34);
-  border-radius: var(--r-pill);
+  gap: 12px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
   font-family: var(--font-sans);
   font-weight: 500;
   font-size: 13px;
   letter-spacing: -0.005em;
   color: var(--color-purple);
-  transition:
-    background 240ms var(--ease-expo),
-    border-color 240ms var(--ease-expo),
-    transform 220ms var(--ease-expo),
-    box-shadow 280ms var(--ease-expo);
+  transition: color 240ms var(--ease-expo);
   user-select: none;
-  box-shadow: 0 0 0 0 rgba(155, 145, 246, 0);
 }
 .ph-trigger::-webkit-details-marker { display: none; }
 .ph-trigger::marker { display: none; content: ""; }
-.ph-trigger:hover {
-  background: rgba(155, 145, 246, 0.13);
-  border-color: var(--color-purple);
-  box-shadow: 0 6px 20px -10px rgba(155, 145, 246, 0.55);
-}
-.ph-trigger:active {
-  transform: translateY(0.5px) scale(0.985);
-}
 .ph-trigger:focus-visible {
   outline: 2px solid var(--color-purple);
-  outline-offset: 3px;
+  outline-offset: 4px;
+  border-radius: 4px;
 }
 .ph-trigger-icon {
   position: relative;
@@ -945,18 +949,15 @@ body.is-loaded .cover-mockup img {
   font-size: 12.5px;
 }
 .ph-content {
-  margin-top: 14px;
-  padding: clamp(16px, 2vh, 20px) clamp(18px, 2vw, 22px);
-  background: rgba(155, 145, 246, 0.05);
-  border-left: 2px solid var(--color-purple);
-  border-radius: 0 var(--r-card) var(--r-card) 0;
-  max-width: 72ch;
-  /* The closed-state baseline — JS animates from these values to the
-     open state on the `toggle` event using WAAPI. The transitions stay
-     here as a CSS-only fallback for browsers without JS. */
+  margin-top: clamp(12px, 1.6vh, 16px);
+  padding-top: clamp(12px, 1.6vh, 16px);
+  border-top: 1px solid rgba(155, 145, 246, 0.20);
+  /* Closed-state baseline — JS animates from these values to the open
+     state via WAAPI on the toggle event. Transitions remain as a
+     CSS-only fallback for browsers where the script doesn't run. */
   overflow: hidden;
   opacity: 0;
-  transform: translateY(-6px);
+  transform: translateY(-4px);
   transition:
     opacity 280ms var(--ease-expo),
     transform 320ms var(--ease-expo);
