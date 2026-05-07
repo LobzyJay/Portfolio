@@ -34,7 +34,10 @@ ul { list-style: none; }
   --color-purple:   #9B91F6;
 
   /* portfolio core */
-  --bg:           var(--color-midnight);
+  /* Page bg is pure black (was #14141A, a navy-tinted near-black). The
+     midnight token still drives accent surfaces (toggle text on yellow,
+     chapter type colour) but the canvas itself reads as black. */
+  --bg:           #000000;
   --bg-card:      #1e1e1e;
   --bg-btn:       #464646;
   --bg-btn-light: #f1f1f4;
@@ -120,6 +123,24 @@ ul { list-style: none; }
   background: var(--bg);
   overflow: hidden;
   isolation: isolate;
+}
+/* Smooth handoff into the article body: the bottom of the hero fades
+   from the live ripple canvas into the page bg so there's no hard edge
+   where the cover ends and the overview begins. Sits above the mockup
+   (z=1) but below cover-title (z=2) and cover-profile (z=3) so the
+   foreground content stays untouched. */
+.cover::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 32%;
+  background: linear-gradient(to bottom,
+    rgba(0, 0, 0, 0)    0%,
+    rgba(0, 0, 0, 0.55) 55%,
+    #000                100%
+  );
+  pointer-events: none;
+  z-index: 1;
 }
 /* Three.js liquid-ripple canvas — sits BEHIND the hero image so its
    mouse-driven ripple FX reads through the semi-transparent mockup. */
@@ -671,8 +692,12 @@ body.is-loaded .cover-mockup img {
 .chapter-body > ul,
 .chapter-body > ol,
 .chapter-body > .pull-quote,
-.chapter-body > .demo-card {
+.chapter-body > .demo-card,
+.chapter-body > .prompt-hint {
   grid-column: 1 / -1;
+}
+.chapter-body > .prompt-hint {
+  max-width: 72ch;
 }
 /* Prose fills the full assigned grid range — no fixed character cap */
 .chapter-body > p,
@@ -681,13 +706,13 @@ body.is-loaded .cover-mockup img {
   max-width: none;
 }
 /* Pull-quote figure spans the full grid column so the top + bottom rules
-   read as full-width dividers. The TEXT inside hangs right-aligned with a
-   tight measure for readability — the rules don't shrink with it. */
+   read as full-width dividers. The TEXT inside hangs left-aligned (Day 1
+   reference) — the rules don't shrink with it. */
 .chapter-body > .pull-quote {
   max-width: none;
   margin-left: 0;
   margin-right: 0;
-  text-align: right;
+  text-align: left;
 }
 .chapter-body > .demo-card {
   max-width: none;
@@ -780,22 +805,26 @@ body.is-loaded .cover-mockup img {
 .chapter-body > ul:first-child,
 .chapter-body > ol:first-child { margin-top: clamp(28px, 4vh, 44px); }
 
-/* Pull-quote — DM Sans large, script accent on first letter */
+/* Pull-quote — DM Sans large, script accent on first letter.
+   Day 1 reference standard: left-aligned, top + bottom rule lines,
+   larger display weight. All pull-quotes on the page match this. */
 .pull-quote {
   margin-top: clamp(48px, 7vh, 80px) !important;
   padding: clamp(24px, 4vh, 40px) 0;
   border-top: 1px solid var(--rule-light);
   border-bottom: 1px solid var(--rule-light);
+  text-align: left;
 }
 .pull-quote p {
   font-family: var(--font-sans);
   font-weight: 300;
-  font-size: clamp(24px, 2.4vw, 34px);
+  font-size: clamp(26px, 2.6vw, 38px);
   line-height: 1.28;
   color: var(--text-light);
   letter-spacing: -0.018em;
-  max-width: 44ch;
-  margin: 0 0 0 auto !important;
+  max-width: 52ch;
+  margin: 0 !important;
+  text-align: left;
 }
 .pull-quote .qb {
   display: block;
@@ -807,6 +836,213 @@ body.is-loaded .cover-mockup img {
   font-size: 1.5em;
   line-height: 0.8;
   margin-right: 0.04em;
+}
+
+/* ── Prompt hint — pill with a lightbulb glyph.
+   Rest:   pill shows [lightbulb] Hint. Reads at a glance.
+   Hover:  the dot + sub label "how I'd describe …" slides in after
+           Hint. Mouse leaves the hint area → CSS-auto outro (sub
+           label slides back, pill bg returns to rest).
+   Open:   icon picks up a soft yellow halo so state is legible even
+           after the cursor moves. Body bento drops below.
+   Outros: mouseleave on .prompt-hint reverses :hover automatically;
+   script.js closes [open] 120ms after mouseleave. IntersectionObserver
+   also closes [open] when the hint scrolls out of view. */
+.prompt-hint {
+  display: block;
+  margin: clamp(24px, 3.4vh, 32px) 0;
+  max-width: 72ch;
+}
+.ph-trigger {
+  list-style: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  padding: 3px 14px 3px 3px;
+  /* Frosted-glass capsule, matching the .day-rail-list aesthetic.
+     Soft dark surface, hairline white border, backdrop blur. Red glyph
+     disc inside reads as the focal "active dot" against the dim
+     surface, same as the active day-rail node. */
+  background: rgba(20, 20, 20, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--r-pill);
+  overflow: hidden;
+  backdrop-filter: blur(10px) saturate(140%);
+  -webkit-backdrop-filter: blur(10px) saturate(140%);
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 13px;
+  letter-spacing: -0.005em;
+  color: var(--text);
+  user-select: none;
+  /* Outro path: short, normal ease so the pill bg + border return to
+     rest in sync with the WAAPI body close. easeOutQuart over 720ms
+     was leaving a long dead tail — the body had already disappeared
+     but the pill was still fading for ~500ms past it. */
+  transition:
+    background 280ms var(--ease-expo),
+    border-color 280ms var(--ease-expo),
+    box-shadow 320ms var(--ease-expo);
+}
+.ph-trigger::-webkit-details-marker { display: none; }
+.ph-trigger::marker { display: none; content: ""; }
+.ph-trigger:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+/* Expansion rules skip while data-closing is set so the pill outro
+   runs in parallel with the WAAPI body close, not after it.
+   :has(:focus-visible) instead of :focus-within so that click-driven
+   focus on the <summary> doesn't keep the pill expanded after the
+   close completes — only keyboard focus expands it. */
+.prompt-hint:hover:not([data-closing]) .ph-trigger,
+.prompt-hint:has(:focus-visible):not([data-closing]) .ph-trigger,
+.prompt-hint[open]:not([data-closing]) .ph-trigger {
+  background: rgba(20, 20, 20, 0.7);
+  border-color: rgba(255, 255, 255, 0.16);
+  /* Intro path: snappier ease-out so the pill responds quickly to the
+     mouse arriving. The outro on the base rule above handles the
+     gentle collapse back. */
+  transition:
+    background 280ms var(--ease-expo),
+    border-color 280ms var(--ease-expo),
+    box-shadow 320ms var(--ease-expo);
+}
+.prompt-hint[open]:not([data-closing]) .ph-trigger {
+  box-shadow: 0 0 16px rgba(228, 2, 2, 0.45);
+}
+.ph-trigger-icon {
+  flex-shrink: 0;
+  display: inline-grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: var(--r-pill);
+  /* Solid red disc with a white glyph — the focal "active dot"
+     against the dim capsule. Mirrors the day-rail.is-active node. */
+  background: var(--accent);
+  color: var(--text);
+  transition:
+    background 320ms var(--ease-expo),
+    box-shadow 320ms var(--ease-expo);
+}
+.ph-trigger-icon svg {
+  width: 14px;
+  height: 14px;
+  display: block;
+}
+/* Open: icon disc keeps its solid red but picks up a soft outer halo,
+   mirroring the day-rail.is-active node's red glow. The :not(data-
+   closing) guard makes sure the halo fades in lockstep with the rest
+   of the pill outro, instead of holding through the close animation. */
+.prompt-hint[open]:not([data-closing]) .ph-trigger-icon {
+  box-shadow: 0 0 12px rgba(228, 2, 2, 0.6);
+}
+.ph-trigger-label {
+  flex-shrink: 0;
+  font-weight: 500;
+  color: var(--text);
+}
+.ph-trigger-sub {
+  display: inline-flex;
+  align-items: center;
+  max-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  opacity: 0;
+  font-weight: 400;
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.55);
+  /* Outro path — short, normal ease so the sub label retreats in
+     sync with the rest of the pill. */
+  transition:
+    max-width 320ms var(--ease-expo),
+    opacity 240ms var(--ease-expo);
+}
+/* Dot separator only appears once the sub is animating in. */
+.ph-trigger-sub::before {
+  content: "·";
+  color: var(--accent);
+  opacity: 0.7;
+  margin: 0 8px 0 0;
+}
+.prompt-hint:hover:not([data-closing]) .ph-trigger-sub,
+.prompt-hint:has(:focus-visible):not([data-closing]) .ph-trigger-sub,
+.prompt-hint[open]:not([data-closing]) .ph-trigger-sub {
+  max-width: 360px;
+  opacity: 1;
+  /* Intro path — snappier and a touch faster, with a small delay so
+     the pill bg shift starts first. */
+  transition:
+    max-width 420ms var(--ease-expo) 60ms,
+    opacity 280ms var(--ease-expo) 60ms;
+}
+.ph-content {
+  margin-top: clamp(12px, 1.6vh, 16px);
+  padding: clamp(16px, 2vh, 22px) clamp(18px, 2vw, 24px);
+  background: rgba(20, 20, 20, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--r-bento);
+  backdrop-filter: blur(10px) saturate(140%);
+  -webkit-backdrop-filter: blur(10px) saturate(140%);
+  /* Closed-state baseline. JS animates these via WAAPI on toggle.
+     The CSS transitions are a fallback for browsers without JS, and
+     box-shadow is also transitioned so the open-state red glow can't
+     pop off at the close-flip if the WAAPI close ease is ever changed
+     to one that doesn't already drive opacity to 0. */
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(-6px);
+  transition:
+    opacity 320ms var(--ease-expo),
+    transform 360ms var(--ease-expo),
+    box-shadow 360ms var(--ease-expo);
+}
+.prompt-hint[open] .ph-content {
+  opacity: 1;
+  transform: translateY(0);
+  box-shadow: 0 0 28px rgba(228, 2, 2, 0.20);
+}
+.ph-body {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: 14px;
+  color: var(--text-light-muted);
+  margin: 0 0 12px;
+  line-height: 1.55;
+}
+.ph-prompt {
+  font-family: var(--font-sans);
+  font-style: italic;
+  font-weight: 300;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--text-light);
+  margin: 0;
+  background: transparent;
+  padding: 0;
+  border: 0;
+}
+.ph-prompt::before {
+  content: "“";
+  margin-right: 2px;
+  color: var(--accent);
+  font-style: normal;
+}
+.ph-prompt::after {
+  content: "”";
+  margin-left: 2px;
+  color: var(--accent);
+  font-style: normal;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ph-trigger-icon,
+  .ph-trigger-icon::before,
+  .ph-trigger-icon::after,
+  .ph-content { transition: none !important; }
+  .prompt-hint[open] .ph-content { transform: none; }
 }
 
 /* ── Prompt callout — "this is what I sent Claude" ────────── */
@@ -1863,42 +2099,22 @@ body.is-loaded .cover-mockup img {
   align-items: baseline;
   padding: clamp(10px, 1.4vh, 14px) 0;
   border-bottom: 1px solid var(--rule-light);
-  transition: background-color 220ms var(--ease-expo);
 }
 .as-list li:last-child { border-bottom: 0; }
-.as-list li:hover { background: rgba(255,201,25,0.04); }
 .as-name {
   font-family: var(--font-sans);
   font-weight: 500;
   font-size: 14px;
   color: var(--color-white);
   letter-spacing: -0.005em;
-  position: relative;
-  display: inline-block;
-  width: max-content;
 }
-.as-name::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -2px;
-  height: 1px;
-  background: var(--color-yellow);
-  transform: scaleX(0);
-  transform-origin: left center;
-  transition: transform 280ms var(--ease-expo);
-}
-.as-list li:hover .as-name::after { transform: scaleX(1); }
 .as-desc {
   font-family: var(--font-sans);
   font-weight: 300;
   font-size: 13px;
   color: var(--text-light-muted);
   line-height: 1.45;
-  transition: color 220ms var(--ease-expo);
 }
-.as-list li:hover .as-desc { color: var(--color-white); }
 .as-num {
   font-family: var(--font-sans);
   font-weight: 500;
@@ -1908,9 +2124,7 @@ body.is-loaded .cover-mockup img {
   font-variant-numeric: tabular-nums;
   line-height: 1.45;
   min-width: 18px;
-  transition: color 220ms var(--ease-expo);
 }
-.as-list li:hover .as-num { color: var(--color-yellow); }
 @media (max-width: 720px) {
   .as-head { flex-direction: column; align-items: flex-start; }
   .as-list li { grid-template-columns: auto 1fr; gap: 8px; }
@@ -2078,6 +2292,18 @@ body.is-loaded .cover-mockup img {
   grid-column: 1 / span 9;
   margin-top: clamp(28px, 4vh, 40px);
 }
+.chapter--accordion > .chapter-body > .prompt-hint {
+  grid-column: 1 / span 9;
+  margin-top: clamp(24px, 3.4vh, 32px);
+}
+.chapter--swiss .chapter-prose-rail > .prompt-hint {
+  grid-column: 1 / span 7;
+  margin-top: clamp(20px, 3vh, 28px);
+}
+.chapter--swiss > .chapter-body > .prompt-hint {
+  grid-column: 1 / span 9;
+  margin-top: clamp(24px, 3.4vh, 32px);
+}
 .chapter--accordion > .chapter-body > .prompt-row {
   grid-column: 1 / -1;
   margin-top: clamp(28px, 4vh, 40px);
@@ -2116,7 +2342,7 @@ body.is-loaded .cover-mockup img {
   padding: 0;
 }
 .chapter--accordion > .chapter-body > .pull-quote {
-  grid-column: 5 / span 8;
+  grid-column: 1 / -1;
   margin-top: clamp(40px, 6vh, 64px);
   max-width: none;
 }
@@ -2125,72 +2351,75 @@ body.is-loaded .cover-mockup img {
   margin-top: clamp(28px, 4vh, 40px);
 }
 
-/* ── Inputs bento (Day 0): list of source docs/refs fed into the build ── */
+/* ── Inputs bento (Day 0): list of source docs/refs fed into the build.
+   Layout mirrors .agents-skills — midnight surface, eyebrow header above
+   a rule, three-column row (num · name · desc) with hover-tracked
+   underline + colour shift. Keeps the page rhythm consistent between
+   the two list-of-things bentos. */
 .inputs-bento {
-  display: flex;
-  flex-direction: column;
-  gap: clamp(14px, 1.6vh, 20px);
-  padding: clamp(18px, 2vw, 24px);
-  background: #000000;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 4px;
+  margin: clamp(36px, 5vh, 56px) 0 clamp(20px, 3vh, 28px);
+  padding: clamp(20px, 2.6vh, 28px) clamp(20px, 2.4vw, 28px) clamp(24px, 3vh, 32px);
+  background: var(--color-midnight);
+  border: 1px solid var(--rule-light);
+  border-radius: var(--r-bento);
+  color: var(--color-white);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.02);
 }
 .ib-eyebrow {
   font-family: var(--font-sans);
   font-weight: 500;
-  font-size: 10px;
-  letter-spacing: 0.2em;
+  font-size: 11px;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.5);
-  margin: 0;
+  color: var(--text-light-muted);
+  margin: 0 0 clamp(16px, 2.2vh, 22px);
+  padding-bottom: clamp(14px, 1.8vh, 18px);
+  border-bottom: 1px solid var(--rule-light);
 }
 .ib-list {
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: clamp(10px, 1.2vh, 14px) clamp(20px, 2vw, 28px);
+  gap: clamp(2px, 0.4vh, 4px);
 }
 .ib-list li {
   display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 4px 12px;
-  padding: clamp(8px, 1vh, 12px) 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  grid-template-columns: auto minmax(0, 0.42fr) minmax(0, 0.58fr);
+  gap: clamp(10px, 1.2vw, 14px);
   align-items: baseline;
+  padding: clamp(10px, 1.4vh, 14px) 0;
+  border-bottom: 1px solid var(--rule-light);
 }
-.ib-list li:first-child,
-.ib-list li:nth-child(2) {
-  border-top: 0;
-}
+.ib-list li:last-child { border-bottom: 0; }
 .ib-num {
   font-family: var(--font-sans);
   font-weight: 500;
-  font-size: 10px;
+  font-size: 11px;
+  color: var(--text-light-muted);
   letter-spacing: 0.06em;
-  color: rgba(255, 255, 255, 0.4);
   font-variant-numeric: tabular-nums;
+  line-height: 1.45;
+  min-width: 18px;
 }
 .ib-name {
   font-family: var(--font-sans);
   font-weight: 500;
-  font-size: 13px;
-  color: var(--color-yellow);
-  letter-spacing: 0;
+  font-size: 14px;
+  color: var(--color-white);
+  letter-spacing: -0.005em;
   word-break: break-word;
 }
 .ib-desc {
-  grid-column: 2 / -1;
   font-family: var(--font-sans);
   font-weight: 300;
-  font-size: 12.5px;
+  font-size: 13px;
+  color: var(--text-light-muted);
   line-height: 1.45;
-  color: rgba(255, 255, 255, 0.55);
 }
 @media (max-width: 720px) {
-  .ib-list { grid-template-columns: 1fr; }
-  .ib-list li:nth-child(2) { border-top: 1px solid rgba(255, 255, 255, 0.08); }
+  .ib-list li { grid-template-columns: auto 1fr; gap: 8px; }
+  .ib-list li .ib-desc { grid-column: 1 / -1; padding-left: 28px; }
 }
 
 @keyframes accordion-fade {
@@ -2255,6 +2484,9 @@ body.is-loaded .cover-mockup img {
 }
 .chapter--swiss .chapter-prose-rail > .chapter-side {
   grid-column: 9 / span 4;
+  /* Span all rows so paragraphs flow normally beside the aside instead
+     of each paragraph cell being stretched to the aside's full height. */
+  grid-row: 1 / span 99;
   position: sticky;
   top: clamp(28px, 4vh, 56px);
   align-self: start;
@@ -2885,48 +3117,80 @@ body.is-loaded .cover-mockup img {
   pointer-events: auto;            /* activated on click */
 }
 
-/* Click-to-interact pill — top-right, sits just below the chrome bar */
-.lf-shield {
-  position: absolute;
-  right: 14px;
-  top: 56px;
-  z-index: 4;
+/* Click-to-interact action — filled pill inside the chrome bar.
+   REST: white bg + midnight text + red dot — loud, draws the click.
+   HOVER (rest): bg dims slightly to off-white so the press reads.
+   ACTIVE (.is-active, after click): bg quiets to a soft grey one shade
+     lighter than the chrome bar so the button recedes once the user
+     has engaged the iframe; dot shifts white, text stays white.
+   HOVER (active): grey brightens slightly so "click to release" still
+     reads as interactive.
+   Two label spans (.lf-action-full / .lf-action-short) so narrow
+   viewports can swap to a shorter "Interact / Release" without JS. */
+.lf-action {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-midnight);
+  white-space: nowrap;
+  background: #ffffff;
+  border: 0;
+  padding: 5px 12px;
+  margin-right: 12px;
+  border-radius: var(--r-pill);
+  cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 14px;
-  background: rgba(20,20,20,0.88);
-  color: #ffffff;
-  font-family: var(--font-sans);
-  font-weight: 500;
-  font-size: 12px;
-  letter-spacing: 0.04em;
-  border-radius: 999px;
-  cursor: pointer;
-  border: 1px solid rgba(255,255,255,0.12);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  transition: background 0.22s var(--ease-expo), transform 0.22s var(--ease-expo), opacity 0.22s var(--ease-expo);
+  gap: 6px;
+  transition:
+    background 0.22s var(--ease-expo),
+    color 0.22s var(--ease-expo);
   background-image: none !important;
 }
-.lf-shield::before {
+.lf-action::before {
   content: "";
   width: 6px;
   height: 6px;
   border-radius: 999px;
   background: var(--accent);
   flex-shrink: 0;
+  transition: background 0.22s var(--ease-expo), box-shadow 0.22s var(--ease-expo);
 }
-.lf-shield:hover {
-  background: rgba(20,20,20,0.96);
-  transform: translateY(-1px);
+.lf-action:hover { background: #d4d4d4; }
+.lf-action:hover::before {
+  box-shadow: 0 0 6px rgba(228, 2, 2, 0.5);
 }
-.live-frame.is-active .lf-shield {
-  background: rgba(228,2,2,0.92);
-  border-color: rgba(255,255,255,0.18);
+.lf-action:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
 }
-.live-frame.is-active .lf-shield::before {
+/* Active: chrome bg is rgba(255,255,255,0.05) ≈ #0d0d0d on the page;
+   #1f1f1f sits one shade lighter so the button recedes but stays
+   distinct from the chrome row. */
+.live-frame.is-active .lf-action {
+  background: #1f1f1f;
+  color: #ffffff;
+}
+.live-frame.is-active .lf-action::before {
   background: #ffffff;
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.45);
+}
+.live-frame.is-active .lf-action:hover { background: #2a2a2a; }
+.live-frame.is-active .lf-action:hover::before {
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.65);
+}
+/* Show full label by default, short label only at narrow widths. */
+.lf-action-short { display: none; }
+@media (max-width: 720px) {
+  .lf-action { margin-right: 10px; }
+  .lf-action-full { display: none; }
+  .lf-action-short { display: inline; }
+}
+@media (max-width: 540px) {
+  /* When chrome is genuinely tight, the URL eats the most space and
+     reads as decoration anyway. Hide it so the action + Open + dots
+     can share the row without overflow. */
+  .lf-chrome > .lf-url { display: none; }
 }
 
 /* Footer-atmosphere live-frame variant — the iframe loads the isolated
@@ -2947,7 +3211,19 @@ body.is-loaded .cover-mockup img {
   border-radius: 0 0 var(--r-card) var(--r-card);
   background: var(--bg-light-2);
   pointer-events: none; /* shield by default — activated via .is-active */
-  transition: opacity 0.2s var(--ease-expo);
+  /* The deployed footer-atmosphere route paints the STSL midnight
+     (#14141A) as its canvas — a brand colour with a slight blue/purple
+     cast. Desaturating the iframe pulls it toward neutral dark-grey so
+     it reads in the same family as .how-built. The red sweep overlay
+     stays legible, just less vivid. */
+  filter: saturate(0.32);
+  transition: opacity 0.2s var(--ease-expo), filter 0.4s var(--ease-expo);
+}
+/* When the user activates the iframe to play with the cursor sweep,
+   restore full saturation so the live demo reads at intended colour. */
+.live-frame--footer.is-active iframe,
+.live-frame--footer.is-active .lf-iframe {
+  filter: saturate(1);
 }
 .live-frame--footer.is-active iframe,
 .live-frame--footer.is-active .lf-iframe {
@@ -3015,25 +3291,19 @@ body.is-loaded .cover-mockup img {
 .live-frame--tabbed .lf-iframe {
   border-radius: 0 0 var(--r-card) var(--r-card);
 }
-.live-frame--tabbed .lf-shield {
-  top: 108px;
-}
 
 @media (max-width: 540px) {
   .live-frame--tabbed .lf-tabs { gap: 2px; padding: 4px; }
   .lf-tab { padding: 8px 12px; font-size: 12px; flex: 1 1 30%; }
-  .live-frame--tabbed .lf-open { flex-basis: 100%; text-align: center; padding: 6px 0; }
-  /* Tabs + Open wrap into multiple rows on phones, so the shield's
-     desktop top:108px lands inside the iframe rather than over content.
-     Pin it just below the chrome bar with a generous offset. */
-  .live-frame--tabbed .lf-shield { top: auto; bottom: 14px; right: 14px; }
-  /* Phone-sized shield: tight font for visual restraint, but a 44px tap
-     target per WCAG 2.5.5 — applied at every phone-class viewport so it
-     never depends on pointer:coarse media-query detection. */
-  .live-frame .lf-shield {
+  .live-frame--tabbed .lf-open { flex-basis: auto; text-align: center; padding: 6px 0; }
+  /* Phone-sized chrome action: tighter type + 44px tap target so the
+     filled pill still meets WCAG 2.5.5 once it's living inline in
+     the chrome bar. Padding scales down a notch to keep the pill
+     proportional to the smaller chrome row. */
+  .lf-action {
     font-size: 11px;
     min-height: 44px;
-    padding: 10px 16px;
+    padding: 6px 12px;
   }
 }
 .live-frame figcaption {
@@ -4062,7 +4332,9 @@ body.is-loaded .cover-mockup img {
   padding: clamp(18px, 2vw, 24px);
   background: #000000;
   border: 1px solid rgba(255,255,255,0.14);
-  border-radius: 4px;
+  /* Was 4px (token --r-sharp); aligned to --r-card so the cost + burn
+     cards match the small-card radius tier used elsewhere. */
+  border-radius: var(--r-card);
   display: flex; flex-direction: column; gap: 14px;
   min-height: 240px;
 }

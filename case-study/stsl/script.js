@@ -260,40 +260,72 @@ function initEntryAnimation() {
 }
 
 /* ── 5. IFRAME SHIELD — click to activate, release on exit ─ */
+/* ── IFRAME SHIELD — was a floating absolute-positioned pill in the
+   top-right of each .live-frame; now lives inline inside the chrome
+   bar, beside the Open link. Tabbed variants put their Open link in
+   .lf-tabs (above the URL row), simple variants put it inside the
+   .lf-chrome row, and the footer variant has no Open at all — the
+   action picks the right host and inserts before Open if present,
+   else appends to the chrome. */
 function initIframeShield() {
   const frames = document.querySelectorAll('.live-frame');
   if (!frames.length) return;
 
+  const setLabel = (action, active) => {
+    /* Two label spans so the chrome can swap to a shorter text on
+       narrow viewports via CSS, without JS having to know breakpoints. */
+    action.innerHTML = '';
+    const full = document.createElement('span');
+    full.className = 'lf-action-full';
+    full.textContent = active ? 'Active · click to release' : 'Click to interact';
+    const short = document.createElement('span');
+    short.className = 'lf-action-short';
+    short.textContent = active ? 'Release' : 'Interact';
+    action.append(full, short);
+  };
+
   frames.forEach((frame) => {
-    // Inject shield pill if not already present
-    if (!frame.querySelector('.lf-shield')) {
-      const shield = document.createElement('button');
-      shield.type = 'button';
-      shield.className = 'lf-shield';
-      shield.setAttribute('aria-pressed', 'false');
-      shield.textContent = 'Click to interact';
-      frame.appendChild(shield);
+    if (frame.querySelector('.lf-action')) return; // idempotent
 
-      shield.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        const active = frame.classList.toggle('is-active');
-        shield.setAttribute('aria-pressed', active ? 'true' : 'false');
-        shield.textContent = active ? 'Active · click to release' : 'Click to interact';
-      });
+    /* Pick the host: tabbed variant has Open inside .lf-tabs; simple
+       variants have Open (or nothing) inside .lf-chrome. */
+    const tabs = frame.querySelector('.lf-tabs');
+    const chrome = frame.querySelector('.lf-chrome');
+    let host = null;
+    let beforeNode = null;
+    if (tabs && tabs.querySelector('.lf-open')) {
+      host = tabs;
+      beforeNode = tabs.querySelector('.lf-open');
+    } else if (chrome) {
+      host = chrome;
+      beforeNode = chrome.querySelector('.lf-open');
     }
+    if (!host) return;
 
-    // Auto-release when iframe scrolls out of view
+    const action = document.createElement('button');
+    action.type = 'button';
+    action.className = 'lf-action';
+    action.setAttribute('aria-pressed', 'false');
+    setLabel(action, false);
+    if (beforeNode) host.insertBefore(action, beforeNode);
+    else host.appendChild(action);
+
+    action.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const active = frame.classList.toggle('is-active');
+      action.setAttribute('aria-pressed', active ? 'true' : 'false');
+      setLabel(action, active);
+    });
+
+    /* Auto-release when iframe scrolls out of view. */
     if ('IntersectionObserver' in window) {
       const io = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
           if (!entry.isIntersecting && frame.classList.contains('is-active')) {
             frame.classList.remove('is-active');
-            const shield = frame.querySelector('.lf-shield');
-            if (shield) {
-              shield.setAttribute('aria-pressed', 'false');
-              shield.textContent = 'Click to interact';
-            }
+            action.setAttribute('aria-pressed', 'false');
+            setLabel(action, false);
           }
         });
       }, { threshold: 0.15 });
@@ -816,22 +848,18 @@ function initDayCost() {
       ? 'day 0'
       : (d >= BURN_DAY ? 'day 4 — context full' : `day ${dayN}`);
 
+    /* Model credit on the status line. Day 0 + the early ramp ran on
+       Sonnet in Claude chat (the brief, the audit, the PRD). Once the
+       build started in Claude Code the rest of it rolled on Opus 4.7,
+       so the credit swaps when the needle passes the day-2 mark. */
+    tokenStatus.textContent = d < 2 ? 'Claude Sonnet' : 'Claude Opus 4.7';
+    /* The big number + gauge needle already carry the burn state via
+       red colour shift; keep is-burning / is-exhausted on the NUMBER. */
     tokenNum.classList.remove('is-burning', 'is-exhausted');
-    tokenStatus.classList.remove('is-burning', 'is-exhausted');
-    if (d <= 0) {
-      tokenStatus.textContent = 'Idle.';
-    } else if (d < 1) {
-      tokenStatus.textContent = 'Session 1, building.';
-    } else if (d < 2) {
-      tokenStatus.textContent = 'Session 2, building.';
-    } else if (d < BURN_DAY) {
-      tokenStatus.textContent = 'Session 3, burning fast.';
+    if (d >= 3 && d < BURN_DAY) {
       tokenNum.classList.add('is-burning');
-      tokenStatus.classList.add('is-burning');
-    } else {
-      tokenStatus.textContent = 'Context exhausted.';
+    } else if (d >= BURN_DAY) {
       tokenNum.classList.add('is-exhausted');
-      tokenStatus.classList.add('is-exhausted');
     }
 
     // Reset-pulse on session boundary crossings.
@@ -883,6 +911,194 @@ function initDayCost() {
 }
 
 /* ── BOOT ─────────────────────────────────────────────────── */
+/* ── PROMPT-HINT click-to-reveal.
+   <details> hides its body content via UA display:none the instant
+   [open] is removed, which means an outro animation hooked on the
+   `toggle` event has nothing to animate (scrollHeight = 0 by then).
+   Pattern below intercepts the click, runs a WAAPI height/opacity
+   animation manually, and only flips d.open at the END of the close
+   animation so the browser's hide is invisible. */
+function initPromptHints() {
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const hints = Array.from(document.querySelectorAll('details.prompt-hint'));
+  if (!hints.length) return;
+
+  const OPEN_EASE  = 'cubic-bezier(0.16, 1, 0.3, 1)';     // ease-out, snappy in
+  /* easeIn for the close: slow start, fast finish. WAAPI applies one
+     easing to every animated property — with a standard ease, opacity
+     hits 0 well before height does, leaving a residual layout tail.
+     Accelerating curve makes height finish its motion at the same
+     moment opacity does, so the layout snaps shut in sync. */
+  const CLOSE_EASE = 'cubic-bezier(0.55, 0, 1, 0.45)';
+  const OPEN_MS  = 380;
+  const CLOSE_MS = 440;
+
+  hints.forEach((d) => {
+    const content = d.querySelector('.ph-content');
+    const trigger = d.querySelector('summary');
+    if (!content || !trigger) return;
+
+    let activeAnim = null;
+    let isAnimating = false;
+
+    function cancelAnim() {
+      if (activeAnim) { try { activeAnim.cancel(); } catch (_) {} activeAnim = null; }
+      d._activeAnim = null;
+      isAnimating = false;
+    }
+
+    function animateOpen() {
+      if (reduce) { d.open = true; return; }
+      cancelAnim();
+      d.open = true;
+      const cs = getComputedStyle(content);
+      const marginTop = cs.marginTop;
+      const target = content.scrollHeight;
+      isAnimating = true;
+      activeAnim = content.animate(
+        [
+          { height: '0px', opacity: 0, transform: 'translateY(-6px)', marginTop: '0px' },
+          { height: `${target}px`, opacity: 1, transform: 'translateY(0)', marginTop }
+        ],
+        { duration: OPEN_MS, easing: OPEN_EASE, fill: 'forwards' }
+      );
+      d._activeAnim = activeAnim;
+      activeAnim.onfinish = () => { isAnimating = false; activeAnim = null; d._activeAnim = null; };
+    }
+
+    function animateClose() {
+      if (!d.open) return;
+      if (reduce) { d.open = false; return; }
+      cancelAnim();
+      const cs = getComputedStyle(content);
+      const marginTop = cs.marginTop;
+      const target = content.scrollHeight;
+      isAnimating = true;
+      // Flag the close NOW so the trigger pill + sub label start their
+      // CSS outros in parallel with the body height animation.
+      d.setAttribute('data-closing', '');
+      activeAnim = content.animate(
+        [
+          // Animate margin-top alongside height so the gap between
+          // pill and body collapses WITH the body, not after. Without
+          // this the body shrinks to 0 but its 14px top-margin lingers
+          // until [open] is flipped, reading as a leftover gap.
+          { height: `${target}px`, opacity: 1, transform: 'translateY(0)', marginTop },
+          { height: '0px', opacity: 0, transform: 'translateY(-6px)', marginTop: '0px' }
+        ],
+        { duration: CLOSE_MS, easing: CLOSE_EASE, fill: 'forwards' }
+      );
+      d._activeAnim = activeAnim;
+      activeAnim.onfinish = () => {
+        // Order matters: flip [open]=false FIRST so the CSS expansion
+        // rules (which key off [open]:not([data-closing])) can't re-
+        // fire for one frame between the data-closing removal and the
+        // open flip. Removing data-closing after is a no-op visually.
+        d.open = false;
+        d.removeAttribute('data-closing');
+        isAnimating = false;
+        activeAnim = null;
+        d._activeAnim = null;
+      };
+    }
+
+    /* Restore from a mid-flight close back to fully-open, with a
+       smooth height animation instead of letting cancelAnim() snap
+       the body back to natural height in 0ms. Reads the current
+       frozen height before cancelling, removes data-closing so CSS
+       can take over opacity/transform, then runs a short WAAPI from
+       current → target to bridge height + marginTop smoothly. */
+    function animateRestore() {
+      if (reduce) {
+        if (activeAnim) { try { activeAnim.cancel(); } catch (_) {} }
+        d.removeAttribute('data-closing');
+        d._activeAnim = null;
+        isAnimating = false;
+        activeAnim = null;
+        return;
+      }
+      const currentHeight = content.getBoundingClientRect().height;
+      const currentMargin = getComputedStyle(content).marginTop;
+      // Cancel the close keyframes (drops fill:forwards inline values).
+      // Removing data-closing re-engages CSS [open]:not([data-closing])
+      // so opacity/transform restore via the CSS fallback transitions.
+      if (activeAnim) { try { activeAnim.cancel(); } catch (_) {} }
+      d.removeAttribute('data-closing');
+      const target = content.scrollHeight;
+      const targetMargin = getComputedStyle(content).marginTop;
+      isAnimating = true;
+      activeAnim = content.animate(
+        [
+          { height: `${currentHeight}px`, marginTop: currentMargin },
+          { height: `${target}px`, marginTop: targetMargin }
+        ],
+        { duration: 280, easing: OPEN_EASE, fill: 'forwards' }
+      );
+      d._activeAnim = activeAnim;
+      activeAnim.onfinish = () => {
+        isAnimating = false;
+        activeAnim = null;
+        d._activeAnim = null;
+      };
+    }
+
+    /* Custom click handler — prevent the native open/close so we can
+       drive the animation ourselves. */
+    trigger.addEventListener('click', (e) => {
+      e.preventDefault();
+      // If a close is in flight, treat the click as "abort + reopen"
+      // and animate back to full height instead of dropping it.
+      if (isAnimating && d.hasAttribute('data-closing')) {
+        animateRestore();
+        return;
+      }
+      if (isAnimating) return;
+      if (d.open) animateClose(); else animateOpen();
+    });
+
+    /* Mouseleave fires the close immediately. The earlier grace was a
+       40ms buffer for tiny overshoots, but with the shorter close
+       duration the buffer reads as lag. */
+    d.addEventListener('mouseleave', () => {
+      if (d._closeTimer) clearTimeout(d._closeTimer);
+      if (d.open && !isAnimating) animateClose();
+    });
+    /* Mouseenter cancels both the pending close AND any in-flight
+       close animation, smoothly restoring the body to its natural
+       height instead of snapping it back. */
+    d.addEventListener('mouseenter', () => {
+      if (d._closeTimer) { clearTimeout(d._closeTimer); d._closeTimer = null; }
+      if (isAnimating && d.hasAttribute('data-closing')) {
+        animateRestore();
+      }
+    });
+
+    /* Suppress the native toggle handler from running anything. The
+       click handler above keeps things in sync. */
+    d.addEventListener('toggle', () => { /* no-op */ });
+  });
+
+  /* Auto-close when the hint scrolls out of the viewport. Body is
+     off-screen so we skip the eased close — but still cancel any
+     in-flight WAAPI so we don't leave the body in an intermediate
+     state when [open] flips. */
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        const d = entry.target;
+        if (!entry.isIntersecting && d.open) {
+          // Cancel any close animation in flight; the body is going
+          // off-screen anyway, no point keeping the keyframes ticking.
+          if (d._activeAnim) { try { d._activeAnim.cancel(); } catch (_) {} }
+          d.removeAttribute('data-closing');
+          d.open = false;
+        }
+      });
+    }, { threshold: 0, rootMargin: '0px 0px 0px 0px' });
+    hints.forEach((d) => io.observe(d));
+  }
+}
+
 function boot() {
   // Force scroll to top on every refresh — disable browser auto-restore.
   if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
@@ -902,6 +1118,7 @@ function boot() {
   initReveal();
   initTipTap();
   initDayCost();
+  initPromptHints();
   // Loader gates the entry animation; rest is already running.
   initLoader(() => {
     document.body.classList.add('is-loaded');
