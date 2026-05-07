@@ -970,16 +970,55 @@ function initPromptHints() {
       };
     }
 
+    /* Restore from a mid-flight close back to fully-open, with a
+       smooth height animation instead of letting cancelAnim() snap
+       the body back to natural height in 0ms. Reads the current
+       frozen height before cancelling, removes data-closing so CSS
+       can take over opacity/transform, then runs a short WAAPI from
+       current → target to bridge height + marginTop smoothly. */
+    function animateRestore() {
+      if (reduce) {
+        if (activeAnim) { try { activeAnim.cancel(); } catch (_) {} }
+        d.removeAttribute('data-closing');
+        d._activeAnim = null;
+        isAnimating = false;
+        activeAnim = null;
+        return;
+      }
+      const currentHeight = content.getBoundingClientRect().height;
+      const currentMargin = getComputedStyle(content).marginTop;
+      // Cancel the close keyframes (drops fill:forwards inline values).
+      // Removing data-closing re-engages CSS [open]:not([data-closing])
+      // so opacity/transform restore via the CSS fallback transitions.
+      if (activeAnim) { try { activeAnim.cancel(); } catch (_) {} }
+      d.removeAttribute('data-closing');
+      const target = content.scrollHeight;
+      const targetMargin = getComputedStyle(content).marginTop;
+      isAnimating = true;
+      activeAnim = content.animate(
+        [
+          { height: `${currentHeight}px`, marginTop: currentMargin },
+          { height: `${target}px`, marginTop: targetMargin }
+        ],
+        { duration: 280, easing: OPEN_EASE, fill: 'forwards' }
+      );
+      d._activeAnim = activeAnim;
+      activeAnim.onfinish = () => {
+        isAnimating = false;
+        activeAnim = null;
+        d._activeAnim = null;
+      };
+    }
+
     /* Custom click handler — prevent the native open/close so we can
        drive the animation ourselves. */
     trigger.addEventListener('click', (e) => {
       e.preventDefault();
       // If a close is in flight, treat the click as "abort + reopen"
-      // rather than silently dropping it.
+      // and animate back to full height instead of dropping it.
       if (isAnimating && d.hasAttribute('data-closing')) {
-        cancelAnim();
-        d.removeAttribute('data-closing');
-        return; // pill is open + content already visible (cancel froze it)
+        animateRestore();
+        return;
       }
       if (isAnimating) return;
       if (d.open) animateClose(); else animateOpen();
@@ -993,14 +1032,12 @@ function initPromptHints() {
       if (d.open && !isAnimating) animateClose();
     });
     /* Mouseenter cancels both the pending close AND any in-flight
-       close animation, so the body stops collapsing the moment the
-       cursor returns. The pill restores via CSS once data-closing
-       comes off (the :not([data-closing]) guards re-engage). */
+       close animation, smoothly restoring the body to its natural
+       height instead of snapping it back. */
     d.addEventListener('mouseenter', () => {
       if (d._closeTimer) { clearTimeout(d._closeTimer); d._closeTimer = null; }
       if (isAnimating && d.hasAttribute('data-closing')) {
-        cancelAnim();
-        d.removeAttribute('data-closing');
+        animateRestore();
       }
     });
 

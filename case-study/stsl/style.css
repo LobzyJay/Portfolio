@@ -985,13 +985,17 @@ body.is-loaded .cover-mockup img {
   backdrop-filter: blur(10px) saturate(140%);
   -webkit-backdrop-filter: blur(10px) saturate(140%);
   /* Closed-state baseline. JS animates these via WAAPI on toggle.
-     The CSS transitions are a fallback for browsers without JS. */
+     The CSS transitions are a fallback for browsers without JS, and
+     box-shadow is also transitioned so the open-state red glow can't
+     pop off at the close-flip if the WAAPI close ease is ever changed
+     to one that doesn't already drive opacity to 0. */
   overflow: hidden;
   opacity: 0;
   transform: translateY(-6px);
   transition:
     opacity 320ms var(--ease-expo),
-    transform 360ms var(--ease-expo);
+    transform 360ms var(--ease-expo),
+    box-shadow 360ms var(--ease-expo);
 }
 .prompt-hint[open] .ph-content {
   opacity: 1;
