@@ -2283,10 +2283,12 @@ body.is-loaded .cover-mockup img {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* ── Day 1 anchor-side layout: heading + photo share row 1 (heading at
-   cols 1-7, photo at cols 9-12, both top-aligned). Body fills row 2 at
-   full width. Photo is NOT sticky — only its parallax scale animates on
-   scroll, the heading stays where it sits in the page. */
+/* ── Day 1 anchor-side layout: chapter is a 12-col grid.
+   Row 1: heading cols 1-7 (small), photo cols 9-12 (tall — spans rows 1-2).
+   Row 2: chapter-body cols 1-7 — prose flows alongside the photo, no
+          empty space between heading and the first paragraph.
+   Row 3: live-frame--anchor-tail cols 1-12 — full-width artifact below.
+   Photo is NOT sticky; only its parallax scale animates on scroll. */
 .chapter--accordion.chapter--anchor-side {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
@@ -2298,13 +2300,13 @@ body.is-loaded .cover-mockup img {
   grid-column: 1 / span 7;
   grid-row: 1;
   align-self: start;
-  /* Heading text sits at the TOP of the row so it aligns with the
+  /* Heading text sits at the TOP of its cell so it aligns with the
      top of the photo, not vertically-centered against the row height. */
   align-items: flex-start;
 }
 .chapter--accordion.chapter--anchor-side > .chapter-side--anchor {
   grid-column: 9 / span 4;
-  grid-row: 1;
+  grid-row: 1 / span 2;   /* photo extends down through the body row */
   align-self: start;
   position: static;
   margin: 0;
@@ -2318,8 +2320,29 @@ body.is-loaded .cover-mockup img {
   display: block;
 }
 .chapter--accordion.chapter--anchor-side > .chapter-body {
-  grid-column: 1 / -1;
+  grid-column: 1 / span 7;  /* prose stays in cols 1-7, beside the photo */
   grid-row: 2;
+}
+.chapter--accordion.chapter--anchor-side > .live-frame--anchor-tail {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  margin-top: clamp(40px, 6vh, 64px);
+}
+/* When in anchor-side mode the prose-rail flattens to a block container
+   so the prose flows full-width within the body cell (no inner sub-grid
+   that would re-narrow it to cols 1-7 of cols 1-7). */
+.chapter--accordion.chapter--anchor-side > .chapter-body > .chapter-prose-rail {
+  display: block;
+}
+.chapter--accordion.chapter--anchor-side > .chapter-body > .chapter-prose-rail > p,
+.chapter--accordion.chapter--anchor-side > .chapter-body > .chapter-prose-rail > ul,
+.chapter--accordion.chapter--anchor-side > .chapter-body > .chapter-prose-rail > ol,
+.chapter--accordion.chapter--anchor-side > .chapter-body > .chapter-prose-rail > .pull-quote,
+.chapter--accordion.chapter--anchor-side > .chapter-body > .chapter-prose-rail > .token-snippet,
+.chapter--accordion.chapter--anchor-side > .chapter-body > .chapter-prose-rail > .prompt-hint {
+  grid-column: unset;
+  max-width: none;
+  width: auto;
 }
 @media (max-width: 900px) {
   .chapter--accordion.chapter--anchor-side {
