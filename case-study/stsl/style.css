@@ -3156,7 +3156,7 @@ body.is-loaded .cover-mockup img {
   flex-shrink: 0;
   transition: background 0.22s var(--ease-expo), box-shadow 0.22s var(--ease-expo);
 }
-.lf-action:hover { background: #f0f0f0; }
+.lf-action:hover { background: #d4d4d4; }
 .lf-action:hover::before {
   box-shadow: 0 0 6px rgba(228, 2, 2, 0.5);
 }
