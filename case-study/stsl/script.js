@@ -913,12 +913,14 @@ function initPromptHints() {
       if (reduce) { d.open = true; return; }
       cancelAnim();
       d.open = true;
+      const cs = getComputedStyle(content);
+      const marginTop = cs.marginTop;
       const target = content.scrollHeight;
       isAnimating = true;
       activeAnim = content.animate(
         [
-          { height: '0px', opacity: 0, transform: 'translateY(-6px)' },
-          { height: `${target}px`, opacity: 1, transform: 'translateY(0)' }
+          { height: '0px', opacity: 0, transform: 'translateY(-6px)', marginTop: '0px' },
+          { height: `${target}px`, opacity: 1, transform: 'translateY(0)', marginTop }
         ],
         { duration: OPEN_MS, easing: OPEN_EASE, fill: 'forwards' }
       );
@@ -929,24 +931,25 @@ function initPromptHints() {
       if (!d.open) return;
       if (reduce) { d.open = false; return; }
       cancelAnim();
+      const cs = getComputedStyle(content);
+      const marginTop = cs.marginTop;
       const target = content.scrollHeight;
       isAnimating = true;
       // Flag the close NOW so the trigger pill + sub label start their
-      // CSS outros in parallel with the body height animation. Without
-      // this, [open] stays true until WAAPI finishes and the pill only
-      // begins collapsing AFTER the body is done — which reads as the
-      // 1-second pause the user flagged.
+      // CSS outros in parallel with the body height animation.
       d.setAttribute('data-closing', '');
       activeAnim = content.animate(
         [
-          { height: `${target}px`, opacity: 1, transform: 'translateY(0)' },
-          { height: '0px', opacity: 0, transform: 'translateY(-6px)' }
+          // Animate margin-top alongside height so the gap between
+          // pill and body collapses WITH the body, not after. Without
+          // this the body shrinks to 0 but its 14px top-margin lingers
+          // until [open] is flipped, reading as a leftover gap.
+          { height: `${target}px`, opacity: 1, transform: 'translateY(0)', marginTop },
+          { height: '0px', opacity: 0, transform: 'translateY(-6px)', marginTop: '0px' }
         ],
         { duration: CLOSE_MS, easing: CLOSE_EASE, fill: 'forwards' }
       );
       activeAnim.onfinish = () => {
-        // Body is already at height/opacity 0; flip [open] now so the
-        // UA display:none takeover is invisible.
         d.removeAttribute('data-closing');
         d.open = false;
         isAnimating = false;
