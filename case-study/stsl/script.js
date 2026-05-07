@@ -929,10 +929,10 @@ function initPromptHints() {
       const target = content.scrollHeight;
       const from = opening ? 0 : target;
       const to   = opening ? target : 0;
-      const duration = opening ? 380 : 460;
+      const duration = opening ? 380 : 540;
       const easing = opening
-        ? 'cubic-bezier(0.16, 1, 0.3, 1)'   // ease-out: snap into open
-        : 'cubic-bezier(0.55, 0, 0.2, 1)';  // softer ease for the outro
+        ? 'cubic-bezier(0.16, 1, 0.3, 1)'    // ease-out: snap into open
+        : 'cubic-bezier(0.32, 0.72, 0, 1)';  // long quintic outro, very soft tail
       content.animate(
         [
           { height: `${from}px`, opacity: opening ? 0 : 1, transform: opening ? 'translateY(-6px)' : 'translateY(0)' },

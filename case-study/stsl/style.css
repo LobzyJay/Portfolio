@@ -861,35 +861,41 @@ body.is-loaded .cover-mockup img {
   gap: 8px;
   height: 32px;
   padding: 3px 14px 3px 3px;
-  background: rgba(255, 201, 25, 0.07);
-  border: 1px solid rgba(255, 201, 25, 0.34);
-  border-radius: 999px;
+  /* Frosted-glass capsule, matching the .day-rail-list aesthetic.
+     Soft dark surface, hairline white border, backdrop blur. Red glyph
+     disc inside reads as the focal "active dot" against the dim
+     surface, same as the active day-rail node. */
+  background: rgba(20, 20, 20, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--r-pill);
   overflow: hidden;
+  backdrop-filter: blur(10px) saturate(140%);
+  -webkit-backdrop-filter: blur(10px) saturate(140%);
   font-family: var(--font-sans);
   font-weight: 500;
   font-size: 13px;
   letter-spacing: -0.005em;
-  color: var(--color-yellow);
+  color: var(--text);
   user-select: none;
-  /* Outro path (mouse out): softer 380ms ease so the pill bg doesn't
-     just snap back. Intro path overrides below with the snappier
-     ease-expo curve for the open/hover state. */
+  /* Outro path: long, gentle ease-in-out so the pill bg + border glide
+     back to rest instead of snapping. Cubic-bezier(0.32, 0.72, 0, 1)
+     is a quintic-ish curve, very soft tail. */
   transition:
-    background 380ms cubic-bezier(0.55, 0, 0.2, 1),
-    border-color 380ms cubic-bezier(0.55, 0, 0.2, 1),
-    box-shadow 420ms cubic-bezier(0.55, 0, 0.2, 1);
+    background 520ms cubic-bezier(0.32, 0.72, 0, 1),
+    border-color 520ms cubic-bezier(0.32, 0.72, 0, 1),
+    box-shadow 560ms cubic-bezier(0.32, 0.72, 0, 1);
 }
 .ph-trigger::-webkit-details-marker { display: none; }
 .ph-trigger::marker { display: none; content: ""; }
 .ph-trigger:focus-visible {
-  outline: 2px solid var(--color-yellow);
+  outline: 2px solid var(--accent);
   outline-offset: 3px;
 }
 .prompt-hint:hover .ph-trigger,
 .prompt-hint:focus-within .ph-trigger,
 .prompt-hint[open] .ph-trigger {
-  background: rgba(255, 201, 25, 0.13);
-  border-color: rgba(255, 201, 25, 0.62);
+  background: rgba(20, 20, 20, 0.7);
+  border-color: rgba(255, 255, 255, 0.16);
   /* Intro path: snappier ease-out so the pill responds quickly to the
      mouse arriving. The outro on the base rule above handles the
      gentle collapse back. */
@@ -899,7 +905,7 @@ body.is-loaded .cover-mockup img {
     box-shadow 320ms var(--ease-expo);
 }
 .prompt-hint[open] .ph-trigger {
-  box-shadow: 0 8px 22px -14px rgba(255, 201, 25, 0.55);
+  box-shadow: 0 0 16px rgba(228, 2, 2, 0.45);
 }
 .ph-trigger-icon {
   flex-shrink: 0;
@@ -907,11 +913,11 @@ body.is-loaded .cover-mockup img {
   place-items: center;
   width: 26px;
   height: 26px;
-  border-radius: 999px;
-  /* Solid yellow disc with a midnight glyph so the icon stays a focal
-     point against the lighter yellow-tint pill bg. */
-  background: var(--color-yellow);
-  color: var(--color-midnight);
+  border-radius: var(--r-pill);
+  /* Solid red disc with a white glyph — the focal "active dot"
+     against the dim capsule. Mirrors the day-rail.is-active node. */
+  background: var(--accent);
+  color: var(--text);
   transition:
     background 320ms var(--ease-expo),
     box-shadow 320ms var(--ease-expo);
@@ -921,16 +927,15 @@ body.is-loaded .cover-mockup img {
   height: 14px;
   display: block;
 }
-/* Open: icon disc keeps its solid yellow but picks up a soft outer
-   halo so the state is legible at a glance after the cursor has
-   moved off the trigger. */
+/* Open: icon disc keeps its solid red but picks up a soft outer halo,
+   mirroring the day-rail.is-active node's red glow. */
 .prompt-hint[open] .ph-trigger-icon {
-  box-shadow: 0 0 0 4px rgba(255, 201, 25, 0.22);
+  box-shadow: 0 0 12px rgba(228, 2, 2, 0.6);
 }
 .ph-trigger-label {
   flex-shrink: 0;
   font-weight: 500;
-  color: var(--color-yellow);
+  color: var(--text);
 }
 .ph-trigger-sub {
   display: inline-flex;
@@ -941,18 +946,18 @@ body.is-loaded .cover-mockup img {
   opacity: 0;
   font-weight: 400;
   font-size: 12.5px;
-  color: var(--text-light-muted);
-  /* Outro path — softer easing + slightly longer so the sub label
-     glides back into the pill instead of clipping shut. */
+  color: rgba(255, 255, 255, 0.55);
+  /* Outro path — long, soft ease so the sub label glides shut. The
+     quintic curve has a very gentle tail end, no abrupt clip. */
   transition:
-    max-width 460ms cubic-bezier(0.55, 0, 0.2, 1),
-    opacity 320ms cubic-bezier(0.55, 0, 0.2, 1);
+    max-width 540ms cubic-bezier(0.32, 0.72, 0, 1),
+    opacity 380ms cubic-bezier(0.32, 0.72, 0, 1);
 }
 /* Dot separator only appears once the sub is animating in. */
 .ph-trigger-sub::before {
   content: "·";
-  color: var(--color-yellow);
-  opacity: 0.55;
+  color: var(--accent);
+  opacity: 0.7;
   margin: 0 8px 0 0;
 }
 .prompt-hint:hover .ph-trigger-sub,
@@ -969,23 +974,25 @@ body.is-loaded .cover-mockup img {
 .ph-content {
   margin-top: clamp(12px, 1.6vh, 16px);
   padding: clamp(16px, 2vh, 22px) clamp(18px, 2vw, 24px);
-  background: rgba(255, 201, 25, 0.05);
-  border: 1px solid rgba(255, 201, 25, 0.30);
+  background: rgba(20, 20, 20, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--r-bento);
-  /* Closed-state baseline — JS animates from these values to the open
-     state via WAAPI on the toggle event. Transitions remain as a
-     CSS-only fallback if the script doesn't run. */
+  backdrop-filter: blur(10px) saturate(140%);
+  -webkit-backdrop-filter: blur(10px) saturate(140%);
+  /* Closed-state baseline. JS animates these via WAAPI on toggle, with
+     a smoother ease curve on the close path (script.js). The CSS
+     transitions remain as a fallback for browsers without JS. */
   overflow: hidden;
   opacity: 0;
   transform: translateY(-6px);
   transition:
-    opacity 280ms var(--ease-expo),
-    transform 320ms var(--ease-expo);
+    opacity 380ms cubic-bezier(0.32, 0.72, 0, 1),
+    transform 420ms cubic-bezier(0.32, 0.72, 0, 1);
 }
 .prompt-hint[open] .ph-content {
   opacity: 1;
   transform: translateY(0);
-  box-shadow: 0 12px 32px -18px rgba(255, 201, 25, 0.42);
+  box-shadow: 0 0 28px rgba(228, 2, 2, 0.20);
 }
 .ph-body {
   font-family: var(--font-sans);
@@ -1010,13 +1017,13 @@ body.is-loaded .cover-mockup img {
 .ph-prompt::before {
   content: "“";
   margin-right: 2px;
-  color: var(--color-yellow);
+  color: var(--accent);
   font-style: normal;
 }
 .ph-prompt::after {
   content: "”";
   margin-left: 2px;
-  color: var(--color-yellow);
+  color: var(--accent);
   font-style: normal;
 }
 @media (prefers-reduced-motion: reduce) {
