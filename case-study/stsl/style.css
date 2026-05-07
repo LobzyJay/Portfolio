@@ -893,9 +893,12 @@ body.is-loaded .cover-mockup img {
   outline-offset: 3px;
 }
 /* Expansion rules skip while data-closing is set so the pill outro
-   runs in parallel with the WAAPI body close, not after it. */
+   runs in parallel with the WAAPI body close, not after it.
+   :has(:focus-visible) instead of :focus-within so that click-driven
+   focus on the <summary> doesn't keep the pill expanded after the
+   close completes — only keyboard focus expands it. */
 .prompt-hint:hover:not([data-closing]) .ph-trigger,
-.prompt-hint:focus-within:not([data-closing]) .ph-trigger,
+.prompt-hint:has(:focus-visible):not([data-closing]) .ph-trigger,
 .prompt-hint[open]:not([data-closing]) .ph-trigger {
   background: rgba(20, 20, 20, 0.7);
   border-color: rgba(255, 255, 255, 0.16);
@@ -966,7 +969,7 @@ body.is-loaded .cover-mockup img {
   margin: 0 8px 0 0;
 }
 .prompt-hint:hover:not([data-closing]) .ph-trigger-sub,
-.prompt-hint:focus-within:not([data-closing]) .ph-trigger-sub,
+.prompt-hint:has(:focus-visible):not([data-closing]) .ph-trigger-sub,
 .prompt-hint[open]:not([data-closing]) .ph-trigger-sub {
   max-width: 360px;
   opacity: 1;
