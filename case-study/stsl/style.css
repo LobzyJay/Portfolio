@@ -3393,7 +3393,12 @@ body.is-loaded .cover-mockup img {
   position: fixed;
   inset: 0;
   z-index: 2000;
-  background: var(--bg);
+  /* Pinned to --color-midnight so the loader matches the portfolio
+     root's loader exactly. The case-study page bg is #000 for the
+     article surface, but the loader screen needs to be uniform with
+     the rest of the site so navigating in doesn't flash a colour
+     shift. */
+  background: var(--color-midnight);
   transition: opacity 0.65s ease;
 }
 #loader.fade-out {

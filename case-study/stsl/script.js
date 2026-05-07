@@ -63,6 +63,12 @@ function initBackground(canvasId, opts = {}) {
   const patternScale = opts.patternScale || 1.0;
   if (typeof THREE === 'undefined') return;
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  /* Skip the WebGL ripple on mobile — a 60fps render loop with a
+     full-viewport shader is the single biggest framerate cost on
+     phones, and the cover already has a solid bg + gradient that
+     reads fine without it. Pointer-coarse devices typically don't
+     hit the ripple effect anyway. */
+  if (window.matchMedia('(max-width: 720px)').matches) return;
   const canvas = document.getElementById(canvasId || 'bg-canvas');
   if (!canvas) return;
   const cover = canvas.parentElement;
@@ -340,29 +346,53 @@ function initIframeShield() {
    1.18 over its journey through the viewport. rAF-coalesced. */
 function initParallaxImages() {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const isMobile = window.matchMedia('(max-width: 720px)').matches;
   const frames = Array.from(document.querySelectorAll('[data-parallax]'));
   if (!frames.length) return;
 
+  /* IntersectionObserver gates which items are currently visible so
+     the rAF loop only does layout work for items in (or near) the
+     viewport — the rest sit untouched until they scroll in. Biggest
+     win on mobile where scroll cost matters most. */
+  const visible = new Set();
   const items = frames.map((frame) => {
     const img = frame.querySelector('img');
     if (!img) return null;
     img.style.transformOrigin = 'center center';
     img.style.willChange = 'transform';
     img.style.transition = 'transform 0.12s linear';
-    const min = parseFloat(frame.dataset.parallaxMin);
-    const max = parseFloat(frame.dataset.parallaxMax);
-    return {
-      frame,
-      img,
-      min: Number.isFinite(min) ? min : 1.0,
-      max: Number.isFinite(max) ? max : 1.02,
-    };
+    let min = parseFloat(frame.dataset.parallaxMin);
+    let max = parseFloat(frame.dataset.parallaxMax);
+    if (!Number.isFinite(min)) min = 1.0;
+    if (!Number.isFinite(max)) max = 1.02;
+    /* Compress the parallax range on mobile so each scroll tick
+       triggers a smaller transform delta — keeps the effect, drops
+       the per-frame composite cost roughly in half. */
+    if (isMobile) {
+      const range = max - min;
+      max = min + range * 0.5;
+    }
+    return { frame, img, min, max };
   }).filter(Boolean);
+
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        const item = items.find((it) => it.frame === entry.target);
+        if (!item) return;
+        if (entry.isIntersecting) visible.add(item);
+        else visible.delete(item);
+      });
+    }, { rootMargin: '100px 0px' });
+    items.forEach((it) => io.observe(it.frame));
+  } else {
+    items.forEach((it) => visible.add(it));
+  }
 
   let raf = 0;
   function update() {
     const vh = window.innerHeight;
-    items.forEach(({ frame, img, min, max }) => {
+    visible.forEach(({ frame, img, min, max }) => {
       const r = frame.getBoundingClientRect();
       const p = Math.max(0, Math.min(1, (vh - r.top) / (vh + r.height)));
       const scale = min + (max - min) * p;
@@ -371,8 +401,8 @@ function initParallaxImages() {
   }
 
   function onScroll() {
-    cancelAnimationFrame(raf);
-    raf = requestAnimationFrame(update);
+    if (raf) return;
+    raf = requestAnimationFrame(() => { raf = 0; update(); });
   }
 
   update();
