@@ -258,7 +258,7 @@
         </aside>
       </section>
 
-      <figure class="bleed-shot" data-reveal data-parallax data-parallax-min="1.12" data-parallax-max="1.22">
+      <figure class="bleed-shot" data-reveal data-parallax data-parallax-min="1.00" data-parallax-max="1.13">
         <img src="media/laptop-hero.jpg" alt="STSL homepage shown on a laptop, perspective view" loading="lazy" />
       </figure>
 
@@ -291,8 +291,8 @@
           </aside>
           <p>What came back was a 22-kilobyte document. Executive summary, IA audit, visual audit, messaging audit, CTA analysis, mobile, accessibility, and then the actual PRD with problem statement, target audience, success metrics, scope, page sections, design system direction, technical requirements, and a phased timeline. It read like something a senior PM would have spent a week on.</p>
           <p>Two lines from it stayed with me through the rest of the build. The first was about who STSL actually is versus how their site presents them. The second was about the editorial direction. The brief called for what it named <span class="tip" tabindex="0" role="button" aria-label="Tip: Editorial Luxury, tap to expand" data-tip="Marketing pages treated like a publication. Restraint, type, system over chrome.">"Editorial Luxury"</span>, which sounds pretentious written down, but the spirit of it was simple. Treat the marketing pages like a long-form publication, not a SaaS template. Use restraint. Let the system do the work.</p>
-          <p>That set up a few refusals before any pixel got pushed. No purple gradients. No generic dashboard chrome. No AI-generated imagery. No Inter, no Roboto, no defaults. The type stack landed on Plus Jakarta Sans for display, Geist for body, Source Serif 4 italic for pull-quotes, and JetBrains Mono for captions and code. Four typefaces, each chosen for what it does that the defaults don't.</p>
-          <p>I also locked the max content width at 88rem, which is wider than most marketing sites. The reason was that the site needed to feel like it had room to breathe. A 32-year-old infrastructure company doesn't need to act small.</p>
+          <p>The type stack landed on Plus Jakarta Sans for display, Geist for body, Source Serif 4 italic for pull-quotes, and JetBrains Mono for captions and code. Four typefaces, each chosen for what it does that the defaults don't.</p>
+          <p>I also locked the max content width at 88rem, which is wider than most marketing sites. The reason was that the site needed to feel like it had room to breathe. A 32-year-old infrastructure company doesn't need to act small. The grid underneath is 12 columns, which is the standard most editorial and product systems lean on. 12 divides cleanly into halves, thirds, quarters, and sixths, so the rhythm holds whether a row is two-up, three-up, or four-up. The eye reads the page as ordered without having to think about it.</p>
           <p>The thing I noticed about writing the PRD as Day 0 is how much it changed Day 1. I wasn't designing into the void. Every choice on Day 1 referenced a line in the brief. The brief became the alignment partner I'd normally have a stakeholder for.</p>
           <figure class="inputs-bento" data-reveal aria-label="What I fed in on Day 0">
             <p class="ib-eyebrow">what I gave it</p>
@@ -308,19 +308,19 @@
         </div>
       </details>
 
-      <details class="chapter chapter--accordion chapter--swiss" id="ch-03-day-1-system-before-pages" data-reveal>
+      <details class="chapter chapter--accordion chapter--swiss chapter--anchor-side" id="ch-03-day-1-system-before-pages" data-reveal>
         <summary class="chapter-head">
           <h2 class="chapter-title">Day 1, System before pages</h2>
           <span class="chapter-toggle" aria-hidden="true"></span>
         </summary>
+        <aside class="chapter-side chapter-side--anchor">
+          <div class="chapter-side-frame" data-parallax data-parallax-min="1.00" data-parallax-max="1.06">
+            <img src="media/mobile-1.jpg" alt="STSL on mobile, snap-scroll on the solutions tiles" loading="lazy" />
+          </div>
+          <p class="chapter-side-caption"><span class="csc-num">01</span><span>Mobile · solutions snap-scroll. The system on the smallest viewport.</span></p>
+        </aside>
         <div class="chapter-body">
           <div class="chapter-prose-rail">
-            <aside class="chapter-side">
-              <div class="chapter-side-frame">
-                <img src="media/mobile-1.jpg" alt="STSL on mobile, snap-scroll on the solutions tiles" loading="lazy" />
-              </div>
-              <p class="chapter-side-caption"><span class="csc-num">01</span><span>Mobile · solutions snap-scroll. The system on the smallest viewport.</span></p>
-            </aside>
             <p>Day 1 was a system day. The bet was that the design system goes first, even though nobody sees it yet. No marketing pages, no homepage, no hero. Just <span class="tip" tabindex="0" role="button" aria-label="Tip: tokens, tap to expand" data-tip="Named values for colour, spacing, type. Reference one token, update one place.">tokens</span>, <span class="tip" tabindex="0" role="button" aria-label="Tip: primitives, tap to expand" data-tip="Smallest reusable components. Button, Link, Card. Composed into bigger patterns.">primitives</span>, and the first round of layout components. By the end of the day, the only thing on screen was a docs page that listed swatches, type scales, and a few buttons. Most people would call that a wasted Saturday. I think it was the most important decision I made all four days.</p>
             <p>The architecture was three layers. Primitive tokens at the bottom (raw color values, spacing scale, type ramp), semantic tokens in the middle (bg-canvas, text-primary, accent-default, names that describe meaning, not appearance), and component tokens on top (button-bg, card-radius, nav-blur, names that describe usage). Every color the marketing site would later use referenced a semantic token. Every semantic token referenced a primitive. That's three lookups for any given pixel, which sounds like overhead, but it's actually how a system stays sane when you start adding pages.</p>
             <p>I split the system into its own workspace, separate from the marketing app. The foundations layer (raw values) lived in one folder, the STSL brand bindings (cream, charcoal, accent red, the typeface stack) in another. Marketing pages and the UI kit both pulled from those two. That structure made one thing true: if I wanted to change a token, say the cream canvas hue, I'd touch one file and every page would update. If I wanted to swap brands later, I'd add a second brand binding and the system would adopt it.</p>
@@ -329,6 +329,11 @@
               <p><span class="quote-script">T</span>he design system isn't a deliverable at the end, it's the load-bearing infrastructure on day one.</p>
             </figure>
             <p>Motion was the other token category that had to land on Day 1. I picked four easing curves and three durations and gave them names: ease-expressive for the soft cinematic curve, ease-snappy for click feedback, ease-natural for content reveal, and ease-precise for UI states. Then I locked them into a single CSS variable file. Every transition on the marketing site later referenced one of those four. Nothing freelanced.</p>
+            <aside class="prompt-hint" data-reveal aria-label="Prompt hint, building the tokens layer">
+              <p class="ph-label">prompt hint, if you want to follow along</p>
+              <p class="ph-body">If you're trying to set this up yourself, this is roughly the prompt I'd give Claude:</p>
+              <p class="ph-prompt">Build the foundations layer first. Three token tiers, primitive (raw values), semantic (bg-canvas, text-primary, accent-default), component (button-bg, card-radius, nav-blur). Each tier references the one below. Output as one tokens.css file with CSS variables grouped by tier. Add motion tokens for four easing curves and three durations under the same file.</p>
+            </aside>
             <figure class="token-snippet" data-reveal>
               <div class="tk-chrome" aria-hidden="true">
                 <span class="tk-dot tk-dot--r"></span>
@@ -365,7 +370,7 @@
               <button class="lf-tab" type="button" role="tab" data-hash="#primitives">Primitives</button>
               <button class="lf-tab" type="button" role="tab" data-hash="#patterns">Patterns</button>
               <button class="lf-tab" type="button" role="tab" data-hash="#compositions">Compositions</button>
-              <a class="lf-open" data-lf-open href="https://systemspec-website-redesign-web.vercel.app/design/#brand" target="_blank" rel="noopener">Open ↗</a>
+              <a class="lf-open" data-lf-open href="https://systemspec-website-redesign-web.vercel.app/design/#brand" target="_blank" rel="noopener">Open</a>
             </div>
             <div class="lf-chrome lf-chrome--tabbed">
               <span class="lf-dot lf-dot--r" aria-hidden="true"></span>
@@ -407,6 +412,11 @@
           <p>Day 3 was 22 commits and most of them were fixing things. The single big one was tagged "STSL marketing site v1, full rebuild" and it was the only commit that actually built new pages. Everything else was the system reacting to itself.</p>
           <p>Two of those reactions are worth telling, because they're the kind of moment that doesn't show up in a portfolio shot but tells you what the day actually was.</p>
           <p>The first was a deploy-path issue. The site lived under a subpath on the host, which meant every internal link, every asset reference, every fetch had to be aware of that prefix. The framework handles most of it, but the combination of <span class="tip" tabindex="0" role="button" aria-label="Tip: static export, tap to expand" data-tip="Build mode that ships plain HTML/CSS/JS. No server, just files.">static export</span>, client-side routing, and an aggressive transition layer meant the bridge wasn't watertight. Links that worked locally returned 404 on the deploy. I wrote a tiny helper that rewrote every internal href in one place and re-ran the export. That fix is exactly two characters longer than it needs to be. It works.</p>
+          <aside class="prompt-hint" data-reveal aria-label="Prompt hint, deploy-path fix">
+            <p class="ph-label">prompt hint, deploy-path fix</p>
+            <p class="ph-body">If you hit the same 404-on-deploy problem, this is the kind of prompt that gets a clean fix:</p>
+            <p class="ph-prompt">Internal links 404 on the deployed site under a subpath but work locally. Static export, client-side routing, deploy path is /project-name. Write one helper that rewrites every internal href to include the basePath, then tell me where to call it. Don't add config until we hit a real problem.</p>
+          </aside>
           <p>The second one is the more honest of the two. Worth staying with for a beat. I'd built a clever route-transition wrapper that intercepted clicks on internal links to add a soft cross-fade between pages. Nice idea. It also broke every internal link because the click interception fired before the browser could navigate, and the transition's promise resolution was racing the route push. The pages just stopped going anywhere.</p>
           <figure class="pull-quote" data-reveal>
             <p><span class="quote-script">A</span> clever abstraction broke real links, and I had to crawl back into the static HTML and rewrite hrefs by hand.</p>
@@ -429,7 +439,7 @@
               <span class="lf-dot lf-dot--y" aria-hidden="true"></span>
               <span class="lf-dot lf-dot--g" aria-hidden="true"></span>
               <span class="lf-url">/contact</span>
-              <a class="lf-open" href="https://systemspec-website-redesign-web.vercel.app/contact/" target="_blank" rel="noopener">Open ↗</a>
+              <a class="lf-open" href="https://systemspec-website-redesign-web.vercel.app/contact/" target="_blank" rel="noopener">Open</a>
             </div>
             <iframe src="https://systemspec-website-redesign-web.vercel.app/contact/" title="Live artifact, contact form" loading="lazy"></iframe>
             <figcaption><strong>Artifact</strong>, Contact form. Day 3 ditched the Grid plumbing and rebuilt this in a dedicated layout.</figcaption>
@@ -445,6 +455,11 @@
         <div class="chapter-body">
           <p>Day 4 was 29 commits, almost all of them small. None of them changed what the site did. All of them changed how the site felt. This is the day I'd skip if I were trying to ship faster, and the day that would've made the rest of the work feel cheap if I had.</p>
           <p>The splash was the first one. The site loaded with a brief moment where the page background was the wrong color before the styles hydrated. A faint cream flash on dark mode that lasted maybe 80ms. Most people don't see it. I saw it. I added a pre-paint script that runs synchronously in <code>&lt;head&gt;</code> and sets a <code>data-splash="active"</code> attribute on <code>&lt;html&gt;</code> before the body paints. The CSS keyed off that attribute and held the canvas at the right color until the splash dismissed. The flash went away. That's an 80ms problem nobody asked me to fix and the kind of polish a site either has or doesn't.</p>
+          <aside class="prompt-hint" data-reveal aria-label="Prompt hint, splash gate">
+            <p class="ph-label">prompt hint, splash gate</p>
+            <p class="ph-body">The splash gate is the kind of thing that's faster to ask for than to write from scratch:</p>
+            <p class="ph-prompt">There's an 80ms canvas-color flash before styles hydrate on dark mode. Add a pre-paint script in &lt;head&gt; that sets data-splash="active" on &lt;html&gt; before the body paints, then have CSS hold the right canvas colour until the splash dismisses. Make the route detection work under any deploy basePath, not hardcoded to /design.</p>
+          </aside>
           <p>The hover gesture on the audience tiles was Day 4's most visible iteration. The first version had a 400ms slow expressive ease-out. It looked great in isolation. In context, scrolling past three of them in a row felt slow. I cut it to 200ms with a snappier ease-out and added a 5% scale-up so the cards lifted toward the viewer. The exact commit message reads "snappier 200ms ease-out (was duration-slow 400ms expressive)". That's the kind of decision you can only make by looking at the live site and noticing what feels off, then changing one variable and looking again.</p>
           <p>Mobile snap-scroll was the third thing. The audience tiles and the pathway tiles wanted to be a horizontal carousel on phones, not a stacked column. CSS scroll-snap got me 80% of the way there. The remaining 20% was tuning the snap-padding so the next card peeked into view at the right amount, signaling "there's more here". That detail tells the user the carousel is interactive without an arrow icon.</p>
           <p>The OG image was the smallest commit and the most embarrassing. I'd exported the social card as a 1.4MB PNG. WhatsApp didn't show a preview. Slack didn't show a preview. iMessage didn't show a preview. The reason was the file size limit on those platforms' link preview fetchers, which is roughly 300KB. Re-exporting as JPG dropped it to 281KB and every preview started rendering. The commit message was "OG image: PNG (1.4MB) → JPG (281KB) for WhatsApp preview". That's a 1-line fix that unlocked every share-on-mobile flow.</p>
@@ -517,8 +532,14 @@
           <p>npm workspaces drew clear lines between the foundations package, the brand package, the marketing app, and the UI kit. Touching one didn't accidentally break another. When something did break, the diff was small enough to spot.</p>
           <p>Theme switching is token-driven, not component-driven. Every dark-mode color is a re-binding of the same primitive token, not a new color. That meant flipping themes was a matter of updating one file, and no component had to know which theme was active. The frozen-dark surfaces (the panels that stay dark in any theme) opted out via a single utility class.</p>
           <p>Images had a small pipeline. Every screenshot got run through <code>sips</code> on the way in: max long-edge 2400px for desktop shots, 1600px for mobile, JPEG quality 78. Originals stayed in a gitignored folder so the source was never lost. The article you're reading is under 3MB of media total.</p>
-          <p>The build broke twice. Once was the GitHub Pages basePath problem covered in Day 3. The other was the splash gate, which set a <code>data-splash="active"</code> attribute synchronously in <code>&lt;head&gt;</code> using a regex to detect the design route. The first version checked <code>pathname.startsWith('/design')</code> which silently failed on GH Pages because the deploy path is <code>/Systemspec-website-redesign/design</code>. Switching to <code>/\\/design(\\/|$)/.test(pathname)</code> made it work under any basePath.</p>
+          <p>The build broke twice. Once was the GitHub Pages basePath problem covered in Day 3. The other was the splash gate, which set a <code>data-splash="active"</code> attribute synchronously in <code>&lt;head&gt;</code> using a regex to detect the design route. The first version checked <code>pathname.startsWith('/design')</code> which silently failed on GitHub Pages because the deploy path is <code>/Systemspec-website-redesign/design</code>. Switching to <code>/\\/design(\\/|$)/.test(pathname)</code> made it work under any basePath.</p>
           <p>The fix took 30 seconds. Finding it took longer than that.</p>
+          <p>Deploying didn't need a separate workflow. The static export drops a folder of HTML and assets, and Vercel and GitHub Pages both pick it up directly. I let Claude handle the wiring. It read the Vercel CLI docs, walked me through <code>vercel login</code> once, attached the project to my account, and set up a redeploy on every push. Same flow works on Netlify or Cloudflare Pages. The only step you can't outsource is the OAuth login, which has to happen in your browser.</p>
+          <aside class="prompt-hint" data-reveal aria-label="Prompt hint, deploy with AI">
+            <p class="ph-label">prompt hint, deploy with AI</p>
+            <p class="ph-body">If you want to skip reading the deploy docs, this is the kind of prompt that gets you live:</p>
+            <p class="ph-prompt">I have a static-exported Next.js site in this repo. Walk me through deploying it to Vercel using the CLI. Tell me when I need to log in so my account gets attached, link the project, and set up a redeploy on every push. Don't write extra config until we hit a real problem.</p>
+          </aside>
         </div>
       </section>
 
@@ -537,7 +558,7 @@
               <span class="lf-dot lf-dot--y" aria-hidden="true"></span>
               <span class="lf-dot lf-dot--g" aria-hidden="true"></span>
               <span class="lf-url">/developers</span>
-              <a class="lf-open" href="https://systemspec-website-redesign-web.vercel.app/developers/" target="_blank" rel="noopener">Open ↗</a>
+              <a class="lf-open" href="https://systemspec-website-redesign-web.vercel.app/developers/" target="_blank" rel="noopener">Open</a>
             </div>
             <iframe src="https://systemspec-website-redesign-web.vercel.app/developers/" title="Live artifact, developers page" loading="lazy"></iframe>
             <figcaption><strong>Artifact</strong>, Developer page. Code samples, API tour. The frozen-dark surfaces in action.</figcaption>
