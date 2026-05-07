@@ -2239,30 +2239,35 @@ body.is-loaded .cover-mockup img {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* ── Day 1 anchor-side layout: chapter is a 12-col grid.
-   Row 1: heading cols 1-7 (small), photo cols 9-12 (tall — spans rows 1-2).
-   Row 2: chapter-body cols 1-7 — prose flows alongside the photo, no
-          empty space between heading and the first paragraph.
-   Row 3: live-frame--anchor-tail cols 1-12 — full-width artifact below.
+/* ── Day 1 anchor-side layout: chapter uses grid-template-areas (only
+   when [open]) so the heading + photo + body + tail land in known cells
+   regardless of which other selector lower in the cascade thinks the
+   body should sit at. While closed it stays a plain block so the row
+   toggle sits at the far right edge like every other accordion.
+   "head photo"   — heading top-left, photo top-right (photo is taller)
+   "body photo"   — prose flows under the heading, alongside the photo
+   "tail tail"    — full-width live-frame below
    Photo is NOT sticky; only its parallax scale animates on scroll. */
-.chapter--accordion.chapter--anchor-side {
+.chapter--accordion.chapter--anchor-side[open] {
   display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  grid-template-areas:
+    "head photo"
+    "body photo"
+    "tail tail";
   column-gap: var(--grid-gap);
   row-gap: 0;
   align-items: start;
 }
 .chapter--accordion.chapter--anchor-side > summary.chapter-head {
-  grid-column: 1 / span 7;
-  grid-row: 1;
+  grid-area: head !important;  /* defeats lower-cascade grid-column wins */
   align-self: start;
   /* Heading text sits at the TOP of its cell so it aligns with the
      top of the photo, not vertically-centered against the row height. */
   align-items: flex-start;
 }
 .chapter--accordion.chapter--anchor-side > .chapter-side--anchor {
-  grid-column: 9 / span 4;
-  grid-row: 1 / span 2;   /* photo extends down through the body row */
+  grid-area: photo !important;
   align-self: start;
   position: static;
   margin: 0;
@@ -2270,18 +2275,19 @@ body.is-loaded .cover-mockup img {
   overflow: visible;
   z-index: auto;
 }
+.chapter--accordion.chapter--anchor-side > .chapter-side--anchor .chapter-side-frame {
+  width: 100%;
+}
 .chapter--accordion.chapter--anchor-side > .chapter-side--anchor .chapter-side-frame img {
   width: 100%;
   height: auto;
   display: block;
 }
 .chapter--accordion.chapter--anchor-side > .chapter-body {
-  grid-column: 1 / span 7;  /* prose stays in cols 1-7, beside the photo */
-  grid-row: 2;
+  grid-area: body !important;
 }
 .chapter--accordion.chapter--anchor-side > .live-frame--anchor-tail {
-  grid-column: 1 / -1;
-  grid-row: 3;
+  grid-area: tail !important;
   margin-top: clamp(40px, 6vh, 64px);
 }
 /* When in anchor-side mode the prose-rail flattens to a block container
@@ -2301,14 +2307,22 @@ body.is-loaded .cover-mockup img {
   width: auto;
 }
 @media (max-width: 900px) {
-  .chapter--accordion.chapter--anchor-side {
+  .chapter--accordion.chapter--anchor-side[open] {
     display: block;
+    grid-template-columns: none;
+    grid-template-areas: none;
   }
   .chapter--accordion.chapter--anchor-side > .chapter-side--anchor {
     margin: clamp(20px, 3vh, 32px) 0 clamp(8px, 1vh, 16px);
     max-width: 480px;
-    grid-column: unset;
-    grid-row: unset;
+    grid-column: unset !important;
+    grid-row: unset !important;
+    grid-area: auto !important;
+  }
+  .chapter--accordion.chapter--anchor-side > .chapter-body,
+  .chapter--accordion.chapter--anchor-side > summary.chapter-head,
+  .chapter--accordion.chapter--anchor-side > .live-frame--anchor-tail {
+    grid-area: auto !important;
   }
 }
 
