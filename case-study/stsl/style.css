@@ -2305,6 +2305,28 @@ body.is-loaded .cover-mockup img {
   overflow: hidden;
 }
 
+/* Day 1 only: lift the chapter-side photo up so its top aligns with
+   the top of the chapter heading text, then let position: sticky keep
+   it pinned in view as the prose scrolls past until it reaches the
+   design-system iframe. The negative margin-top mirrors the chapter-
+   head's vertical footprint (padding-top + min-height + padding-bottom
+   minus the heading text's optical height). */
+#ch-03-day-1-system-before-pages .chapter-prose-rail > .chapter-side {
+  margin-top: calc(
+    -1 * (
+      clamp(20px, 3vh, 36px)        /* chapter --accordion padding-top */
+      + clamp(64px, 8vh, 88px)      /* summary min-height */
+      + clamp(20px, 3vh, 32px)      /* summary padding-bottom (open) */
+      - clamp(34px, 3.4vw, 56px)    /* heading text optical height — lower so picture top lands on the cap line */
+    )
+  );
+}
+/* Keep the row toggle visually above the lifted photo on the right. */
+#ch-03-day-1-system-before-pages > summary.chapter-head {
+  position: relative;
+  z-index: 2;
+}
+
 /* Day 2 — first paragraph is a large lead, rest flows full-width
    like the other accordions. The "slow day" gets a single editorial cue. */
 .chapter--accordion.chapter--spread > .chapter-body > p:first-of-type {
@@ -2336,6 +2358,10 @@ body.is-loaded .cover-mockup img {
     z-index: auto;
     max-height: none;
     overflow: visible;
+  }
+  /* Day 1 desktop lift doesn't apply once the layout collapses */
+  #ch-03-day-1-system-before-pages .chapter-prose-rail > .chapter-side {
+    margin-top: clamp(28px, 4vh, 44px);
   }
   /* Day 1 prose-rail flattens to single column on mobile */
   .chapter--swiss > .chapter-body > .chapter-prose-rail {
