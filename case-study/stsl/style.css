@@ -877,14 +877,14 @@ body.is-loaded .cover-mockup img {
   letter-spacing: -0.005em;
   color: var(--text);
   user-select: none;
-  /* Outro path: long, gentle easeOutQuart so the pill bg + border
-     glide back to rest. Cubic-bezier(0.22, 1, 0.36, 1) has a strong
-     deceleration into the end — the close motion lingers rather than
-     snapping shut. */
+  /* Outro path: short, normal ease so the pill bg + border return to
+     rest in sync with the WAAPI body close. easeOutQuart over 720ms
+     was leaving a long dead tail — the body had already disappeared
+     but the pill was still fading for ~500ms past it. */
   transition:
-    background 720ms cubic-bezier(0.22, 1, 0.36, 1),
-    border-color 720ms cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 760ms cubic-bezier(0.22, 1, 0.36, 1);
+    background 280ms var(--ease-expo),
+    border-color 280ms var(--ease-expo),
+    box-shadow 320ms var(--ease-expo);
 }
 .ph-trigger::-webkit-details-marker { display: none; }
 .ph-trigger::marker { display: none; content: ""; }
@@ -952,11 +952,11 @@ body.is-loaded .cover-mockup img {
   font-weight: 400;
   font-size: 12.5px;
   color: rgba(255, 255, 255, 0.55);
-  /* Outro path — easeOutQuart, long and very gentle. Sub label
-     retreats into the pill rather than clipping shut. */
+  /* Outro path — short, normal ease so the sub label retreats in
+     sync with the rest of the pill. */
   transition:
-    max-width 720ms cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 520ms cubic-bezier(0.22, 1, 0.36, 1);
+    max-width 320ms var(--ease-expo),
+    opacity 240ms var(--ease-expo);
 }
 /* Dot separator only appears once the sub is animating in. */
 .ph-trigger-sub::before {
@@ -984,15 +984,14 @@ body.is-loaded .cover-mockup img {
   border-radius: var(--r-bento);
   backdrop-filter: blur(10px) saturate(140%);
   -webkit-backdrop-filter: blur(10px) saturate(140%);
-  /* Closed-state baseline. JS animates these via WAAPI on toggle with
-     the long easeOutQuart close (script.js). The CSS transitions are
-     a fallback for browsers without JS. */
+  /* Closed-state baseline. JS animates these via WAAPI on toggle.
+     The CSS transitions are a fallback for browsers without JS. */
   overflow: hidden;
   opacity: 0;
   transform: translateY(-6px);
   transition:
-    opacity 520ms cubic-bezier(0.22, 1, 0.36, 1),
-    transform 580ms cubic-bezier(0.22, 1, 0.36, 1);
+    opacity 320ms var(--ease-expo),
+    transform 360ms var(--ease-expo);
 }
 .prompt-hint[open] .ph-content {
   opacity: 1;

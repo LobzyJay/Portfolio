@@ -892,9 +892,9 @@ function initPromptHints() {
   if (!hints.length) return;
 
   const OPEN_EASE  = 'cubic-bezier(0.16, 1, 0.3, 1)';     // ease-out, snappy in
-  const CLOSE_EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';    // easeOutQuart, long lazy tail
+  const CLOSE_EASE = 'cubic-bezier(0.4, 0, 0.2, 1)';      // standard ease, no dead tail
   const OPEN_MS  = 380;
-  const CLOSE_MS = 760;
+  const CLOSE_MS = 440;
 
   hints.forEach((d) => {
     const content = d.querySelector('.ph-content');
@@ -980,12 +980,12 @@ function initPromptHints() {
       if (d.open) animateClose(); else animateOpen();
     });
 
-    /* Mouseleave triggers a soft animated close after a tiny grace. */
+    /* Mouseleave fires the close immediately. The earlier grace was a
+       40ms buffer for tiny overshoots, but with the shorter close
+       duration the buffer reads as lag. */
     d.addEventListener('mouseleave', () => {
       if (d._closeTimer) clearTimeout(d._closeTimer);
-      d._closeTimer = setTimeout(() => {
-        if (d.open && !isAnimating) animateClose();
-      }, 40);
+      if (d.open && !isAnimating) animateClose();
     });
     /* Mouseenter cancels both the pending close AND any in-flight
        close animation, so the body stops collapsing the moment the
