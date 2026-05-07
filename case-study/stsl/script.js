@@ -935,10 +935,11 @@ function initPromptHints() {
       );
     });
 
-    /* Auto-close when the cursor leaves the hint's bounding box. The
-       260ms delay keeps small overshoots (e.g. lifting to scroll) from
-       collapsing the hint mid-read. */
-    d.addEventListener('mouseleave', () => closeWithDelay(d, 260));
+    /* Auto-close when the cursor leaves the hint's bounding box. A
+       120ms grace keeps tiny overshoots (e.g. lifting to scroll) from
+       collapsing the hint mid-read, but the close still feels reactive
+       when the cursor moves to the next paragraph. */
+    d.addEventListener('mouseleave', () => closeWithDelay(d, 120));
     d.addEventListener('mouseenter', () => {
       if (d._closeTimer) { clearTimeout(d._closeTimer); d._closeTimer = null; }
     });

@@ -409,11 +409,15 @@
           <p>The first was a deploy-path issue. The site lived under a subpath on the host, which meant every internal link, every asset reference, every fetch had to be aware of that prefix. The framework handles most of it, but the combination of <span class="tip" tabindex="0" role="button" aria-label="Tip: static export, tap to expand" data-tip="Build mode that ships plain HTML/CSS/JS. No server, just files.">static export</span>, client-side routing, and an aggressive transition layer meant the bridge wasn't watertight. Links that worked locally returned 404 on the deploy. I wrote a tiny helper that rewrote every internal href in one place and re-ran the export. That fix is exactly two characters longer than it needs to be. It works.</p>
           <details class="prompt-hint" data-reveal>
             <summary class="ph-trigger" aria-label="Show prompt hint, broken links fix">
-              <span class="ph-trigger-icon" aria-hidden="true"></span>
-              <span class="ph-trigger-text">
-                <span class="ph-trigger-label">Hint</span>
-                <span class="ph-trigger-sub">how I'd describe the broken-links fix</span>
+              <span class="ph-trigger-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M9 18h6"/>
+                  <path d="M10 21h4"/>
+                  <path d="M12 3a6 6 0 0 0-3.5 10.9V16a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1v-2.1A6 6 0 0 0 12 3Z"/>
+                </svg>
               </span>
+              <span class="ph-trigger-label">Hint</span>
+              <span class="ph-trigger-sub">how I'd describe the broken-links fix</span>
             </summary>
             <div class="ph-content">
               <p class="ph-body">You don't have to know the technical fix to ask for it. Just tell Claude what you're seeing:</p>
@@ -460,11 +464,15 @@
           <p>The splash was the first one. The site loaded with a brief moment where the page background was the wrong color before the styles hydrated. A faint cream flash on dark mode that lasted maybe 80ms. Most people don't see it. I saw it. I added a pre-paint script that runs synchronously in <code>&lt;head&gt;</code> and sets a <code>data-splash="active"</code> attribute on <code>&lt;html&gt;</code> before the body paints. The CSS keyed off that attribute and held the canvas at the right color until the splash dismissed. The flash went away. That's an 80ms problem nobody asked me to fix and the kind of polish a site either has or doesn't.</p>
           <details class="prompt-hint" data-reveal>
             <summary class="ph-trigger" aria-label="Show prompt hint, loading-flash fix">
-              <span class="ph-trigger-icon" aria-hidden="true"></span>
-              <span class="ph-trigger-text">
-                <span class="ph-trigger-label">Hint</span>
-                <span class="ph-trigger-sub">how I'd ask Claude to fix the loading flash</span>
+              <span class="ph-trigger-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M9 18h6"/>
+                  <path d="M10 21h4"/>
+                  <path d="M12 3a6 6 0 0 0-3.5 10.9V16a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1v-2.1A6 6 0 0 0 12 3Z"/>
+                </svg>
               </span>
+              <span class="ph-trigger-label">Hint</span>
+              <span class="ph-trigger-sub">how I'd ask Claude to fix the loading flash</span>
             </summary>
             <div class="ph-content">
               <p class="ph-body">The fix is faster to describe than to write from scratch. Just say what you're seeing:</p>
