@@ -838,67 +838,72 @@ body.is-loaded .cover-mockup img {
   margin-right: 0.04em;
 }
 
-/* ── Prompt hint — styled as a small bento card. Closed state shows
-   the trigger row only; open state reveals the body content below a
-   hairline rule, all inside the same card surface. Purple primary
-   surface with yellow accents on the icon + quotes. WAAPI animates
-   the height + opacity on toggle (script.js). Auto-closes on
-   mouseleave (260ms grace) and IntersectionObserver out-of-viewport. */
+/* ── Prompt hint — three-state interaction.
+   A: rest      → small purple circle, just the icon. Reads as a marker
+                  in the prose, not a CTA.
+   B: hover     → pill expands horizontally, label + sub fade in.
+   C: open      → pill stays expanded; the body content drops below as
+                  a bento card surface. WAAPI animates the body height.
+   Outros: mouseleave on .prompt-hint reverses :hover (CSS-auto) and
+   triggers a 260ms-delayed close on [open] (script.js). The
+   IntersectionObserver also closes [open] when the hint scrolls out
+   of view. */
 .prompt-hint {
+  display: block;
   margin: clamp(24px, 3.4vh, 32px) 0;
-  padding: clamp(14px, 1.8vh, 18px) clamp(16px, 1.8vw, 22px);
-  background: rgba(155, 145, 246, 0.04);
-  border: 1px solid rgba(155, 145, 246, 0.22);
-  border-radius: var(--r-bento);
   max-width: 72ch;
-  transition:
-    background 280ms var(--ease-expo),
-    border-color 280ms var(--ease-expo),
-    box-shadow 320ms var(--ease-expo);
-  box-shadow: 0 0 0 0 rgba(155, 145, 246, 0);
-}
-.prompt-hint:hover {
-  background: rgba(155, 145, 246, 0.07);
-  border-color: rgba(155, 145, 246, 0.42);
-}
-.prompt-hint[open] {
-  background: rgba(155, 145, 246, 0.07);
-  border-color: rgba(155, 145, 246, 0.55);
-  box-shadow: 0 12px 36px -18px rgba(155, 145, 246, 0.5);
+  /* Wrapper has no surface chrome — the trigger is its own pill, and
+     the body content has its own card. They breathe separately. */
 }
 .ph-trigger {
   list-style: none;
   cursor: pointer;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 12px;
-  padding: 0;
-  background: transparent;
-  border: 0;
-  border-radius: 0;
+  height: 36px;
+  padding: 4px;
+  background: rgba(155, 145, 246, 0.07);
+  border: 1px solid rgba(155, 145, 246, 0.32);
+  border-radius: 999px;
+  overflow: hidden;
   font-family: var(--font-sans);
   font-weight: 500;
   font-size: 13px;
   letter-spacing: -0.005em;
   color: var(--color-purple);
-  transition: color 240ms var(--ease-expo);
   user-select: none;
+  transition:
+    padding 380ms var(--ease-expo),
+    background 280ms var(--ease-expo),
+    border-color 280ms var(--ease-expo),
+    box-shadow 320ms var(--ease-expo);
 }
 .ph-trigger::-webkit-details-marker { display: none; }
 .ph-trigger::marker { display: none; content: ""; }
 .ph-trigger:focus-visible {
   outline: 2px solid var(--color-purple);
-  outline-offset: 4px;
-  border-radius: 4px;
+  outline-offset: 3px;
+}
+/* Hover OR keyboard-focus OR open: pill expands and label fades in. */
+.prompt-hint:hover .ph-trigger,
+.prompt-hint:focus-within .ph-trigger,
+.prompt-hint[open] .ph-trigger {
+  padding: 4px 16px 4px 4px;
+  background: rgba(155, 145, 246, 0.12);
+  border-color: rgba(155, 145, 246, 0.55);
+}
+.prompt-hint[open] .ph-trigger {
+  box-shadow: 0 8px 22px -14px rgba(155, 145, 246, 0.55);
 }
 .ph-trigger-icon {
+  flex-shrink: 0;
   position: relative;
   display: inline-grid;
   place-items: center;
-  width: 22px;
-  height: 22px;
+  width: 26px;
+  height: 26px;
   border-radius: 999px;
-  background: rgba(255, 201, 25, 0.16);
+  background: rgba(255, 201, 25, 0.18);
   color: var(--color-yellow);
   font-size: 0;
   line-height: 1;
@@ -906,6 +911,28 @@ body.is-loaded .cover-mockup img {
     transform 380ms var(--ease-expo),
     background 280ms var(--ease-expo),
     color 280ms var(--ease-expo);
+}
+.ph-trigger-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: 0;
+  max-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  opacity: 0;
+  transition:
+    max-width 420ms var(--ease-expo),
+    margin-left 380ms var(--ease-expo),
+    opacity 280ms var(--ease-expo);
+}
+.prompt-hint:hover .ph-trigger-text,
+.prompt-hint:focus-within .ph-trigger-text,
+.prompt-hint[open] .ph-trigger-text {
+  max-width: 360px;
+  margin-left: 10px;
+  opacity: 1;
+  transition-delay: 60ms;
 }
 /* Build the +/− glyph from two pseudo bars so we can rotate one to a
    minus when [open] without a font swap or a glyph repaint. */
@@ -950,14 +977,16 @@ body.is-loaded .cover-mockup img {
 }
 .ph-content {
   margin-top: clamp(12px, 1.6vh, 16px);
-  padding-top: clamp(12px, 1.6vh, 16px);
-  border-top: 1px solid rgba(155, 145, 246, 0.20);
+  padding: clamp(16px, 2vh, 22px) clamp(18px, 2vw, 24px);
+  background: rgba(155, 145, 246, 0.05);
+  border: 1px solid rgba(155, 145, 246, 0.30);
+  border-radius: var(--r-bento);
   /* Closed-state baseline — JS animates from these values to the open
      state via WAAPI on the toggle event. Transitions remain as a
-     CSS-only fallback for browsers where the script doesn't run. */
+     CSS-only fallback if the script doesn't run. */
   overflow: hidden;
   opacity: 0;
-  transform: translateY(-4px);
+  transform: translateY(-6px);
   transition:
     opacity 280ms var(--ease-expo),
     transform 320ms var(--ease-expo);
@@ -965,6 +994,7 @@ body.is-loaded .cover-mockup img {
 .prompt-hint[open] .ph-content {
   opacity: 1;
   transform: translateY(0);
+  box-shadow: 0 12px 32px -18px rgba(155, 145, 246, 0.45);
 }
 .ph-body {
   font-family: var(--font-sans);
