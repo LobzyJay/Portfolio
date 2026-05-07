@@ -892,7 +892,12 @@ function initPromptHints() {
   if (!hints.length) return;
 
   const OPEN_EASE  = 'cubic-bezier(0.16, 1, 0.3, 1)';     // ease-out, snappy in
-  const CLOSE_EASE = 'cubic-bezier(0.4, 0, 0.2, 1)';      // standard ease, no dead tail
+  /* easeIn for the close: slow start, fast finish. WAAPI applies one
+     easing to every animated property — with a standard ease, opacity
+     hits 0 well before height does, leaving a residual layout tail.
+     Accelerating curve makes height finish its motion at the same
+     moment opacity does, so the layout snaps shut in sync. */
+  const CLOSE_EASE = 'cubic-bezier(0.55, 0, 1, 0.45)';
   const OPEN_MS  = 380;
   const CLOSE_MS = 440;
 
