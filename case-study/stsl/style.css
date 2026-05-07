@@ -3117,27 +3117,34 @@ body.is-loaded .cover-mockup img {
   pointer-events: auto;            /* activated on click */
 }
 
-/* Click-to-interact action — lives inline inside the chrome bar,
-   beside the Open link. Compact text-button to match .lf-open's tone:
-   accent-red text + tiny red dot at rest, white on hover, white +
-   persistent when the iframe is interactively engaged (.is-active).
+/* Click-to-interact action — filled pill inside the chrome bar.
+   REST: white bg + midnight text + red dot — loud, draws the click.
+   HOVER (rest): bg dims slightly to off-white so the press reads.
+   ACTIVE (.is-active, after click): bg quiets to a soft grey one shade
+     lighter than the chrome bar so the button recedes once the user
+     has engaged the iframe; dot shifts white, text stays white.
+   HOVER (active): grey brightens slightly so "click to release" still
+     reads as interactive.
    Two label spans (.lf-action-full / .lf-action-short) so narrow
    viewports can swap to a shorter "Interact / Release" without JS. */
 .lf-action {
   font-family: var(--font-sans);
   font-size: 12px;
   font-weight: 500;
-  color: var(--accent);
+  color: var(--color-midnight);
   white-space: nowrap;
-  background: none;
+  background: #ffffff;
   border: 0;
-  padding: 0;
+  padding: 5px 12px;
   margin-right: 12px;
+  border-radius: var(--r-pill);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  transition: color 0.22s var(--ease-expo);
+  transition:
+    background 0.22s var(--ease-expo),
+    color 0.22s var(--ease-expo);
   background-image: none !important;
 }
 .lf-action::before {
@@ -3149,20 +3156,28 @@ body.is-loaded .cover-mockup img {
   flex-shrink: 0;
   transition: background 0.22s var(--ease-expo), box-shadow 0.22s var(--ease-expo);
 }
-.lf-action:hover { color: #ffffff; }
+.lf-action:hover { background: #f0f0f0; }
 .lf-action:hover::before {
-  background: #ffffff;
-  box-shadow: 0 0 6px rgba(255, 255, 255, 0.55);
+  box-shadow: 0 0 6px rgba(228, 2, 2, 0.5);
 }
 .lf-action:focus-visible {
   outline: 2px solid var(--accent);
-  outline-offset: 4px;
-  border-radius: 2px;
+  outline-offset: 3px;
 }
-.live-frame.is-active .lf-action { color: #ffffff; }
+/* Active: chrome bg is rgba(255,255,255,0.05) ≈ #0d0d0d on the page;
+   #1f1f1f sits one shade lighter so the button recedes but stays
+   distinct from the chrome row. */
+.live-frame.is-active .lf-action {
+  background: #1f1f1f;
+  color: #ffffff;
+}
 .live-frame.is-active .lf-action::before {
   background: #ffffff;
-  box-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.45);
+}
+.live-frame.is-active .lf-action:hover { background: #2a2a2a; }
+.live-frame.is-active .lf-action:hover::before {
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.65);
 }
 /* Show full label by default, short label only at narrow widths. */
 .lf-action-short { display: none; }
@@ -3281,14 +3296,14 @@ body.is-loaded .cover-mockup img {
   .live-frame--tabbed .lf-tabs { gap: 2px; padding: 4px; }
   .lf-tab { padding: 8px 12px; font-size: 12px; flex: 1 1 30%; }
   .live-frame--tabbed .lf-open { flex-basis: auto; text-align: center; padding: 6px 0; }
-  /* Phone-sized chrome action: tight font + 44px tap target so the
-     control still meets WCAG 2.5.5 once it's living inside the chrome
-     bar. */
+  /* Phone-sized chrome action: tighter type + 44px tap target so the
+     filled pill still meets WCAG 2.5.5 once it's living inline in
+     the chrome bar. Padding scales down a notch to keep the pill
+     proportional to the smaller chrome row. */
   .lf-action {
     font-size: 11px;
     min-height: 44px;
-    display: inline-flex;
-    align-items: center;
+    padding: 6px 12px;
   }
 }
 .live-frame figcaption {
