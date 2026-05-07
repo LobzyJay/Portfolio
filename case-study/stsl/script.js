@@ -929,10 +929,10 @@ function initPromptHints() {
       const target = content.scrollHeight;
       const from = opening ? 0 : target;
       const to   = opening ? target : 0;
-      const duration = opening ? 380 : 540;
+      const duration = opening ? 380 : 760;
       const easing = opening
         ? 'cubic-bezier(0.16, 1, 0.3, 1)'    // ease-out: snap into open
-        : 'cubic-bezier(0.32, 0.72, 0, 1)';  // long quintic outro, very soft tail
+        : 'cubic-bezier(0.22, 1, 0.36, 1)';  // easeOutQuart: long, very gentle outro
       content.animate(
         [
           { height: `${from}px`, opacity: opening ? 0 : 1, transform: opening ? 'translateY(-6px)' : 'translateY(0)' },
@@ -942,11 +942,11 @@ function initPromptHints() {
       );
     });
 
-    /* Auto-close when the cursor leaves the hint's bounding box. A
-       120ms grace keeps tiny overshoots (e.g. lifting to scroll) from
-       collapsing the hint mid-read, but the close still feels reactive
-       when the cursor moves to the next paragraph. */
-    d.addEventListener('mouseleave', () => closeWithDelay(d, 120));
+    /* Auto-close when the cursor leaves the hint's bounding box. The
+       grace is intentionally short (40ms) so the close starts gliding
+       almost immediately — the smoothness comes from the long-eased
+       outro curve, not from a delay sitting on top of it. */
+    d.addEventListener('mouseleave', () => closeWithDelay(d, 40));
     d.addEventListener('mouseenter', () => {
       if (d._closeTimer) { clearTimeout(d._closeTimer); d._closeTimer = null; }
     });

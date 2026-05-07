@@ -877,13 +877,14 @@ body.is-loaded .cover-mockup img {
   letter-spacing: -0.005em;
   color: var(--text);
   user-select: none;
-  /* Outro path: long, gentle ease-in-out so the pill bg + border glide
-     back to rest instead of snapping. Cubic-bezier(0.32, 0.72, 0, 1)
-     is a quintic-ish curve, very soft tail. */
+  /* Outro path: long, gentle easeOutQuart so the pill bg + border
+     glide back to rest. Cubic-bezier(0.22, 1, 0.36, 1) has a strong
+     deceleration into the end — the close motion lingers rather than
+     snapping shut. */
   transition:
-    background 520ms cubic-bezier(0.32, 0.72, 0, 1),
-    border-color 520ms cubic-bezier(0.32, 0.72, 0, 1),
-    box-shadow 560ms cubic-bezier(0.32, 0.72, 0, 1);
+    background 720ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 720ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 760ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 .ph-trigger::-webkit-details-marker { display: none; }
 .ph-trigger::marker { display: none; content: ""; }
@@ -947,11 +948,11 @@ body.is-loaded .cover-mockup img {
   font-weight: 400;
   font-size: 12.5px;
   color: rgba(255, 255, 255, 0.55);
-  /* Outro path — long, soft ease so the sub label glides shut. The
-     quintic curve has a very gentle tail end, no abrupt clip. */
+  /* Outro path — easeOutQuart, long and very gentle. Sub label
+     retreats into the pill rather than clipping shut. */
   transition:
-    max-width 540ms cubic-bezier(0.32, 0.72, 0, 1),
-    opacity 380ms cubic-bezier(0.32, 0.72, 0, 1);
+    max-width 720ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 520ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 /* Dot separator only appears once the sub is animating in. */
 .ph-trigger-sub::before {
@@ -979,15 +980,15 @@ body.is-loaded .cover-mockup img {
   border-radius: var(--r-bento);
   backdrop-filter: blur(10px) saturate(140%);
   -webkit-backdrop-filter: blur(10px) saturate(140%);
-  /* Closed-state baseline. JS animates these via WAAPI on toggle, with
-     a smoother ease curve on the close path (script.js). The CSS
-     transitions remain as a fallback for browsers without JS. */
+  /* Closed-state baseline. JS animates these via WAAPI on toggle with
+     the long easeOutQuart close (script.js). The CSS transitions are
+     a fallback for browsers without JS. */
   overflow: hidden;
   opacity: 0;
   transform: translateY(-6px);
   transition:
-    opacity 380ms cubic-bezier(0.32, 0.72, 0, 1),
-    transform 420ms cubic-bezier(0.32, 0.72, 0, 1);
+    opacity 520ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 580ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 .prompt-hint[open] .ph-content {
   opacity: 1;

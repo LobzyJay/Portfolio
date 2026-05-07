@@ -421,7 +421,7 @@
             </summary>
             <div class="ph-content">
               <p class="ph-body">You don't have to know the technical fix to ask for it. Just tell Claude what you're seeing:</p>
-              <p class="ph-prompt">my site works fine on my laptop, but every internal link breaks when I deploy it online. the site lives in a subfolder on the host, like /project-name. write me a small bit of code that fixes every link, and tell me where to drop it in. keep it simple.</p>
+              <p class="ph-prompt">my site works fine on my laptop, but every internal link breaks when I deploy it online. the site lives in a subfolder on the host, like /project-name. write me a small bit of code that fixes every link, then either tell me where to drop it in or just patch it and redeploy yourself. keep it simple.</p>
             </div>
           </details>
           <p>The second one is the more honest of the two. Worth staying with for a beat. I'd built a clever route-transition wrapper that intercepted clicks on internal links to add a soft cross-fade between pages. Nice idea. It also broke every internal link because the click interception fired before the browser could navigate, and the transition's promise resolution was racing the route push. The pages just stopped going anywhere.</p>
