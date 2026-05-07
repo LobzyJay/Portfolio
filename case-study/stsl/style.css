@@ -839,9 +839,10 @@ body.is-loaded .cover-mockup img {
 }
 
 /* ── Prompt hint — collapsed pill-button by default, click to reveal
-   the natural-language prompt. Lighter than .prompt-callout (no avatars,
-   no thread chrome) so it can sit inline with prose without stealing
-   the scene. Native <details> disclosure handles the open/close. */
+   the natural-language prompt with an animated height + opacity slide.
+   Purple primary surface, yellow accent on the icon and quotes — its own
+   visual lane vs. the rest of the article's red/yellow rhythm. JS in
+   script.js drives the height animation via WAAPI on the toggle event. */
 .prompt-hint {
   margin: clamp(20px, 3vh, 28px) 0;
   padding: 0;
@@ -855,44 +856,85 @@ body.is-loaded .cover-mockup img {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  padding: 9px 16px 9px 14px;
-  background: rgba(255, 201, 25, 0.06);
-  border: 1px solid rgba(255, 201, 25, 0.32);
+  padding: 9px 18px 9px 12px;
+  background: rgba(155, 145, 246, 0.07);
+  border: 1px solid rgba(155, 145, 246, 0.34);
   border-radius: var(--r-pill);
   font-family: var(--font-sans);
   font-weight: 500;
   font-size: 13px;
   letter-spacing: -0.005em;
-  color: var(--color-yellow);
-  transition: background 220ms var(--ease-expo), border-color 220ms var(--ease-expo);
+  color: var(--color-purple);
+  transition:
+    background 240ms var(--ease-expo),
+    border-color 240ms var(--ease-expo),
+    transform 220ms var(--ease-expo),
+    box-shadow 280ms var(--ease-expo);
   user-select: none;
+  box-shadow: 0 0 0 0 rgba(155, 145, 246, 0);
 }
 .ph-trigger::-webkit-details-marker { display: none; }
 .ph-trigger::marker { display: none; content: ""; }
 .ph-trigger:hover {
-  background: rgba(255, 201, 25, 0.12);
-  border-color: var(--color-yellow);
+  background: rgba(155, 145, 246, 0.13);
+  border-color: var(--color-purple);
+  box-shadow: 0 6px 20px -10px rgba(155, 145, 246, 0.55);
+}
+.ph-trigger:active {
+  transform: translateY(0.5px) scale(0.985);
 }
 .ph-trigger:focus-visible {
-  outline: 2px solid var(--color-yellow);
+  outline: 2px solid var(--color-purple);
   outline-offset: 3px;
 }
 .ph-trigger-icon {
+  position: relative;
   display: inline-grid;
   place-items: center;
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   border-radius: 999px;
-  background: rgba(255, 201, 25, 0.18);
-  font-size: 13px;
+  background: rgba(255, 201, 25, 0.16);
+  color: var(--color-yellow);
+  font-size: 0;
   line-height: 1;
-  font-weight: 500;
-  transition: transform 320ms var(--ease-expo), background 220ms var(--ease-expo);
+  transition:
+    transform 380ms var(--ease-expo),
+    background 280ms var(--ease-expo),
+    color 280ms var(--ease-expo);
+}
+/* Build the +/− glyph from two pseudo bars so we can rotate one to a
+   minus when [open] without a font swap or a glyph repaint. */
+.ph-trigger-icon::before,
+.ph-trigger-icon::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  background: currentColor;
+  border-radius: 1px;
+  transition: transform 320ms var(--ease-expo), opacity 200ms var(--ease-expo);
+}
+.ph-trigger-icon::before {
+  /* horizontal bar */
+  width: 10px;
+  height: 1.5px;
+  transform: translate(-50%, -50%);
+}
+.ph-trigger-icon::after {
+  /* vertical bar (collapses to invisible when open, leaving a minus) */
+  width: 1.5px;
+  height: 10px;
+  transform: translate(-50%, -50%);
 }
 .prompt-hint[open] .ph-trigger-icon {
-  transform: rotate(45deg);
+  transform: rotate(180deg);
   background: var(--color-yellow);
   color: var(--color-midnight);
+}
+.prompt-hint[open] .ph-trigger-icon::after {
+  opacity: 0;
+  transform: translate(-50%, -50%) rotate(90deg);
 }
 .ph-trigger-label {
   font-weight: 500;
@@ -905,11 +947,23 @@ body.is-loaded .cover-mockup img {
 .ph-content {
   margin-top: 14px;
   padding: clamp(16px, 2vh, 20px) clamp(18px, 2vw, 22px);
-  background: rgba(255, 201, 25, 0.04);
-  border-left: 2px solid var(--color-yellow);
+  background: rgba(155, 145, 246, 0.05);
+  border-left: 2px solid var(--color-purple);
   border-radius: 0 var(--r-card) var(--r-card) 0;
-  animation: accordion-fade 0.4s var(--ease-expo);
   max-width: 72ch;
+  /* The closed-state baseline — JS animates from these values to the
+     open state on the `toggle` event using WAAPI. The transitions stay
+     here as a CSS-only fallback for browsers without JS. */
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(-6px);
+  transition:
+    opacity 280ms var(--ease-expo),
+    transform 320ms var(--ease-expo);
+}
+.prompt-hint[open] .ph-content {
+  opacity: 1;
+  transform: translateY(0);
 }
 .ph-body {
   font-family: var(--font-sans);
@@ -942,6 +996,13 @@ body.is-loaded .cover-mockup img {
   margin-left: 2px;
   color: var(--color-yellow);
   font-style: normal;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ph-trigger-icon,
+  .ph-trigger-icon::before,
+  .ph-trigger-icon::after,
+  .ph-content { transition: none !important; }
+  .prompt-hint[open] .ph-content { transform: none; }
 }
 
 /* ── Prompt callout — "this is what I sent Claude" ────────── */

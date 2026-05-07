@@ -818,20 +818,37 @@ function initDayCost() {
 
     tokenNum.classList.remove('is-burning', 'is-exhausted');
     tokenStatus.classList.remove('is-burning', 'is-exhausted');
+    /* The slider runs 0-84 (the full 12-week comparison timeline). The
+       burn period only covers days 0-4, so anchoring the "exhausted"
+       state to d>=4 leaves the status stuck red for ~95% of the scroll.
+       Map post-burn ranges to ledger-style messages instead so the
+       status keeps changing as the studio comparison plays out. */
     if (d <= 0) {
       tokenStatus.textContent = 'Idle.';
     } else if (d < 1) {
       tokenStatus.textContent = 'Session 1, building.';
     } else if (d < 2) {
       tokenStatus.textContent = 'Session 2, building.';
-    } else if (d < BURN_DAY) {
+    } else if (d < 3) {
       tokenStatus.textContent = 'Session 3, burning fast.';
       tokenNum.classList.add('is-burning');
       tokenStatus.classList.add('is-burning');
-    } else {
-      tokenStatus.textContent = 'Context exhausted.';
+    } else if (d < BURN_DAY) {
+      tokenStatus.textContent = 'Session 3, near full.';
+      tokenNum.classList.add('is-burning');
+      tokenStatus.classList.add('is-burning');
+    } else if (d < 14) {
+      tokenStatus.textContent = 'Context full. 4 days down.';
       tokenNum.classList.add('is-exhausted');
       tokenStatus.classList.add('is-exhausted');
+    } else if (d < 28) {
+      tokenStatus.textContent = 'Week 2. Studio: discovery.';
+    } else if (d < 56) {
+      tokenStatus.textContent = 'Week 4-8. Studio: building.';
+    } else if (d < 84) {
+      tokenStatus.textContent = 'Week 12. Studio: pushing for ship.';
+    } else {
+      tokenStatus.textContent = '12 weeks vs my 4 days.';
     }
 
     // Reset-pulse on session boundary crossings.
@@ -883,6 +900,63 @@ function initDayCost() {
 }
 
 /* ── BOOT ─────────────────────────────────────────────────── */
+/* ── PROMPT-HINT click-to-reveal. WAAPI animates .ph-content height +
+   opacity on each toggle (the icon spin and bg shift are CSS). Two
+   auto-close behaviours layered on top so the open hint never feels
+   abandoned: mouseleave + IntersectionObserver out-of-viewport. */
+function initPromptHints() {
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const hints = Array.from(document.querySelectorAll('details.prompt-hint'));
+  if (!hints.length) return;
+
+  const closeWithDelay = (d, ms) => {
+    if (!d.open) return;
+    if (d._closeTimer) clearTimeout(d._closeTimer);
+    d._closeTimer = setTimeout(() => { if (d.open) d.open = false; }, ms);
+  };
+
+  hints.forEach((d) => {
+    const content = d.querySelector('.ph-content');
+    if (!content) return;
+
+    /* Animate height + opacity on every toggle. */
+    d.addEventListener('toggle', () => {
+      if (reduce) return;
+      const opening = d.open;
+      const target = content.scrollHeight;
+      const from = opening ? 0 : target;
+      const to   = opening ? target : 0;
+      content.animate(
+        [
+          { height: `${from}px`, opacity: opening ? 0 : 1, transform: opening ? 'translateY(-6px)' : 'translateY(0)' },
+          { height: `${to}px`,   opacity: opening ? 1 : 0, transform: opening ? 'translateY(0)'    : 'translateY(-6px)' }
+        ],
+        { duration: 380, easing: 'cubic-bezier(0.16, 1, 0.3, 1)', fill: 'forwards' }
+      );
+    });
+
+    /* Auto-close when the cursor leaves the hint's bounding box. The
+       260ms delay keeps small overshoots (e.g. lifting to scroll) from
+       collapsing the hint mid-read. */
+    d.addEventListener('mouseleave', () => closeWithDelay(d, 260));
+    d.addEventListener('mouseenter', () => {
+      if (d._closeTimer) { clearTimeout(d._closeTimer); d._closeTimer = null; }
+    });
+  });
+
+  /* Auto-close when the hint scrolls out of the viewport. */
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting && entry.target.open) {
+          entry.target.open = false;
+        }
+      });
+    }, { threshold: 0, rootMargin: '0px 0px 0px 0px' });
+    hints.forEach((d) => io.observe(d));
+  }
+}
+
 function boot() {
   // Force scroll to top on every refresh — disable browser auto-restore.
   if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
@@ -902,6 +976,7 @@ function boot() {
   initReveal();
   initTipTap();
   initDayCost();
+  initPromptHints();
   // Loader gates the entry animation; rest is already running.
   initLoader(() => {
     document.body.classList.add('is-loaded');
