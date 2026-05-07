@@ -816,39 +816,15 @@ function initDayCost() {
       ? 'day 0'
       : (d >= BURN_DAY ? 'day 4 — context full' : `day ${dayN}`);
 
+    /* The big number + the gauge needle already carry the burn state.
+       The status line below is just a quiet credit — what model did
+       this run on. Keep is-burning / is-exhausted on the NUMBER so the
+       red shift on full still reads, but leave the status text static. */
     tokenNum.classList.remove('is-burning', 'is-exhausted');
-    tokenStatus.classList.remove('is-burning', 'is-exhausted');
-    /* The slider runs 0-84 (the full 12-week comparison timeline). The
-       burn period only covers days 0-4, so anchoring the "exhausted"
-       state to d>=4 leaves the status stuck red for ~95% of the scroll.
-       Map post-burn ranges to ledger-style messages instead so the
-       status keeps changing as the studio comparison plays out. */
-    if (d <= 0) {
-      tokenStatus.textContent = 'Idle.';
-    } else if (d < 1) {
-      tokenStatus.textContent = 'Session 1, building.';
-    } else if (d < 2) {
-      tokenStatus.textContent = 'Session 2, building.';
-    } else if (d < 3) {
-      tokenStatus.textContent = 'Session 3, burning fast.';
+    if (d >= 3 && d < BURN_DAY) {
       tokenNum.classList.add('is-burning');
-      tokenStatus.classList.add('is-burning');
-    } else if (d < BURN_DAY) {
-      tokenStatus.textContent = 'Session 3, near full.';
-      tokenNum.classList.add('is-burning');
-      tokenStatus.classList.add('is-burning');
-    } else if (d < 14) {
-      tokenStatus.textContent = 'Context full. 4 days down.';
+    } else if (d >= BURN_DAY) {
       tokenNum.classList.add('is-exhausted');
-      tokenStatus.classList.add('is-exhausted');
-    } else if (d < 28) {
-      tokenStatus.textContent = 'Week 2. Studio: discovery.';
-    } else if (d < 56) {
-      tokenStatus.textContent = 'Week 4-8. Studio: building.';
-    } else if (d < 84) {
-      tokenStatus.textContent = 'Week 12. Studio: pushing for ship.';
-    } else {
-      tokenStatus.textContent = '12 weeks vs my 4 days.';
     }
 
     // Reset-pulse on session boundary crossings.
@@ -900,59 +876,102 @@ function initDayCost() {
 }
 
 /* ── BOOT ─────────────────────────────────────────────────── */
-/* ── PROMPT-HINT click-to-reveal. WAAPI animates .ph-content height +
-   opacity on each toggle (the icon spin and bg shift are CSS). Two
-   auto-close behaviours layered on top so the open hint never feels
-   abandoned: mouseleave + IntersectionObserver out-of-viewport. */
+/* ── PROMPT-HINT click-to-reveal.
+   <details> hides its body content via UA display:none the instant
+   [open] is removed, which means an outro animation hooked on the
+   `toggle` event has nothing to animate (scrollHeight = 0 by then).
+   Pattern below intercepts the click, runs a WAAPI height/opacity
+   animation manually, and only flips d.open at the END of the close
+   animation so the browser's hide is invisible. */
 function initPromptHints() {
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const hints = Array.from(document.querySelectorAll('details.prompt-hint'));
   if (!hints.length) return;
 
-  const closeWithDelay = (d, ms) => {
-    if (!d.open) return;
-    if (d._closeTimer) clearTimeout(d._closeTimer);
-    d._closeTimer = setTimeout(() => { if (d.open) d.open = false; }, ms);
-  };
+  const OPEN_EASE  = 'cubic-bezier(0.16, 1, 0.3, 1)';     // ease-out, snappy in
+  const CLOSE_EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';    // easeOutQuart, long lazy tail
+  const OPEN_MS  = 380;
+  const CLOSE_MS = 760;
 
   hints.forEach((d) => {
     const content = d.querySelector('.ph-content');
-    if (!content) return;
+    const trigger = d.querySelector('summary');
+    if (!content || !trigger) return;
 
-    /* Animate height + opacity on every toggle. Use ease-out (fast in)
-       on open and ease-in-out (smooth both ends) on close so the
-       collapse-back has a softer landing rather than just running
-       backward through the open curve. */
-    d.addEventListener('toggle', () => {
-      if (reduce) return;
-      const opening = d.open;
+    let activeAnim = null;
+    let isAnimating = false;
+
+    function cancelAnim() {
+      if (activeAnim) { try { activeAnim.cancel(); } catch (_) {} activeAnim = null; }
+      isAnimating = false;
+    }
+
+    function animateOpen() {
+      if (reduce) { d.open = true; return; }
+      cancelAnim();
+      d.open = true;
       const target = content.scrollHeight;
-      const from = opening ? 0 : target;
-      const to   = opening ? target : 0;
-      const duration = opening ? 380 : 760;
-      const easing = opening
-        ? 'cubic-bezier(0.16, 1, 0.3, 1)'    // ease-out: snap into open
-        : 'cubic-bezier(0.22, 1, 0.36, 1)';  // easeOutQuart: long, very gentle outro
-      content.animate(
+      isAnimating = true;
+      activeAnim = content.animate(
         [
-          { height: `${from}px`, opacity: opening ? 0 : 1, transform: opening ? 'translateY(-6px)' : 'translateY(0)' },
-          { height: `${to}px`,   opacity: opening ? 1 : 0, transform: opening ? 'translateY(0)'    : 'translateY(-6px)' }
+          { height: '0px', opacity: 0, transform: 'translateY(-6px)' },
+          { height: `${target}px`, opacity: 1, transform: 'translateY(0)' }
         ],
-        { duration, easing, fill: 'forwards' }
+        { duration: OPEN_MS, easing: OPEN_EASE, fill: 'forwards' }
       );
+      activeAnim.onfinish = () => { isAnimating = false; activeAnim = null; };
+    }
+
+    function animateClose() {
+      if (!d.open) return;
+      if (reduce) { d.open = false; return; }
+      cancelAnim();
+      const target = content.scrollHeight;
+      isAnimating = true;
+      activeAnim = content.animate(
+        [
+          { height: `${target}px`, opacity: 1, transform: 'translateY(0)' },
+          { height: '0px', opacity: 0, transform: 'translateY(-6px)' }
+        ],
+        { duration: CLOSE_MS, easing: CLOSE_EASE, fill: 'forwards' }
+      );
+      activeAnim.onfinish = () => {
+        // Flip the actual [open] state ONLY after the body has
+        // finished gliding out — by this point the visible content
+        // is already at height/opacity 0, so the UA display:none
+        // takeover is invisible.
+        d.open = false;
+        isAnimating = false;
+        activeAnim = null;
+      };
+    }
+
+    /* Custom click handler — prevent the native open/close so we can
+       drive the animation ourselves. */
+    trigger.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (isAnimating) return;
+      if (d.open) animateClose(); else animateOpen();
     });
 
-    /* Auto-close when the cursor leaves the hint's bounding box. The
-       grace is intentionally short (40ms) so the close starts gliding
-       almost immediately — the smoothness comes from the long-eased
-       outro curve, not from a delay sitting on top of it. */
-    d.addEventListener('mouseleave', () => closeWithDelay(d, 40));
+    /* Mouseleave triggers a soft animated close after a tiny grace. */
+    d.addEventListener('mouseleave', () => {
+      if (d._closeTimer) clearTimeout(d._closeTimer);
+      d._closeTimer = setTimeout(() => {
+        if (d.open && !isAnimating) animateClose();
+      }, 40);
+    });
     d.addEventListener('mouseenter', () => {
       if (d._closeTimer) { clearTimeout(d._closeTimer); d._closeTimer = null; }
     });
+
+    /* Suppress the native toggle handler from running anything. The
+       click handler above keeps things in sync. */
+    d.addEventListener('toggle', () => { /* no-op */ });
   });
 
-  /* Auto-close when the hint scrolls out of the viewport. */
+  /* Auto-close when the hint scrolls out of the viewport. The body is
+     off-screen anyway, no need for the eased close — flip directly. */
   if ('IntersectionObserver' in window) {
     const io = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
