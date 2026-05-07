@@ -861,15 +861,15 @@ body.is-loaded .cover-mockup img {
   gap: 8px;
   height: 32px;
   padding: 3px 14px 3px 3px;
-  background: rgba(155, 145, 246, 0.07);
-  border: 1px solid rgba(155, 145, 246, 0.32);
+  background: rgba(255, 201, 25, 0.07);
+  border: 1px solid rgba(255, 201, 25, 0.34);
   border-radius: 999px;
   overflow: hidden;
   font-family: var(--font-sans);
   font-weight: 500;
   font-size: 13px;
   letter-spacing: -0.005em;
-  color: var(--color-purple);
+  color: var(--color-yellow);
   user-select: none;
   /* Outro path (mouse out): softer 380ms ease so the pill bg doesn't
      just snap back. Intro path overrides below with the snappier
@@ -882,14 +882,14 @@ body.is-loaded .cover-mockup img {
 .ph-trigger::-webkit-details-marker { display: none; }
 .ph-trigger::marker { display: none; content: ""; }
 .ph-trigger:focus-visible {
-  outline: 2px solid var(--color-purple);
+  outline: 2px solid var(--color-yellow);
   outline-offset: 3px;
 }
 .prompt-hint:hover .ph-trigger,
 .prompt-hint:focus-within .ph-trigger,
 .prompt-hint[open] .ph-trigger {
-  background: rgba(155, 145, 246, 0.12);
-  border-color: rgba(155, 145, 246, 0.55);
+  background: rgba(255, 201, 25, 0.13);
+  border-color: rgba(255, 201, 25, 0.62);
   /* Intro path: snappier ease-out so the pill responds quickly to the
      mouse arriving. The outro on the base rule above handles the
      gentle collapse back. */
@@ -899,7 +899,7 @@ body.is-loaded .cover-mockup img {
     box-shadow 320ms var(--ease-expo);
 }
 .prompt-hint[open] .ph-trigger {
-  box-shadow: 0 8px 22px -14px rgba(155, 145, 246, 0.55);
+  box-shadow: 0 8px 22px -14px rgba(255, 201, 25, 0.55);
 }
 .ph-trigger-icon {
   flex-shrink: 0;
@@ -908,8 +908,10 @@ body.is-loaded .cover-mockup img {
   width: 26px;
   height: 26px;
   border-radius: 999px;
-  background: rgba(255, 201, 25, 0.18);
-  color: var(--color-yellow);
+  /* Solid yellow disc with a midnight glyph so the icon stays a focal
+     point against the lighter yellow-tint pill bg. */
+  background: var(--color-yellow);
+  color: var(--color-midnight);
   transition:
     background 320ms var(--ease-expo),
     box-shadow 320ms var(--ease-expo);
@@ -919,16 +921,16 @@ body.is-loaded .cover-mockup img {
   height: 14px;
   display: block;
 }
-/* Open: icon picks up a soft yellow halo so state is legible at a
-   glance after the cursor has moved off the trigger. */
+/* Open: icon disc keeps its solid yellow but picks up a soft outer
+   halo so the state is legible at a glance after the cursor has
+   moved off the trigger. */
 .prompt-hint[open] .ph-trigger-icon {
-  background: rgba(255, 201, 25, 0.32);
-  box-shadow: 0 0 0 4px rgba(255, 201, 25, 0.16);
+  box-shadow: 0 0 0 4px rgba(255, 201, 25, 0.22);
 }
 .ph-trigger-label {
   flex-shrink: 0;
   font-weight: 500;
-  color: var(--color-purple);
+  color: var(--color-yellow);
 }
 .ph-trigger-sub {
   display: inline-flex;
@@ -949,7 +951,7 @@ body.is-loaded .cover-mockup img {
 /* Dot separator only appears once the sub is animating in. */
 .ph-trigger-sub::before {
   content: "·";
-  color: var(--color-purple);
+  color: var(--color-yellow);
   opacity: 0.55;
   margin: 0 8px 0 0;
 }
@@ -967,8 +969,8 @@ body.is-loaded .cover-mockup img {
 .ph-content {
   margin-top: clamp(12px, 1.6vh, 16px);
   padding: clamp(16px, 2vh, 22px) clamp(18px, 2vw, 24px);
-  background: rgba(155, 145, 246, 0.05);
-  border: 1px solid rgba(155, 145, 246, 0.30);
+  background: rgba(255, 201, 25, 0.05);
+  border: 1px solid rgba(255, 201, 25, 0.30);
   border-radius: var(--r-bento);
   /* Closed-state baseline — JS animates from these values to the open
      state via WAAPI on the toggle event. Transitions remain as a
@@ -983,7 +985,7 @@ body.is-loaded .cover-mockup img {
 .prompt-hint[open] .ph-content {
   opacity: 1;
   transform: translateY(0);
-  box-shadow: 0 12px 32px -18px rgba(155, 145, 246, 0.45);
+  box-shadow: 0 12px 32px -18px rgba(255, 201, 25, 0.42);
 }
 .ph-body {
   font-family: var(--font-sans);
