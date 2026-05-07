@@ -816,10 +816,13 @@ function initDayCost() {
       ? 'day 0'
       : (d >= BURN_DAY ? 'day 4 — context full' : `day ${dayN}`);
 
-    /* The big number + the gauge needle already carry the burn state.
-       The status line below is just a quiet credit — what model did
-       this run on. Keep is-burning / is-exhausted on the NUMBER so the
-       red shift on full still reads, but leave the status text static. */
+    /* Model credit on the status line. Day 0 + the early ramp ran on
+       Sonnet in Claude chat (the brief, the audit, the PRD). Once the
+       build started in Claude Code the rest of it rolled on Opus 4.7,
+       so the credit swaps when the needle passes the day-2 mark. */
+    tokenStatus.textContent = d < 2 ? 'Claude Sonnet' : 'Claude Opus 4.7';
+    /* The big number + gauge needle already carry the burn state via
+       red colour shift; keep is-burning / is-exhausted on the NUMBER. */
     tokenNum.classList.remove('is-burning', 'is-exhausted');
     if (d >= 3 && d < BURN_DAY) {
       tokenNum.classList.add('is-burning');
@@ -928,6 +931,12 @@ function initPromptHints() {
       cancelAnim();
       const target = content.scrollHeight;
       isAnimating = true;
+      // Flag the close NOW so the trigger pill + sub label start their
+      // CSS outros in parallel with the body height animation. Without
+      // this, [open] stays true until WAAPI finishes and the pill only
+      // begins collapsing AFTER the body is done — which reads as the
+      // 1-second pause the user flagged.
+      d.setAttribute('data-closing', '');
       activeAnim = content.animate(
         [
           { height: `${target}px`, opacity: 1, transform: 'translateY(0)' },
@@ -936,10 +945,9 @@ function initPromptHints() {
         { duration: CLOSE_MS, easing: CLOSE_EASE, fill: 'forwards' }
       );
       activeAnim.onfinish = () => {
-        // Flip the actual [open] state ONLY after the body has
-        // finished gliding out — by this point the visible content
-        // is already at height/opacity 0, so the UA display:none
-        // takeover is invisible.
+        // Body is already at height/opacity 0; flip [open] now so the
+        // UA display:none takeover is invisible.
+        d.removeAttribute('data-closing');
         d.open = false;
         isAnimating = false;
         activeAnim = null;

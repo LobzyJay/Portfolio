@@ -892,9 +892,11 @@ body.is-loaded .cover-mockup img {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
 }
-.prompt-hint:hover .ph-trigger,
-.prompt-hint:focus-within .ph-trigger,
-.prompt-hint[open] .ph-trigger {
+/* Expansion rules skip while data-closing is set so the pill outro
+   runs in parallel with the WAAPI body close, not after it. */
+.prompt-hint:hover:not([data-closing]) .ph-trigger,
+.prompt-hint:focus-within:not([data-closing]) .ph-trigger,
+.prompt-hint[open]:not([data-closing]) .ph-trigger {
   background: rgba(20, 20, 20, 0.7);
   border-color: rgba(255, 255, 255, 0.16);
   /* Intro path: snappier ease-out so the pill responds quickly to the
@@ -905,7 +907,7 @@ body.is-loaded .cover-mockup img {
     border-color 280ms var(--ease-expo),
     box-shadow 320ms var(--ease-expo);
 }
-.prompt-hint[open] .ph-trigger {
+.prompt-hint[open]:not([data-closing]) .ph-trigger {
   box-shadow: 0 0 16px rgba(228, 2, 2, 0.45);
 }
 .ph-trigger-icon {
@@ -961,9 +963,9 @@ body.is-loaded .cover-mockup img {
   opacity: 0.7;
   margin: 0 8px 0 0;
 }
-.prompt-hint:hover .ph-trigger-sub,
-.prompt-hint:focus-within .ph-trigger-sub,
-.prompt-hint[open] .ph-trigger-sub {
+.prompt-hint:hover:not([data-closing]) .ph-trigger-sub,
+.prompt-hint:focus-within:not([data-closing]) .ph-trigger-sub,
+.prompt-hint[open]:not([data-closing]) .ph-trigger-sub {
   max-width: 360px;
   opacity: 1;
   /* Intro path — snappier and a touch faster, with a small delay so
