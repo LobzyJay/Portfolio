@@ -3179,7 +3179,19 @@ body.is-loaded .cover-mockup img {
   border-radius: 0 0 var(--r-card) var(--r-card);
   background: var(--bg-light-2);
   pointer-events: none; /* shield by default — activated via .is-active */
-  transition: opacity 0.2s var(--ease-expo);
+  /* The deployed footer-atmosphere route paints the STSL midnight
+     (#14141A) as its canvas — a brand colour with a slight blue/purple
+     cast. Desaturating the iframe pulls it toward neutral dark-grey so
+     it reads in the same family as .how-built. The red sweep overlay
+     stays legible, just less vivid. */
+  filter: saturate(0.32);
+  transition: opacity 0.2s var(--ease-expo), filter 0.4s var(--ease-expo);
+}
+/* When the user activates the iframe to play with the cursor sweep,
+   restore full saturation so the live demo reads at intended colour. */
+.live-frame--footer.is-active iframe,
+.live-frame--footer.is-active .lf-iframe {
+  filter: saturate(1);
 }
 .live-frame--footer.is-active iframe,
 .live-frame--footer.is-active .lf-iframe {
