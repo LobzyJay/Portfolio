@@ -221,7 +221,10 @@
 
       <!-- Layered hero composition (image + bg pattern + radial gradient) -->
       <div class="cover-mockup" data-reveal>
-        <img src="media/new-hero-image.jpg" alt="STSL homepage on a laptop, dark perforated surface, atmospheric green light" loading="eager" fetchpriority="high" decoding="async" />
+        <picture>
+          <source media="(max-width: 720px)" srcset="media/new-hero-image-m.jpg" />
+          <img src="media/new-hero-image.jpg" alt="STSL homepage on a laptop, dark perforated surface, atmospheric green light" loading="eager" fetchpriority="high" decoding="async" />
+        </picture>
       </div>
 
       <!-- Massive title at bottom -->
@@ -259,7 +262,10 @@
       </section>
 
       <figure class="bleed-shot" data-reveal data-parallax data-parallax-min="1.00" data-parallax-max="1.13">
-        <img src="media/laptop-hero.jpg" alt="STSL homepage shown on a laptop, perspective view" loading="lazy" />
+        <picture>
+          <source media="(max-width: 720px)" srcset="media/laptop-hero-m.jpg" />
+          <img src="media/laptop-hero.jpg" alt="STSL homepage shown on a laptop, perspective view" loading="lazy" decoding="async" />
+        </picture>
       </figure>
 
       <details class="chapter chapter--accordion" id="ch-02-day-0-the-brief" open data-reveal>
@@ -317,7 +323,10 @@
           <div class="chapter-prose-rail">
             <aside class="chapter-side">
               <div class="chapter-side-frame">
-                <img src="media/mobile-1.jpg" alt="STSL on mobile, snap-scroll on the solutions tiles" loading="lazy" />
+                <picture>
+                  <source media="(max-width: 720px)" srcset="media/mobile-1-m.jpg" />
+                  <img src="media/mobile-1.jpg" alt="STSL on mobile, snap-scroll on the solutions tiles" loading="lazy" decoding="async" />
+                </picture>
               </div>
               <p class="chapter-side-caption"><span class="csc-num">01</span><span>Mobile · solutions snap-scroll. The system on the smallest viewport.</span></p>
             </aside>
@@ -392,7 +401,10 @@
           <p>Day 2 saved me at least eight hours on Day 3. The rebuild went fast not because I worked fast on Day 3, but because I had already decided on Day 2 what the rebuild was going to be. The slow day is a discipline. It's the day where you don't ship, on purpose.</p>
           <figure class="bleed-shot bleed-shot--scroll" data-reveal data-parallax data-parallax-min="1.10" data-parallax-max="1.18">
             <div class="bleed-scroll-track">
-              <img src="media/mobile-2.jpg" alt="Mobile pathway tiles, snap-scroll" loading="lazy" />
+              <picture>
+                <source media="(max-width: 720px)" srcset="media/mobile-2-m.jpg" />
+                <img src="media/mobile-2.jpg" alt="Mobile pathway tiles, snap-scroll" loading="lazy" decoding="async" />
+              </picture>
             </div>
           </figure>
         </div>
