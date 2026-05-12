@@ -2346,7 +2346,7 @@ body.is-loaded .cover-mockup img {
   margin-top: clamp(40px, 6vh, 64px);
   max-width: none;
 }
-.chapter--accordion > .chapter-body > .inputs-bento {
+.chapter-body > .inputs-bento {
   grid-column: 1 / span 9;
   margin-top: clamp(28px, 4vh, 40px);
 }
@@ -3350,12 +3350,16 @@ body.is-loaded .cover-mockup img {
   border-radius: clamp(12px, 1.2vw, 18px);
   text-decoration: none;
   background-image: none !important;
+  transform: scale(1) translateY(0); /* explicit base for hover interpolation */
   transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
   cursor: pointer;
   will-change: transform;
+  transform-origin: center center;
 }
-.demo-card:hover {
-  transform: scale(1.025) translateY(-2px);
+.demo-card:hover,
+.demo-card:focus-visible,
+.demo-card:active {
+  transform: scale(1.025) translateY(-2px) !important;
   box-shadow: 0 14px 40px -12px rgba(0, 0, 0, 0.18);
 }
 .demo-card-label {

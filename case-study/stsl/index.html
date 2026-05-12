@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Vibecoding a Full Marketing Site in 3.5 Days with Claude — STSL Case Study | Aloba Adewale</title>
+  <title>Vibecoding a Full Marketing Site in 3.5 Days with Claude: STSL Case Study | Aloba Adewale</title>
 
   <meta name="description" content="A long-form case study on AI-assisted design. How I rebuilt SystemSpecs Technology Solutions in 3.5 days with Claude: a 17-route marketing site, a design system, and a static UI kit. Methodology, agent workflows, real token costs, and what actually worked when one designer ran the whole engagement." />
   <meta name="author" content="Aloba Adewale" />
@@ -265,6 +265,25 @@
         </picture>
       </figure>
 
+      <section class="chapter" id="ch-01b-what-i-started-with" data-reveal>
+        <header class="chapter-head">
+          <h2 class="chapter-title">What I started with</h2>
+        </header>
+        <div class="chapter-body">
+          <figure class="inputs-bento" data-reveal aria-label="What I started with">
+            <p class="ib-eyebrow">the going-in stack</p>
+            <ul class="ib-list">
+              <li><span class="ib-num">01</span><span class="ib-name">Brand kit</span><span class="ib-desc">STSL's wordmark, palette, type direction.</span></li>
+              <li><span class="ib-num">02</span><span class="ib-name">Reference site</span><span class="ib-desc">stsl.com.ng, the existing build, audited line by line.</span></li>
+              <li><span class="ib-num">03</span><span class="ib-name">Claude Max</span><span class="ib-desc">Subscription, no API key.</span></li>
+              <li><span class="ib-num">04</span><span class="ib-name">Figma, free tier</span><span class="ib-desc">For Day 2's static frames.</span></li>
+              <li><span class="ib-num">05</span><span class="ib-name">Mid-level design skill</span><span class="ib-desc">Enough to recognize when the output isn't right and say why.</span></li>
+              <li><span class="ib-num">06</span><span class="ib-name">A free static host</span><span class="ib-desc">GitHub Pages or Vercel.</span></li>
+            </ul>
+          </figure>
+        </div>
+      </section>
+
       <details class="chapter chapter--accordion" id="ch-02-day-0-the-brief" open data-reveal>
         <summary class="chapter-head">
           <h2 class="chapter-title">Day 0, The brief</h2>
@@ -443,11 +462,13 @@
           <p>The cream nav tint was the other small one. I wanted the nav to feel like it floated over the content rather than pasted on top. CSS <code>color-mix(in srgb, var(--bg-canvas) 82%, transparent)</code> with a <code>backdrop-filter: blur(14px) saturate(140%)</code> got me there. The blur softens what's behind it and the saturation bumps colors back up so the page underneath doesn't look washed out. Two CSS properties, more interesting than three weeks of meetings about a nav.</p>
           <p>By 11pm, the marketing site v1 was live on GitHub Pages. Everything worked, most of it elegantly. A few things were duct-taped, including the contact form's grid plumbing, which I knew I'd revisit. That was Day 4's problem.</p>
 
-          <a class="demo-card" href="https://systemspec-website-redesign-web.vercel.app/" target="_blank" rel="noopener">
+          <p>I sent <a href="https://iudoh.me/" target="_blank" rel="noopener"><strong>Idorenyin</strong></a> a preview link before I went to bed. He's a senior dev at Cowrywise; he's been building with AI in his own work for a while. He replied in about a minute. "Omo you're right ohh, you're moving fast with this project." That was the whole exchange.</p>
+
+          <div class="demo-card" role="figure">
             <span class="demo-card-label">Live gesture · hover</span>
             <h3 class="demo-card-title">Cards lift toward the viewer</h3>
-            <p class="demo-card-meta">Scale 1.025, snappier 200ms ease-out (down from 400ms expressive). Hover this card.</p>
-          </a>
+            <p class="demo-card-meta">Scale 1.025, snappier 200ms ease-out. Hover this card.</p>
+          </div>
 
           <figure class="live-frame">
             <div class="lf-chrome">
@@ -561,7 +582,7 @@
           <p>Images had a small pipeline. Every screenshot got run through <code>sips</code> on the way in: max long-edge 2400px for desktop shots, 1600px for mobile, JPEG quality 78. Originals stayed in a gitignored folder so the source was never lost. The article you're reading is under 3MB of media total.</p>
           <p>The build broke twice. Once was the GitHub Pages basePath problem covered in Day 3. The other was the splash gate, which set a <code>data-splash="active"</code> attribute synchronously in <code>&lt;head&gt;</code> using a regex to detect the design route. The first version checked <code>pathname.startsWith('/design')</code> which silently failed on GitHub Pages because the deploy path is <code>/Systemspec-website-redesign/design</code>. Switching to <code>/\\/design(\\/|$)/.test(pathname)</code> made it work under any basePath.</p>
           <p>The fix took 30 seconds. Finding it took longer than that.</p>
-          <p>Deploying didn't need a separate workflow. The static export drops a folder of HTML and assets, and Vercel and GitHub Pages both pick it up directly. I let Claude handle the wiring. It read the Vercel CLI docs, walked me through <code>vercel login</code> once, attached the project to my account, and set up a redeploy on every push. Same flow works on Netlify or Cloudflare Pages. The only step you can't outsource is the OAuth login, which has to happen in your browser.</p>
+          <p>Deploying didn't need a separate workflow. The static export drops a folder of HTML and assets, and Vercel and GitHub Pages both pick it up directly. I started on GitHub Pages then moved to Vercel for the cleaner URL. I let Claude handle the wiring. It read the Vercel CLI docs, walked me through <code>vercel login</code> once, attached the project to my account, and set up a redeploy on every push. Same flow works on Netlify or Cloudflare Pages. The only step you can't outsource is the OAuth login, which has to happen in your browser.</p>
         </div>
       </section>
 
@@ -570,7 +591,8 @@
           <h2 class="chapter-title">What I shipped</h2>
         </header>
         <div class="chapter-body">
-          <p>Three deliverables, one repo. A 17-route marketing site that covers solutions, products, company, developers, and contact. A design system docs page that lays out tokens, primitives, patterns, and compositions in five sections. A static UI kit that lets a developer pull components without bringing the whole brand. All of it deployed on GitHub Pages from a single static export, free to host, ~30 seconds to redeploy.</p>
+          <p>The UI kit almost wasn't built in the CLI. Late in the run I tried porting the system into claude.design to see if a higher-level tool could carry it. Just the import hit my quota. I got one first-iteration UI kit out before the wall, copied it back into the repo, and started fresh in the terminal. The kit that shipped is the rebuild. The salvaged iteration is the reason I knew what to rebuild against.</p>
+          <p>Three deliverables, one repo. A 17-route marketing site that covers solutions, products, company, developers, and contact. A design system docs page that lays out tokens, primitives, patterns, and compositions in five sections. A static UI kit that lets a developer pull components without bringing the whole brand. All of it deployed on Vercel from a single static export, free to host, ~30 seconds to redeploy.</p>
           <p>The marketing site has light and dark mode that flip cleanly because the tokens are theme-aware. The dark mode isn't an inversion of the light mode, it's a separate brand binding that re-references the same primitive tokens. Cards that need to feel "always dramatic" got a frozen-dark surface utility that ignores theme. The rest of the site flips.</p>
           <p>The design system page is the artifact I'm most proud of. It documents what the build is made of. Brand. Foundations. Primitives. Patterns. Compositions. Each section is interactive. You can hover the buttons, type in the fields, open the dialogs. It's a working artifact, not a screenshot reel.</p>
           <p>The UI kit is the smallest deliverable and the most useful one. It's a static HTML page that pulls the foundations package without the brand layer. A developer who wants STSL's primitives but not STSL's color palette can reach into the kit and take what they need.</p>
@@ -646,9 +668,9 @@
             </div>
             <p class="pc-caption">the kind of prompt that worked</p>
           </aside>
-          <p>The way I scaled that pattern was by splitting the work across seven specialised agents, each with one ownership, and pulling in a small library of reusable skills for the writing, research, and visual-craft work. The agents handled lanes. The skills carried voice, structure, and method between sessions.</p>
+          <p>The way I scaled that pattern was by splitting the work across six specialised agents, each with one ownership, and pulling in a small library of reusable skills for the writing, research, and visual-craft work. The agents handled lanes. The skills carried voice, structure, and method between sessions.</p>
 
-          <p>The discipline that made this actually work wasn't the agents themselves. It was not letting any agent reach into another agent's lane. When the copywriter started touching CSS, output went sideways. When visual-craft tried to write tokens, the system drifted. The agents are useful because they're narrow.</p>
+          <p>The discipline that made this actually work wasn't the agents themselves. It was not letting any agent reach into another agent's lane. When the copywriter started touching CSS, output went sideways. When visual-craft tried to write tokens, the system drifted.</p>
 
           <!-- Day-Cost scrubber — one input drives both cards (Days + Cost) over the 12-week timeline. -->
           <figure class="day-cost" data-reveal aria-label="Days versus cost over time">
@@ -867,7 +889,7 @@
 project       <span class="lr-v">stsl-rebuild</span>
 duration      <span class="lr-v">3.5 days</span>
 subscription  <span class="lr-v">Claude Pro</span>  <span class="lr-num">$65</span>
-agents        <span class="lr-v">7 specialised</span>
+agents        <span class="lr-v">6 specialised</span>
 tokens        <span class="lr-v">context exhausted, Day 4 morning</span>
 
 <span class="lr-c">// shipped</span>
@@ -889,14 +911,14 @@ team          <span class="lr-v">5–8 people</span>
           </figure>
           -->
 
-          <p>One thing I didn't fully plan for was token usage. By Day 4 morning the context window was gone, a full conversation wiped out by four days of accumulated code, reviews, and back-and-forths. The numbers, when I checked later, were about 5M tokens across three sessions, roughly $70 in API costs. I had to restart the session cold, with no memory of what had been built. The way I handled it was keeping a running reference folder alongside the repo: markdown docs with the decisions made, inline code comments explaining the non-obvious calls, and a short PRD I could paste at the start of any new session to re-anchor the model. That habit turned out to matter more than the agents. The agents are only as useful as the context you give them.</p>
-          <p>That's the real lesson about working this way. Claude doesn't replace the designer. Claude removes the friction between the designer's idea and the running site. The friction was never the value-add of design. It was the tax on doing design.</p>
+          <p>Day 4 started with the context window gone. 8am at my home workstation. I opened a new chat to fix the splash gate I'd been thinking about overnight. Claude didn't know what a splash gate was. It didn't know what the project was. It didn't know me. Four days of decisions — every token rename, every lint fix, every "no, that's not it" — were a blank window. I sat with it for a minute. Then I opened the reference folder I'd been keeping alongside the repo — markdown docs with the decisions made, inline code comments explaining the non-obvious calls, a short PRD I could paste at the start of any new session — and started pasting context back in. The numbers, when I checked later, were about 5M tokens across three sessions. The Max sub absorbed it; on the API, that would have been roughly $70. The reference folder turned out to matter more than the agents. The agents are only as useful as the context you give them.</p>
+          <p>That's the real lesson about working this way. What Claude actually does is remove the friction between the idea and the execution. The friction was never the value-add of design. It was the tax on doing design.</p>
           <figure class="pull-quote" data-reveal>
             <p><span class="qb"><span class="quote-script">V</span>ibecoding doesn't replace</span><span class="qb">design taste, it amplifies it.</span></p>
           </figure>
-          <p>The amplification works in both directions. If I have strong taste, Claude makes it ship faster. If I have weak taste, Claude makes it ship faster too, and the weakness compounds. The output is only ever as considered as the inputs. The implication for the broader question of "AI-assisted design" is that the taste premium is going up, not down. The execution premium is going down. The designers who are going to do interesting work in the next two years are the ones who can articulate what they want with enough specificity that the model can produce it, then recognize when the output isn't quite right and say why.</p>
+          <p>The amplification works in both directions. If I have strong taste, Claude makes it ship faster. If I have weak taste, Claude makes it ship faster too, and the weakness compounds. The output is only ever as considered as the inputs. The implication for the broader question of "AI-assisted design" is that the taste premium is going up, not down. The designers who are going to do interesting work in the next two years are the ones who can articulate what they want with enough specificity that the model can produce it, then recognize when the output isn't quite right and say why.</p>
           <p>I'm not sure what to call this way of working. It's not waterfall, the brief and the system both kept moving while I built. It's not really agile either, no sprints, no standups, just one designer running the whole thing for four days. Whatever it is, it felt faster than anything I'd done, and the output didn't feel rushed. The methodology question is probably the next thing to figure out.</p>
-          <p>I came into this build with a question about how much of design org work is necessary process and how much is organizational drag. Four days in, I have a partial answer. A lot of process that exists for the team-of-one disappears. Most reviews disappear. Most spec handoffs disappear. The slow march from Figma to staging compresses into the same afternoon. What stays is the part that isn't process at all. The judgement. The taste. The willingness to look at a thing and say "no, that's not it" and try again.</p>
+          <p>I came into this build with a question about how much of design org work is necessary process and how much is organizational drag. Four days in, I have a partial answer. A lot of process that exists for the team-of-one disappears. Most reviews disappear. Most spec handoffs disappear. The slow march from Figma to staging compresses into the same afternoon. What stays is the part that isn't process at all. The willingness to look at a thing and say "no, that's not it" and try again.</p>
           <p>That's the kind of work I enjoy.</p>
         </div>
       </section>
