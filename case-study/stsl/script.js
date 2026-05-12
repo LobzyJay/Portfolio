@@ -63,12 +63,6 @@ function initBackground(canvasId, opts = {}) {
   const patternScale = opts.patternScale || 1.0;
   if (typeof THREE === 'undefined') return;
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  /* Skip the WebGL ripple on mobile — a 60fps render loop with a
-     full-viewport shader is the single biggest framerate cost on
-     phones, and the cover already has a solid bg + gradient that
-     reads fine without it. Pointer-coarse devices typically don't
-     hit the ripple effect anyway. */
-  if (window.matchMedia('(max-width: 720px)').matches) return;
   const canvas = document.getElementById(canvasId || 'bg-canvas');
   if (!canvas) return;
   const cover = canvas.parentElement;
