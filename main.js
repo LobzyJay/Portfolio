@@ -456,7 +456,7 @@ function initTimeClocks() {
     if (swapTimer) { clearTimeout(swapTimer); swapTimer = null; }
     gsap.killTweensOf(cityEl);
     gsap.set(cityEl, { y: 0, opacity: 0.6 });
-    cityEl.textContent = 'Lagos · London';
+    cityEl.textContent = 'Lagos & London';
     if (abbrEl) abbrEl.textContent = 'WAT/BST';
     timeEl.textContent = fmtTime('Africa/Lagos').format(new Date());
   }
@@ -503,7 +503,7 @@ function initTimeClocks() {
   // Initial populate (sync) so the pill fades in already filled
   if (offsetsMatch()) {
     mode = 'sync';
-    cityEl.textContent = 'Lagos · London';
+    cityEl.textContent = 'Lagos & London';
     if (abbrEl) abbrEl.textContent = 'WAT/BST';
     timeEl.textContent = fmtTime('Africa/Lagos').format(new Date());
   } else {
