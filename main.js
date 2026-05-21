@@ -413,6 +413,10 @@ function initHeroRotator() {
 
 /* ============================================================
    7. TIME CLOCKS — Lagos (WAT) + London (GMT/BST)
+   Lagos is UTC+1 year-round; London is UTC+0 (GMT) in winter and
+   UTC+1 (BST) in summer. When the offsets match, the two cities
+   show the same digits, so the pill merges into one. When they
+   diverge, it falls back to swapping between them.
    ============================================================ */
 function initTimeClocks() {
   const wrapEl = document.querySelector('.time-clocks');
@@ -426,24 +430,49 @@ function initTimeClocks() {
     { city: 'London', tz: 'Europe/London' },
   ];
   let idx = 0;
+  let swapTimer = null;
+  let mode = null; // 'sync' (offsets equal) | 'swap' (offsets differ)
 
   const fmtTime = (tz) => new Intl.DateTimeFormat('en-GB', { timeZone: tz, hour: '2-digit', minute: '2-digit', hour12: false });
 
-  // Hardcoded — Lagos is always WAT; London is BST (summer) or GMT (winter)
+  const getOffset = (tz) => new Intl.DateTimeFormat('en', { timeZone: tz, timeZoneName: 'shortOffset' })
+    .formatToParts(new Date()).find(p => p.type === 'timeZoneName')?.value ?? '';
+
   const getAbbr = (tz) => {
     if (tz === 'Africa/Lagos') return 'WAT';
-    // London: if UTC offset is +1 it's BST, otherwise GMT
-    const offset = new Intl.DateTimeFormat('en', { timeZone: tz, timeZoneName: 'shortOffset' })
-      .formatToParts(new Date()).find(p => p.type === 'timeZoneName')?.value ?? '';
-    return offset === 'GMT+1' ? 'BST' : 'GMT';
+    return getOffset(tz) === 'GMT+1' ? 'BST' : 'GMT';
   };
 
-  // Time ticks every second — no animation
+  const offsetsMatch = () => getOffset('Africa/Lagos') === getOffset('Europe/London');
+
+  // Time ticks every second — uses Lagos in sync mode (same digits as London anyway)
   setInterval(() => {
-    timeEl.textContent = fmtTime(ZONES[idx].tz).format(new Date());
+    const tz = mode === 'sync' ? 'Africa/Lagos' : ZONES[idx].tz;
+    timeEl.textContent = fmtTime(tz).format(new Date());
   }, 1000);
 
+  function enterSyncMode() {
+    mode = 'sync';
+    if (swapTimer) { clearTimeout(swapTimer); swapTimer = null; }
+    gsap.killTweensOf(cityEl);
+    gsap.set(cityEl, { y: 0, opacity: 0.6 });
+    cityEl.textContent = 'Lagos & London';
+    if (abbrEl) abbrEl.textContent = 'WAT/BST';
+    timeEl.textContent = fmtTime('Africa/Lagos').format(new Date());
+  }
+
+  function enterSwapMode() {
+    mode = 'swap';
+    idx = 0;
+    const { city, tz } = ZONES[idx];
+    cityEl.textContent = city;
+    if (abbrEl) abbrEl.textContent = getAbbr(tz);
+    timeEl.textContent = fmtTime(tz).format(new Date());
+    swapTimer = setTimeout(swapCity, 4000);
+  }
+
   function swapCity() {
+    if (mode !== 'swap') return;
     gsap.to(cityEl, {
       y: -8, opacity: 0, duration: 0.2, ease: 'power2.in',
       onComplete() {
@@ -455,24 +484,43 @@ function initTimeClocks() {
         gsap.fromTo(cityEl,
           { y: 10, opacity: 0 },
           { y: 0, opacity: 0.6, duration: 0.65, ease: 'elastic.out(1, 0.5)',
-            onComplete() { setTimeout(swapCity, 4000); },
+            onComplete() {
+              if (mode === 'swap') swapTimer = setTimeout(swapCity, 4000);
+            },
           }
         );
       },
     });
   }
 
-  // Initial populate
-  const { city, tz } = ZONES[idx];
-  cityEl.textContent = city;
-  timeEl.textContent = fmtTime(tz).format(new Date());
-  if (abbrEl) abbrEl.textContent = getAbbr(tz);
+  // Re-check every minute so the DST boundary flips the mode automatically
+  setInterval(() => {
+    const wantSync = offsetsMatch();
+    if (wantSync && mode !== 'sync') enterSyncMode();
+    else if (!wantSync && mode !== 'swap') enterSwapMode();
+  }, 60_000);
 
-  // Fade whole clock in, then begin swapping
+  // Initial populate (sync) so the pill fades in already filled
+  if (offsetsMatch()) {
+    mode = 'sync';
+    cityEl.textContent = 'Lagos & London';
+    if (abbrEl) abbrEl.textContent = 'WAT/BST';
+    timeEl.textContent = fmtTime('Africa/Lagos').format(new Date());
+  } else {
+    mode = 'swap';
+    const { city, tz } = ZONES[idx];
+    cityEl.textContent = city;
+    if (abbrEl) abbrEl.textContent = getAbbr(tz);
+    timeEl.textContent = fmtTime(tz).format(new Date());
+  }
+
+  // Fade the whole clock in, then begin the swap timer if we're in swap mode
   gsap.set(wrapEl, { opacity: 0, y: 5 });
   gsap.to(wrapEl, {
     opacity: 1, y: 0, duration: 0.5, ease: 'power3.out', delay: 1.0,
-    onComplete() { setTimeout(swapCity, 4000); },
+    onComplete() {
+      if (mode === 'swap') swapTimer = setTimeout(swapCity, 4000);
+    },
   });
 }
 
