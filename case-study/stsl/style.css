@@ -3049,6 +3049,48 @@ body.is-loaded .cover-mockup img {
   transform: translateX(6px);
 }
 
+/* ── CTA variant of article-end ─────────────────────────── */
+/* Red dot signals "ask" instead of the yellow "wrap-up" dot */
+.end-dot--accent { background: var(--accent); }
+/* Copy is taller than the original article-end (4 elements vs 2),
+   so bottom-align the button with the tertiary link instead of
+   floating it in the middle. Only affects wide layouts; below the
+   720px wrap, the row stacks and align-items is moot. */
+.article-end--cta .article-end__row { align-items: flex-end; }
+/* CTA title is longer than "Thanks for reading." so let it wrap */
+.article-end--cta .end-title {
+  white-space: normal;
+  line-height: 1.1;
+  max-width: 22ch;
+}
+.cta-tertiary {
+  margin: clamp(14px, 2vh, 20px) 0 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.cta-secondary {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: 13px;
+  color: var(--text-muted);
+  letter-spacing: 0.01em;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-color: rgba(255, 255, 255, 0.18);
+  transition: color 0.25s ease, text-decoration-color 0.25s ease;
+}
+.cta-secondary:hover {
+  color: var(--text);
+  text-decoration-color: currentColor;
+}
+.cta-divider {
+  color: var(--text-muted);
+  opacity: 0.4;
+  font-size: 13px;
+}
+
 /* ============================================================
    LIVE ARTIFACTS — A: iframes (browser-chrome wrapper)
    ============================================================ */
